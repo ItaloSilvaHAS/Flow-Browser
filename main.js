@@ -7,6 +7,8 @@ function createWindow() {
     height: 800,
     minWidth: 900,
     minHeight: 600,
+    frame: true,
+    autoHideMenuBar: true,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       nodeIntegration: false,
@@ -14,6 +16,9 @@ function createWindow() {
       webviewTag: true
     }
   });
+
+  // Remove completamente o menu
+  win.setMenuBarVisibility(false);
 
   // Bloqueador de anúncios simples (domínios comuns)
   const adBlockList = ["doubleclick.net", "googlesyndication.com", "adnxs.com", "popads.net"];

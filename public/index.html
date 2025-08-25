@@ -1,58 +1,32 @@
+
+<!DOCTYPE html>
 <html lang="pt-BR" class="scroll-smooth">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Flow Browser - Estudo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Flow Browser - Navegador de Estudo</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link
-    rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
-  />
-  <style>
-    /* Scrollbar hide for horizontal tabs */
-    .scrollbar-hide::-webkit-scrollbar {
-      display: none;
-    }
-    .scrollbar-hide {
-      -ms-overflow-style: none;
-      scrollbar-width: none;
-    }
-    /* Custom scrollbar for notes textarea */
-    textarea::-webkit-scrollbar {
-      width: 8px;
-    }
-    textarea::-webkit-scrollbar-thumb {
-      background-color: rgba(100, 100, 100, 0.5);
-      border-radius: 4px;
-    }
-    /* Scrollbar for notes container */
-    .notes-scroll::-webkit-scrollbar {
-      width: 8px;
-    }
-    .notes-scroll::-webkit-scrollbar-thumb {
-      background-color: rgba(100, 100, 100, 0.5);
-      border-radius: 4px;
-    }
-  </style>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link rel="stylesheet" href="style.css" />
 </head>
-<body class="bg-[#c1c9d6] min-h-screen flex flex-col font-sans select-none overflow-hidden">
+<body class="bg-gradient-to-br from-blue-100 to-purple-100 min-h-screen flex flex-col font-sans select-none overflow-hidden">
 
   <!-- Top bar with tabs and controls -->
-  <header class="flex items-center bg-[#c1c9d6] border-b border-[#a0a9b8] px-2 py-1 select-text">
+  <header class="flex items-center bg-white/95 backdrop-blur-md border-b border-gray-200 px-3 py-2 shadow-sm">
     <!-- Tabs container -->
-    <div class="flex-1 flex overflow-x-auto scrollbar-hide space-x-1 min-w-[300px]">
+    <div class="flex-1 flex overflow-x-auto scrollbar-hide space-x-2 min-w-[300px]">
       <button
         id="btn-home"
-        class="flex items-center space-x-2 bg-[#e3e6eb] rounded-t-full border border-b-0 border-[#a0a9b8] px-3 py-1 text-sm text-[#4a4f5a] max-w-[200px] truncate hover:bg-[#d0d4db] transition"
+        class="flex items-center space-x-2 bg-white rounded-lg border border-gray-200 px-4 py-2 text-sm text-gray-700 max-w-[200px] truncate hover:bg-gray-50 transition-all shadow-sm"
         title="Home"
       >
-        <i class="fas fa-home"></i>
-        <span class="truncate">Home</span>
+        <i class="fas fa-home text-blue-500"></i>
+        <span class="truncate font-medium">Home</span>
       </button>
-      <div id="tabs" class="flex space-x-1"></div>
+      <div id="tabs" class="flex space-x-2"></div>
       <button
         id="btn-new-tab"
-        class="flex items-center justify-center w-8 h-8 rounded-full bg-[#e3e6eb] border border-[#a0a9b8] text-[#4a4f5a] hover:bg-[#d0d4db] transition"
+        class="flex items-center justify-center w-10 h-10 rounded-lg bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 hover:text-blue-500 transition-all shadow-sm"
         title="Nova aba"
       >
         <i class="fas fa-plus"></i>
@@ -61,241 +35,187 @@
   </header>
 
   <!-- Address bar with navigation buttons -->
-  <div class="flex items-center space-x-2 px-3 py-2 bg-[#f5f6f7] border-b border-[#d1d5db]">
-    <button id="btn-back" class="rounded-full p-2 hover:bg-gray-300 transition" title="Voltar" disabled>
-      <i class="fas fa-arrow-left text-gray-700"></i>
-    </button>
-    <button id="btn-forward" class="rounded-full p-2 hover:bg-gray-300 transition" title="Avançar" disabled>
-      <i class="fas fa-arrow-right text-gray-700"></i>
-    </button>
-    <button id="btn-reload" class="rounded-full p-2 hover:bg-gray-300 transition" title="Recarregar">
-      <i class="fas fa-redo text-gray-700"></i>
-    </button>
+  <div class="address-bar-container flex items-center space-x-3 px-4 py-3 bg-white/98 backdrop-blur-md border-b border-gray-100">
+    <div class="flex items-center space-x-1">
+      <button id="btn-back" class="rounded-full p-2 text-gray-600 hover:bg-gray-100 transition-all" title="Voltar" disabled>
+        <i class="fas fa-arrow-left"></i>
+      </button>
+      <button id="btn-forward" class="rounded-full p-2 text-gray-600 hover:bg-gray-100 transition-all" title="Avançar" disabled>
+        <i class="fas fa-arrow-right"></i>
+      </button>
+      <button id="btn-reload" class="rounded-full p-2 text-gray-600 hover:bg-gray-100 transition-all" title="Recarregar">
+        <i class="fas fa-redo"></i>
+      </button>
+    </div>
+    
     <input
       id="input-url"
       type="text"
       placeholder="Digite a pesquisa ou o endereço da Web"
-      class="flex-1 rounded-full py-2 px-4 text-gray-700 text-sm bg-[#e3e6eb] placeholder-[#a0a9b8] outline-none focus:ring-2 focus:ring-gray-300"
+      class="flex-1 rounded-full py-3 px-5 text-gray-700 text-sm bg-gray-100 placeholder-gray-500 border-2 border-transparent focus:bg-white focus:border-blue-400 transition-all"
       spellcheck="false"
       autocomplete="off"
-      autocorrect="off"
-      autocapitalize="off"
     />
-    <button id="btn-search" class="rounded-full p-2 hover:bg-gray-300 transition" title="Pesquisar">
-      <i class="fas fa-search text-gray-700"></i>
-    </button>
-    <button id="btn-profile" class="rounded-full p-2 hover:bg-gray-300 transition" title="Perfil">
-      <i class="fas fa-user-circle text-gray-700"></i>
-    </button>
-    <button id="btn-menu" class="rounded-full p-2 hover:bg-gray-300 transition" title="Menu">
-      <i class="fas fa-bars text-gray-700"></i>
-    </button>
+    
+    <div class="flex items-center space-x-1">
+      <button id="btn-search" class="rounded-full p-2 text-gray-600 hover:bg-gray-100 transition-all" title="Pesquisar">
+        <i class="fas fa-search"></i>
+      </button>
+      <button id="btn-profile" class="rounded-full p-2 text-gray-600 hover:bg-gray-100 transition-all" title="Perfil">
+        <i class="fas fa-user-circle"></i>
+      </button>
+      <button id="btn-menu" class="rounded-full p-2 text-gray-600 hover:bg-gray-100 transition-all" title="Menu">
+        <i class="fas fa-ellipsis-v"></i>
+      </button>
+    </div>
   </div>
 
   <!-- Favorites bar -->
-  <div class="flex items-center justify-between px-3 py-1 bg-[#f5f6f7] border-b border-[#d1d5db] text-[#4a4f5a] text-sm select-text">
-    <div class="flex items-center space-x-1">
-      <i class="far fa-folder-open"></i>
-      <span>Outros favoritos</span>
+  <div class="favorites-bar flex items-center justify-between px-4 py-2 bg-gray-50/95 backdrop-blur-md border-b border-gray-100 text-gray-600 text-sm">
+    <div class="flex items-center space-x-2">
+      <i class="fas fa-bookmark text-blue-500"></i>
+      <span>Favoritos</span>
     </div>
-    <div class="flex items-center space-x-1 cursor-pointer">
-      <i class="fas fa-folder-plus"></i>
+    <div class="flex items-center space-x-2 cursor-pointer hover:text-blue-500 transition-colors">
+      <i class="fas fa-plus"></i>
       <span>Importar favoritos</span>
     </div>
   </div>
 
   <div class="flex flex-1 min-h-0 overflow-hidden">
     <!-- Left vertical toolbar -->
-    <nav
-      id="sidebar"
-      class="flex flex-col items-center space-y-8 bg-white border-r border-[#d1d5db] w-16 py-6 px-1 select-none"
-    >
+    <nav id="sidebar" class="flex flex-col items-center space-y-6 bg-white/95 backdrop-blur-md border-r border-gray-200 w-16 py-6 px-2 shadow-sm">
       <button
         id="btn-ia"
-        class="flex flex-col items-center space-y-1 rounded-full p-2 hover:bg-gray-200 transition w-12 h-12"
+        class="flex flex-col items-center space-y-1 rounded-xl p-3 hover:bg-gradient-to-br hover:from-blue-500 hover:to-purple-600 hover:text-white transition-all w-12 h-12 group"
         title="IA - Chat GPT"
       >
-        <i class="fas fa-star text-2xl text-gray-700"></i>
-        <span class="text-xs text-gray-700 select-none">IA</span>
+        <i class="fas fa-robot text-xl"></i>
+        <span class="text-xs font-medium">IA</span>
       </button>
+      
       <button
         id="btn-notes"
-        class="flex flex-col items-center space-y-1 rounded-full p-2 hover:bg-gray-200 transition w-12 h-12"
+        class="flex flex-col items-center space-y-1 rounded-xl p-3 hover:bg-gradient-to-br hover:from-green-500 hover:to-teal-600 hover:text-white transition-all w-12 h-12 group"
         title="Bloco de Notas"
       >
-        <i class="fas fa-sticky-note text-2xl text-gray-700"></i>
-        <span class="text-xs text-gray-700 select-none">Notas</span>
+        <i class="fas fa-sticky-note text-xl"></i>
+        <span class="text-xs font-medium">Notas</span>
       </button>
+      
       <button
         id="btn-timer"
-        class="flex flex-col items-center space-y-1 rounded-full p-2 hover:bg-gray-200 transition w-12 h-12"
+        class="flex flex-col items-center space-y-1 rounded-xl p-3 hover:bg-gradient-to-br hover:from-red-500 hover:to-pink-600 hover:text-white transition-all w-12 h-12 group"
         title="Temporizador"
       >
-        <i class="fas fa-hourglass-half text-2xl text-gray-700"></i>
-        <span class="text-xs text-gray-700 select-none">Timer</span>
+        <i class="fas fa-clock text-xl"></i>
+        <span class="text-xs font-medium">Timer</span>
       </button>
+      
       <button
         id="btn-reader"
-        class="flex flex-col items-center space-y-1 rounded-full p-2 hover:bg-gray-200 transition w-12 h-12"
+        class="flex flex-col items-center space-y-1 rounded-xl p-3 hover:bg-gradient-to-br hover:from-yellow-500 hover:to-orange-600 hover:text-white transition-all w-12 h-12 group"
         title="Modo de Leitura"
       >
-        <i class="fas fa-book-open text-2xl text-gray-700"></i>
-        <span class="text-xs text-gray-700 select-none">Leitura</span>
+        <i class="fas fa-book-open text-xl"></i>
+        <span class="text-xs font-medium">Leitura</span>
       </button>
+      
       <button
         id="btn-empty"
-        class="flex flex-col items-center space-y-1 rounded-full p-2 hover:bg-gray-200 transition w-12 h-12"
+        class="flex flex-col items-center space-y-1 rounded-xl p-3 transition-all w-12 h-12 opacity-50 cursor-not-allowed"
         title="Em breve"
       >
-        <i class="fas fa-circle-notch text-2xl text-gray-400"></i>
-        <span class="text-xs text-gray-400 select-none">-</span>
+        <i class="fas fa-circle-notch text-xl"></i>
+        <span class="text-xs font-medium">-</span>
       </button>
+      
       <button
         id="btn-help"
-        class="flex flex-col items-center space-y-1 rounded-full p-2 hover:bg-gray-200 transition w-12 h-12"
+        class="flex flex-col items-center space-y-1 rounded-xl p-3 hover:bg-gradient-to-br hover:from-indigo-500 hover:to-purple-600 hover:text-white transition-all w-12 h-12 group"
         title="Ajuda"
       >
-        <i class="fas fa-question text-2xl text-gray-700"></i>
-        <span class="text-xs text-gray-700 select-none">Ajuda</span>
+        <i class="fas fa-question text-xl"></i>
+        <span class="text-xs font-medium">Ajuda</span>
       </button>
+      
+      <button
+        id="btn-themes"
+        class="flex flex-col items-center space-y-1 rounded-xl p-3 hover:bg-gradient-to-br hover:from-purple-500 hover:to-pink-600 hover:text-white transition-all w-12 h-12 group"
+        title="Temas e Cores"
+      >
+        <i class="fas fa-palette text-xl"></i>
+        <span class="text-xs font-medium">Temas</span>
+      </button>
+      
       <button
         id="btn-more"
-        class="flex flex-col items-center space-y-1 rounded-full p-2 hover:bg-gray-200 transition w-12 h-12"
+        class="flex flex-col items-center space-y-1 rounded-xl p-3 hover:bg-gradient-to-br hover:from-gray-500 hover:to-gray-700 hover:text-white transition-all w-12 h-12 group"
         title="Mais ferramentas"
       >
-        <i class="fas fa-ellipsis-v text-2xl text-gray-700"></i>
-        <span class="text-xs text-gray-700 select-none">Mais</span>
+        <i class="fas fa-ellipsis-v text-xl"></i>
+        <span class="text-xs font-medium">Mais</span>
       </button>
     </nav>
 
     <!-- Main content area -->
-    <main class="flex flex-col flex-1 min-h-0 relative bg-gray-50 overflow-hidden">
+    <main class="flex flex-col flex-1 min-h-0 relative bg-gradient-to-br from-gray-50 to-gray-100 overflow-hidden">
       <!-- Home page container -->
       <div id="home-page" class="absolute inset-0 flex flex-col items-center justify-center px-4 sm:px-0">
         <img
           id="home-bg"
-          alt="Mountain lake with clear reflection of snowy mountains and blue sky"
-          class="absolute inset-0 w-full h-full object-cover -z-10 transition-opacity duration-500"
-          src="https://storage.googleapis.com/a1aa/image/a06d8817-f944-4fe0-c55a-d8dd4aecae67.jpg"
+          alt="Beautiful mountain landscape with clear reflection in a calm lake"
+          class="absolute inset-0 w-full h-full object-cover -z-10 transition-all duration-700"
+          src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80"
         />
-        <div class="w-full max-w-3xl">
+        
+        <div class="w-full max-w-4xl">
           <input
             id="home-search"
             type="search"
-            placeholder="Pesquisar na web"
-            class="w-full bg-white bg-opacity-70 rounded-full py-3 px-6 text-gray-700 placeholder-gray-400 text-lg focus:outline-none focus:ring-2 focus:ring-gray-300"
+            placeholder="Pesquisar na web ou digite uma URL"
+            class="w-full bg-white/90 backdrop-blur-md rounded-2xl py-4 px-8 text-gray-700 placeholder-gray-500 text-lg focus:outline-none focus:ring-4 focus:ring-blue-400/30 shadow-xl transition-all"
             spellcheck="false"
             autocomplete="off"
-            autocorrect="off"
-            autocapitalize="off"
           />
         </div>
-        <div
-          id="home-icons"
-          class="mt-8 flex justify-center space-x-6 bg-white bg-opacity-30 rounded-xl py-4 px-6 backdrop-blur-sm"
-        >
-          <a
-            href="#"
-            data-url="https://www.youtube.com"
-            class="flex flex-col items-center space-y-1 cursor-pointer"
-            title="Youtube"
-          >
-            <div
-              class="bg-white bg-opacity-70 rounded-lg p-3 flex items-center justify-center w-14 h-14"
-            >
-              <img
-                alt="YouTube logo black icon on white rounded square background"
-                class="w-10 h-10"
-                src="https://storage.googleapis.com/a1aa/image/42001869-10b9-4d29-e594-77d0d7839408.jpg"
-                width="40"
-                height="40"
-              />
+        
+        <div id="home-icons" class="mt-10 flex justify-center space-x-8 bg-white/20 backdrop-blur-md rounded-2xl py-6 px-8 shadow-xl">
+          <a href="#" data-url="https://www.youtube.com" class="flex flex-col items-center space-y-2 cursor-pointer group" title="YouTube">
+            <div class="bg-white/90 backdrop-blur-md rounded-xl p-4 flex items-center justify-center w-16 h-16 shadow-lg group-hover:shadow-xl transition-all">
+              <i class="fab fa-youtube text-red-500 text-2xl"></i>
             </div>
-            <span class="text-white text-xs select-none">Youtube</span>
+            <span class="text-white text-sm font-medium">YouTube</span>
           </a>
-          <a
-            href="#"
-            data-url="https://talkradio.com"
-            class="flex flex-col items-center space-y-1 cursor-pointer"
-            title="Talk Radio"
-          >
-            <div
-              class="bg-white bg-opacity-70 rounded-lg p-3 flex items-center justify-center w-14 h-14"
-            >
-              <img
-                alt="Talk Radio icon black waveform on white rounded square background"
-                class="w-10 h-10"
-                src="https://storage.googleapis.com/a1aa/image/7d03ba26-148a-470d-22db-cf93fcdcfbad.jpg"
-                width="40"
-                height="40"
-              />
+          
+          <a href="#" data-url="https://github.com" class="flex flex-col items-center space-y-2 cursor-pointer group" title="GitHub">
+            <div class="bg-white/90 backdrop-blur-md rounded-xl p-4 flex items-center justify-center w-16 h-16 shadow-lg group-hover:shadow-xl transition-all">
+              <i class="fab fa-github text-gray-800 text-2xl"></i>
             </div>
-            <span class="text-white text-xs select-none">Talk Radio</span>
+            <span class="text-white text-sm font-medium">GitHub</span>
           </a>
-          <a
-            href="#"
-            data-url="https://github.com"
-            class="flex flex-col items-center space-y-1 cursor-pointer"
-            title="Git Hub"
-          >
-            <div
-              class="bg-white bg-opacity-70 rounded-lg p-3 flex items-center justify-center w-14 h-14"
-            >
-              <img
-                alt="GitHub logo black icon on white rounded square background"
-                class="w-10 h-10"
-                src="https://storage.googleapis.com/a1aa/image/dfc295dc-4be3-4925-fa6f-8dfed6a1001d.jpg"
-                width="40"
-                height="40"
-              />
+          
+          <a href="#" data-url="https://drive.google.com" class="flex flex-col items-center space-y-2 cursor-pointer group" title="Google Drive">
+            <div class="bg-white/90 backdrop-blur-md rounded-xl p-4 flex items-center justify-center w-16 h-16 shadow-lg group-hover:shadow-xl transition-all">
+              <i class="fab fa-google-drive text-blue-500 text-2xl"></i>
             </div>
-            <span class="text-white text-xs select-none">Git Hub</span>
+            <span class="text-white text-sm font-medium">Drive</span>
           </a>
-          <a
-            href="#"
-            data-url="https://pinterest.com"
-            class="flex flex-col items-center space-y-1 cursor-pointer"
-            title="Pinterest"
-          >
-            <div
-              class="bg-white bg-opacity-70 rounded-lg p-3 flex items-center justify-center w-14 h-14"
-            >
-              <img
-                alt="Pinterest logo black icon on white rounded square background"
-                class="w-10 h-10"
-                src="https://storage.googleapis.com/a1aa/image/7e8007f0-f103-42ec-b091-ce1f9d27e82f.jpg"
-                width="40"
-                height="40"
-              />
+          
+          <a href="#" data-url="https://netflix.com" class="flex flex-col items-center space-y-2 cursor-pointer group" title="Netflix">
+            <div class="bg-white/90 backdrop-blur-md rounded-xl p-4 flex items-center justify-center w-16 h-16 shadow-lg group-hover:shadow-xl transition-all">
+              <i class="fas fa-film text-red-600 text-2xl"></i>
             </div>
-            <span class="text-white text-xs select-none">Pinterest</span>
+            <span class="text-white text-sm font-medium">Netflix</span>
           </a>
-          <a
-            href="#"
-            data-url="https://drive.google.com"
-            class="flex flex-col items-center space-y-1 cursor-pointer"
-            title="Google Drive"
-          >
-            <div
-              class="bg-white bg-opacity-70 rounded-lg p-3 flex items-center justify-center w-14 h-14"
-            >
-              <img
-                alt="Google Drive logo black icon on white rounded square background"
-                class="w-10 h-10"
-                src="https://storage.googleapis.com/a1aa/image/f1062394-f61d-474f-1625-490f53d2b5a6.jpg"
-                width="40"
-                height="40"
-              />
-            </div>
-            <span class="text-white text-xs select-none">Google Drive</span>
-          </a>
+          
           <button
             id="btn-add-home-icon"
-            class="flex flex-col items-center space-y-1 cursor-pointer bg-white bg-opacity-30 rounded-lg p-3 w-14 h-14 justify-center"
-            title="Adicionar"
+            class="flex flex-col items-center space-y-2 cursor-pointer bg-white/30 backdrop-blur-md rounded-xl p-4 w-16 h-16 justify-center shadow-lg hover:shadow-xl transition-all group"
+            title="Adicionar site"
           >
-            <i class="fas fa-plus text-white text-2xl"></i>
-            <span class="text-white text-xs select-none">Adicionar</span>
+            <i class="fas fa-plus text-white text-2xl group-hover:scale-110 transition-transform"></i>
+            <span class="text-white text-sm font-medium">Adicionar</span>
           </button>
         </div>
       </div>
@@ -313,686 +233,34 @@
       </div>
     </main>
 
-    <!-- Right bottom corner: wallpaper change button -->
+    <!-- Wallpaper change button -->
     <button
       id="btn-change-wallpaper"
       title="Personalizar papel de parede"
-      class="fixed bottom-4 right-4 bg-white bg-opacity-70 rounded-full p-3 shadow-lg hover:bg-opacity-100 transition z-50"
+      class="fixed bottom-6 right-6 bg-white/90 backdrop-blur-md rounded-full p-4 shadow-xl hover:shadow-2xl transition-all z-50 group"
     >
-      <i class="fas fa-sliders-h text-gray-700 text-xl"></i>
+      <i class="fas fa-image text-gray-700 text-xl group-hover:rotate-12 transition-transform"></i>
     </button>
   </div>
 
   <!-- Modal overlay -->
-  <div
-    id="modal-overlay"
-    class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50"
-  >
-    <!-- Modal content -->
-    <div
-      id="modal-content"
-      class="bg-white rounded-lg max-w-3xl w-full max-h-[90vh] overflow-auto p-6 relative"
-    >
+  <div id="modal-overlay" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
+    <div id="modal-content" class="bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-auto p-6 relative shadow-2xl">
       <button
         id="modal-close"
-        class="absolute top-3 right-3 text-gray-600 hover:text-gray-900 text-xl"
+        class="absolute top-4 right-4 text-gray-400 hover:text-red-500 text-xl w-8 h-8 rounded-full hover:bg-red-50 flex items-center justify-center transition-all"
         title="Fechar"
       >
         <i class="fas fa-times"></i>
       </button>
-      <div id="modal-body" class="mt-6"></div>
+      <div id="modal-body" class="mt-4"></div>
     </div>
   </div>
 
+  <!-- Hidden file input for wallpaper -->
   <input type="file" id="file-input" accept="image/*" class="hidden" />
 
-  <script>
-    // Elements
-    const webview = document.getElementById("webview");
-    const inputUrl = document.getElementById("input-url");
-    const btnBack = document.getElementById("btn-back");
-    const btnForward = document.getElementById("btn-forward");
-    const btnReload = document.getElementById("btn-reload");
-    const btnSearch = document.getElementById("btn-search");
-    const btnHome = document.getElementById("btn-home");
-    const tabsContainer = document.getElementById("tabs");
-    const btnNewTab = document.getElementById("btn-new-tab");
-    const btnChangeWallpaper = document.getElementById("btn-change-wallpaper");
-    const fileInput = document.getElementById("file-input");
-    const backgroundImage = document.getElementById("home-bg");
-    const modalOverlay = document.getElementById("modal-overlay");
-    const modalContent = document.getElementById("modal-content");
-    const modalBody = document.getElementById("modal-body");
-    const modalClose = document.getElementById("modal-close");
-
-    // Sidebar buttons
-    const btnIA = document.getElementById("btn-ia");
-    const btnNotes = document.getElementById("btn-notes");
-    const btnTimer = document.getElementById("btn-timer");
-    const btnReader = document.getElementById("btn-reader");
-    const btnEmpty = document.getElementById("btn-empty");
-    const btnHelp = document.getElementById("btn-help");
-    const btnMore = document.getElementById("btn-more");
-
-    // Home page elements
-    const homePage = document.getElementById("home-page");
-    const webviewContainer = document.getElementById("webview-container");
-    const homeSearch = document.getElementById("home-search");
-    const homeIcons = document.getElementById("home-icons");
-    const btnAddHomeIcon = document.getElementById("btn-add-home-icon");
-
-    // State
-    let tabs = [];
-    let activeTabId = null;
-    let tabIdCounter = 0;
-
-    // Notes data saved in localStorage
-    const NOTES_STORAGE_KEY = "flow_browser_notes";
-
-    // Timer state
-    let timerInterval = null;
-    let timerRemaining = 0;
-    let timerRunning = false;
-
-    // ChatGPT API key (use with caution, do not expose in production)
-    const CHATGPT_API_KEY = "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";
-
-    // Initialize home tab
-    function createTab(url = "https://www.google.com", title = "Nova aba") {
-      const id = ++tabIdCounter;
-      const tab = { id, url, title };
-      tabs.push(tab);
-      renderTabs();
-      setActiveTab(id);
-      return id;
-    }
-
-    function renderTabs() {
-      tabsContainer.innerHTML = "";
-      tabs.forEach((tab) => {
-        const btn = document.createElement("button");
-        btn.className =
-          "flex items-center space-x-2 rounded-t-full border border-b-0 px-3 py-1 text-sm max-w-[200px] truncate transition " +
-          (tab.id === activeTabId
-            ? "bg-[#e3e6eb] border-[#a0a9b8] text-[#4a4f5a]"
-            : "bg-[#f5f6f7] border-[#d1d5db] text-gray-600 hover:bg-[#e3e6eb] hover:text-[#4a4f5a]");
-        btn.title = tab.title;
-        btn.innerHTML = `<span class="truncate">${tab.title}</span> <i class="fas fa-times text-xs"></i>`;
-        btn.onclick = () => setActiveTab(tab.id);
-        btn.querySelector("i").onclick = (e) => {
-          e.stopPropagation();
-          closeTab(tab.id);
-        };
-        tabsContainer.appendChild(btn);
-      });
-    }
-
-    function setActiveTab(id) {
-      const tab = tabs.find((t) => t.id === id);
-      if (!tab) return;
-      activeTabId = id;
-      inputUrl.value = tab.url;
-      if (tab.url === "home") {
-        showHome();
-      } else {
-        showWebview(tab.url);
-      }
-      renderTabs();
-      updateNavButtons();
-    }
-
-    function closeTab(id) {
-      const idx = tabs.findIndex((t) => t.id === id);
-      if (idx === -1) return;
-      tabs.splice(idx, 1);
-      if (activeTabId === id) {
-        if (tabs.length > 0) {
-          const newActive = tabs[Math.max(0, idx - 1)];
-          setActiveTab(newActive.id);
-        } else {
-          createHomeTab();
-        }
-      } else {
-        renderTabs();
-      }
-    }
-
-    // Navigation buttons
-    btnBack.onclick = () => {
-      if (webview.canGoBack()) webview.goBack();
-    };
-    btnForward.onclick = () => {
-      if (webview.canGoForward()) webview.goForward();
-    };
-    btnReload.onclick = () => {
-      webview.reload();
-    };
-
-    // Search or navigate
-    function navigateToInput() {
-      let val = inputUrl.value.trim();
-      if (!val) return;
-      if (val === "home") {
-        setActiveTab(tabs.find(t => t.url === "home")?.id || createHomeTab());
-        return;
-      }
-      // If looks like URL, navigate directly, else search Google
-      if (
-        val.startsWith("http://") ||
-        val.startsWith("https://") ||
-        val.includes(".")
-      ) {
-        if (!val.startsWith("http")) val = "https://" + val;
-        updateCurrentTabUrl(val);
-      } else {
-        // Search Google
-        const searchUrl =
-          "https://www.google.com/search?q=" + encodeURIComponent(val);
-        updateCurrentTabUrl(searchUrl);
-      }
-    }
-    btnSearch.onclick = navigateToInput;
-    inputUrl.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") {
-        navigateToInput();
-      }
-    });
-
-    // Update current tab URL and title
-    function updateCurrentTabUrl(url) {
-      const tab = tabs.find((t) => t.id === activeTabId);
-      if (!tab) return;
-      tab.url = url;
-      tab.title = url;
-      setActiveTab(tab.id);
-    }
-
-    // Update nav buttons state
-    function updateNavButtons() {
-      btnBack.disabled = !webview.canGoBack();
-      btnForward.disabled = !webview.canGoForward();
-    }
-
-    // Home button
-    btnHome.onclick = () => {
-      setActiveTab(tabs.find(t => t.url === "home")?.id || createHomeTab());
-    };
-
-    // New tab button
-    btnNewTab.onclick = () => {
-      createTab();
-    };
-
-    // Webview events
-    webview.addEventListener("did-navigate", (e) => {
-      const url = e.url;
-      const tab = tabs.find((t) => t.id === activeTabId);
-      if (tab) {
-        tab.url = url;
-        tab.title = url;
-        inputUrl.value = url;
-        renderTabs();
-        updateNavButtons();
-      }
-    });
-    webview.addEventListener("did-navigate-in-page", (e) => {
-      const url = e.url;
-      const tab = tabs.find((t) => t.id === activeTabId);
-      if (tab) {
-        tab.url = url;
-        inputUrl.value = url;
-        renderTabs();
-        updateNavButtons();
-      }
-    });
-    webview.addEventListener("page-title-updated", (e) => {
-      const tab = tabs.find((t) => t.id === activeTabId);
-      if (tab) {
-        tab.title = e.title || tab.url;
-        renderTabs();
-      }
-    });
-    webview.addEventListener("did-start-loading", () => {
-      btnReload.innerHTML = '<i class="fas fa-spinner fa-spin text-gray-700"></i>';
-    });
-    webview.addEventListener("did-stop-loading", () => {
-      btnReload.innerHTML = '<i class="fas fa-redo text-gray-700"></i>';
-      updateNavButtons();
-    });
-
-    // Wallpaper change button
-    btnChangeWallpaper.onclick = () => {
-      fileInput.click();
-    };
-    fileInput.onchange = (e) => {
-      const file = e.target.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = (ev) => {
-        backgroundImage.src = ev.target.result;
-        localStorage.setItem("homeBackground", ev.target.result);
-      };
-      reader.readAsDataURL(file);
-      fileInput.value = "";
-    };
-
-    // Show home page
-    function showHome() {
-      homePage.style.display = "flex";
-      webviewContainer.style.display = "none";
-      inputUrl.value = "home";
-      updateNavButtons();
-    }
-
-    // Show webview page
-    function showWebview(url) {
-      homePage.style.display = "none";
-      webviewContainer.style.display = "flex";
-      webview.src = url;
-      inputUrl.value = url;
-      updateNavButtons();
-    }
-
-    // Create home tab
-    function createHomeTab() {
-      const id = ++tabIdCounter;
-      const tab = { id, url: "home", title: "Home" };
-      tabs.push(tab);
-      renderTabs();
-      setActiveTab(id);
-      return id;
-    }
-
-    // Home search bar enter or search icon click
-    homeSearch.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") {
-        const query = homeSearch.value.trim();
-        if (!query) return;
-        const searchUrl = "https://www.google.com/search?q=" + encodeURIComponent(query);
-        createTab(searchUrl, query);
-        homeSearch.value = "";
-      }
-    });
-    homeSearch.addEventListener("search", (e) => {
-      const query = homeSearch.value.trim();
-      if (!query) return;
-      const searchUrl = "https://www.google.com/search?q=" + encodeURIComponent(query);
-      createTab(searchUrl, query);
-      homeSearch.value = "";
-    });
-
-    // Home icons click open in current tab
-    homeIcons.querySelectorAll("a").forEach((a) => {
-      a.addEventListener("click", (e) => {
-        e.preventDefault();
-        const url = a.getAttribute("data-url");
-        if (!url) return;
-        createTab(url, a.title);
-      });
-    });
-
-    // Add home icon button (just alert for now)
-    btnAddHomeIcon.onclick = () => {
-      alert("Funcionalidade para adicionar ícones na home será implementada.");
-    };
-
-    // Sidebar: Notes tab
-    btnNotes.onclick = () => {
-      openNotesModal();
-    };
-
-    // Notes modal content
-    function openNotesModal() {
-      const savedNotes = JSON.parse(localStorage.getItem(NOTES_STORAGE_KEY) || "{}");
-      let notesListHtml = "";
-      for (const id in savedNotes) {
-        notesListHtml += `<li class="border-b border-gray-300 py-1 cursor-pointer hover:bg-gray-100 px-2 truncate" data-id="${id}" title="${savedNotes[id].title}">${savedNotes[id].title}</li>`;
-      }
-      if (!notesListHtml) notesListHtml = "<li class='text-gray-500'>Nenhuma nota salva</li>";
-
-      const html = `
-        <div class="flex flex-col h-[70vh]">
-          <div class="flex justify-between items-center mb-3">
-            <h2 class="text-xl font-semibold">Bloco de Notas</h2>
-            <button id="btn-new-note" class="text-blue-600 hover:underline">Nova Nota</button>
-          </div>
-          <div class="flex flex-1 overflow-hidden border rounded-lg shadow">
-            <ul id="notes-list" class="w-1/3 bg-gray-50 overflow-auto notes-scroll p-2">${notesListHtml}</ul>
-            <div class="flex flex-col flex-1 p-2">
-              <input id="note-title" type="text" placeholder="Título da nota" class="border-b border-gray-300 mb-2 px-2 py-1 rounded focus:outline-none focus:ring-2 focus:ring-blue-400" />
-              <textarea id="note-content" class="flex-1 resize-none border rounded p-2 focus:outline-none focus:ring-2 focus:ring-blue-400" placeholder="Escreva sua nota aqui..."></textarea>
-              <div class="mt-2 flex justify-end space-x-2">
-                <button id="btn-save-note" class="bg-blue-600 text-white px-4 py-1 rounded hover:bg-blue-700 transition">Salvar</button>
-                <button id="btn-delete-note" class="bg-red-600 text-white px-4 py-1 rounded hover:bg-red-700 transition">Excluir</button>
-              </div>
-            </div>
-          </div>
-        </div>
-      `;
-      openModal(html);
-
-      // After modal is open, setup notes logic
-      setupNotesModal();
-    }
-
-    function setupNotesModal() {
-      const notesList = document.getElementById("notes-list");
-      const noteTitle = document.getElementById("note-title");
-      const noteContent = document.getElementById("note-content");
-      const btnSaveNote = document.getElementById("btn-save-note");
-      const btnDeleteNote = document.getElementById("btn-delete-note");
-      const btnNewNote = document.getElementById("btn-new-note");
-
-      let currentNoteId = null;
-      let notes = JSON.parse(localStorage.getItem(NOTES_STORAGE_KEY) || "{}");
-
-      function refreshNotesList() {
-        notesList.innerHTML = "";
-        const keys = Object.keys(notes);
-        if (keys.length === 0) {
-          notesList.innerHTML = "<li class='text-gray-500'>Nenhuma nota salva</li>";
-          clearNote();
-          return;
-        }
-        keys.forEach((id) => {
-          const li = document.createElement("li");
-          li.textContent = notes[id].title;
-          li.title = notes[id].title;
-          li.dataset.id = id;
-          li.className = "border-b border-gray-300 py-1 cursor-pointer hover:bg-gray-100 px-2 truncate";
-          if (id === currentNoteId) li.classList.add("bg-gray-200");
-          li.onclick = () => {
-            currentNoteId = id;
-            loadNote(id);
-            refreshNotesList();
-          };
-          notesList.appendChild(li);
-        });
-      }
-
-      function loadNote(id) {
-        if (!notes[id]) return;
-        noteTitle.value = notes[id].title;
-        noteContent.value = notes[id].content;
-      }
-
-      function clearNote() {
-        currentNoteId = null;
-        noteTitle.value = "";
-        noteContent.value = "";
-      }
-
-      btnSaveNote.onclick = () => {
-        const title = noteTitle.value.trim() || "Sem título";
-        const content = noteContent.value;
-        if (!currentNoteId) {
-          currentNoteId = Date.now().toString();
-        }
-        notes[currentNoteId] = { title, content };
-        localStorage.setItem(NOTES_STORAGE_KEY, JSON.stringify(notes));
-        refreshNotesList();
-        alert("Nota salva!");
-      };
-
-      btnDeleteNote.onclick = () => {
-        if (!currentNoteId) {
-          alert("Nenhuma nota selecionada para excluir.");
-          return;
-        }
-        if (confirm("Tem certeza que deseja excluir esta nota?")) {
-          delete notes[currentNoteId];
-          localStorage.setItem(NOTES_STORAGE_KEY, JSON.stringify(notes));
-          clearNote();
-          refreshNotesList();
-        }
-      };
-
-      btnNewNote.onclick = () => {
-        clearNote();
-        refreshNotesList();
-      };
-
-      // Load first note if exists
-      if (Object.keys(notes).length > 0) {
-        currentNoteId = Object.keys(notes)[0];
-        loadNote(currentNoteId);
-      } else {
-        clearNote();
-      }
-      refreshNotesList();
-    }
-
-    // Sidebar: Timer tab
-    btnTimer.onclick = () => {
-      openTimerModal();
-    };
-
-    function openTimerModal() {
-      const html = `
-        <div class="flex flex-col h-[50vh] max-w-md mx-auto">
-          <h2 class="text-xl font-semibold mb-4">Temporizador de Estudo</h2>
-          <div class="flex justify-center items-center space-x-4 mb-4">
-            <input id="input-minutes" type="number" min="1" max="180" value="25" class="w-20 text-center rounded border border-gray-300 p-2 focus:outline-none focus:ring-2 focus:ring-blue-400" />
-            <span>minutos</span>
-          </div>
-          <div class="text-center text-5xl font-mono mb-6" id="timer-display">25:00</div>
-          <div class="flex justify-center space-x-4">
-            <button id="btn-start-timer" class="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700 transition">Iniciar</button>
-            <button id="btn-pause-timer" class="bg-yellow-500 text-white px-6 py-2 rounded hover:bg-yellow-600 transition" disabled>Pausar</button>
-            <button id="btn-reset-timer" class="bg-red-600 text-white px-6 py-2 rounded hover:bg-red-700 transition">Resetar</button>
-          </div>
-          <div class="mt-4 text-center text-sm text-gray-600">Após o tempo, um alerta será exibido para descanso.</div>
-        </div>
-      `;
-      openModal(html);
-      setupTimerModal();
-    }
-
-    function setupTimerModal() {
-      const inputMinutes = document.getElementById("input-minutes");
-      const timerDisplay = document.getElementById("timer-display");
-      const btnStart = document.getElementById("btn-start-timer");
-      const btnPause = document.getElementById("btn-pause-timer");
-      const btnReset = document.getElementById("btn-reset-timer");
-
-      function formatTime(seconds) {
-        const m = Math.floor(seconds / 60)
-          .toString()
-          .padStart(2, "0");
-        const s = (seconds % 60).toString().padStart(2, "0");
-        return `${m}:${s}`;
-      }
-
-      function updateDisplay() {
-        timerDisplay.textContent = formatTime(timerRemaining);
-      }
-
-      function startTimer() {
-        if (timerRunning) return;
-        timerRunning = true;
-        btnStart.disabled = true;
-        btnPause.disabled = false;
-        timerInterval = setInterval(() => {
-          if (timerRemaining > 0) {
-            timerRemaining--;
-            updateDisplay();
-          } else {
-            clearInterval(timerInterval);
-            timerRunning = false;
-            btnStart.disabled = false;
-            btnPause.disabled = true;
-            alert("Tempo de estudo finalizado! Hora de descansar.");
-          }
-        }, 1000);
-      }
-
-      function pauseTimer() {
-        if (!timerRunning) return;
-        clearInterval(timerInterval);
-        timerRunning = false;
-        btnStart.disabled = false;
-        btnPause.disabled = true;
-      }
-
-      function resetTimer() {
-        clearInterval(timerInterval);
-        timerRunning = false;
-        timerRemaining = parseInt(inputMinutes.value, 10) * 60 || 1500;
-        updateDisplay();
-        btnStart.disabled = false;
-        btnPause.disabled = true;
-      }
-
-      inputMinutes.onchange = () => {
-        if (timerRunning) {
-          alert("Pare o temporizador antes de alterar o tempo.");
-          inputMinutes.value = Math.floor(timerRemaining / 60);
-          return;
-        }
-        resetTimer();
-      };
-
-      btnStart.onclick = startTimer;
-      btnPause.onclick = pauseTimer;
-      btnReset.onclick = resetTimer;
-
-      // Initialize timer
-      timerRemaining = parseInt(inputMinutes.value, 10) * 60 || 1500;
-      updateDisplay();
-      btnPause.disabled = true;
-    }
-
-    // Sidebar: IA Chat GPT
-    btnIA.onclick = () => {
-      openChatGPTModal();
-    };
-
-    function openChatGPTModal() {
-      const html = `
-        <div class="flex flex-col h-[70vh] max-w-3xl w-full">
-          <h2 class="text-xl font-semibold mb-4">Chat GPT - IA para dúvidas</h2>
-          <div id="chat-messages" class="flex-1 overflow-auto border rounded p-4 mb-4 bg-gray-50"></div>
-          <form id="chat-form" class="flex space-x-2">
-            <input id="chat-input" type="text" placeholder="Digite sua pergunta..." class="flex-1 rounded border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400" autocomplete="off" />
-            <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">Enviar</button>
-          </form>
-        </div>
-      `;
-      openModal(html);
-      setupChatGPT();
-    }
-
-    function setupChatGPT() {
-      const chatMessages = document.getElementById("chat-messages");
-      const chatForm = document.getElementById("chat-form");
-      const chatInput = document.getElementById("chat-input");
-
-      function appendMessage(text, fromUser = false) {
-        const div = document.createElement("div");
-        div.className = fromUser
-          ? "text-right mb-2"
-          : "text-left mb-2 text-gray-800";
-        div.textContent = text;
-        chatMessages.appendChild(div);
-        chatMessages.scrollTop = chatMessages.scrollHeight;
-      }
-
-      chatForm.onsubmit = async (e) => {
-        e.preventDefault();
-        const question = chatInput.value.trim();
-        if (!question) return;
-        appendMessage(question, true);
-        chatInput.value = "";
-        appendMessage("Carregando resposta...");
-
-        try {
-          const response = await fetch(
-            "https://api.openai.com/v1/chat/completions",
-            {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${CHATGPT_API_KEY}`,
-              },
-              body: JSON.stringify({
-                model: "gpt-3.5-turbo",
-                messages: [{ role: "user", content: question }],
-                max_tokens: 1000,
-                temperature: 0.7,
-              }),
-            }
-          );
-          const data = await response.json();
-          chatMessages.lastChild.textContent =
-            data.choices?.[0]?.message?.content || "Erro ao obter resposta.";
-          chatMessages.scrollTop = chatMessages.scrollHeight;
-        } catch (error) {
-          chatMessages.lastChild.textContent =
-            "Erro na comunicação com o servidor.";
-        }
-      };
-    }
-
-    // Sidebar: Reader mode (opens current page text in modal)
-    btnReader.onclick = () => {
-      openReaderMode();
-    };
-
-    async function openReaderMode() {
-      try {
-        const text = await webview.executeJavaScript(`
-          (() => {
-            const article = document.querySelector('article') || document.body;
-            return article.innerText || article.textContent || '';
-          })();
-        `);
-        const html = `
-          <div class="flex flex-col h-[70vh] max-w-3xl w-full overflow-auto p-4 bg-white rounded-lg">
-            <h2 class="text-xl font-semibold mb-4">Modo de Leitura</h2>
-            <pre class="whitespace-pre-wrap">${text.replace(
-              /</g,
-              "&lt;"
-            ).replace(/>/g, "&gt;")}</pre>
-          </div>
-        `;
-        openModal(html);
-      } catch (e) {
-        alert("Não foi possível ativar o modo de leitura nesta página.");
-      }
-    }
-
-    // Sidebar: More tools placeholder
-    btnMore.onclick = () => {
-      alert("Mais ferramentas de estudo serão adicionadas em breve.");
-    };
-
-    // Modal helpers
-    function openModal(contentHtml) {
-      modalBody.innerHTML = contentHtml;
-      modalOverlay.classList.remove("hidden");
-      modalOverlay.classList.add("flex");
-    }
-    function closeModal() {
-      modalOverlay.classList.add("hidden");
-      modalOverlay.classList.remove("flex");
-      modalBody.innerHTML = "";
-    }
-    modalClose.onclick = closeModal;
-    modalOverlay.onclick = (e) => {
-      if (e.target === modalOverlay) closeModal();
-    };
-
-    // Initialize home tab on load
-    window.onload = () => {
-      // Load saved background if any
-      const savedBg = localStorage.getItem("homeBackground");
-      if (savedBg) {
-        backgroundImage.src = savedBg;
-      }
-      createHomeTab();
-      inputUrl.value = "home";
-      homeSearch.focus();
-    };
-  </script>
+  <!-- Load the main application script -->
+  <script src="app.js"></script>
 </body>
 </html>
