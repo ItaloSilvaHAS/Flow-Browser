@@ -46,7 +46,7 @@ let tabIdCounter = 0;
 // Constants
 const NOTES_STORAGE_KEY = "flow_browser_notes";
 const WALLPAPER_STORAGE_KEY = "flow_browser_wallpaper";
-const CHATGPT_API_KEY = "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";
+const CHATGPT_API_KEY = "";
 
 // Timer state
 let timerInterval = null;
