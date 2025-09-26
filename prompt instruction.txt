@@ -1,0 +1,42 @@
+Veja meu navegador em Electron, com node. Enfim, quero que voce me ajude a terminar o desenvolvimento dele. Lembrando, estou rodando ele na minha maquina local, usando o npm start, leve isso em conta.
+
+Bom, vendo os arquivos voce ja tem noção do que é: Um navegador com foco em estudos e ferramentas de acessibildiade. Portanto, quero 
+que voce faça algumas coisas na interface:
+
+Primeiro: Os gadgtes no centro parecem estar numa div, e estao muito pequenos e feios. e para um navegador para estudosa ter a netflix ali
+não é bom, troque por algo mais estudioso. (primeira imagem)
+
+Segundo: Sabe os tres pontinhos do lado do boneco de conta? (segunda imagem)
+então, quero que ao clicar nele, aparecessa a sessão de coisas que tem na terceira imagem. E elas devem funcionar, inclusive o menu de "Confioguração", deve abrir um menu sofisticado e minimalista, e nesse
+menu deve ter a opção de trocar de tema (cor) do navegador e remover essa opção da barra lateral. nas configuração deve conter outras opções pra personalizar a experiencia do usuario!
+
+Tres: Quero que possa ser possivel carregar planos de fundo do navegador, e que ja venha um por padrao (pode ser um com particulas de fundo). E mudar dependendo do tema.
+
+Quatro: Quero que tenha 2 temas Especiais: o tema "Evelly(e um emoiji de coquete) que é um tema que deixa tudo rosa. E o tema "Max Steel" que deixa tudo verde neon brilhando.
+
+Cinco:> Lembre-se que o tema pode afetar a legibilidade das fontes, então deixe ela de uma forma que em qualquer tema voce pode conseguir ler o que ta escrito no navegador, ou então coloque uma fonte especial pra cada tema. 
+
+Seix: Por fim, eu tenho um banco de dados no supa Base. Segue as instruções:
+
+	Crie um arquivo, por exemplo supabaseClient.js:
+import { createClient } from '@supabase/supabase-js'
+
+// Pegue do painel do Supabase
+const SUPABASE_URL = "https://bxjuustgvxxrzzbklszk.supabase.co"
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ4anV1c3Rndnh4cnp6Ymtsc3prIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU1NTc5MjksImV4cCI6MjA3MTEzMzkyOX0.VZu9unVOwHGrIal_dIfq4SKhB-x6_xz5-iik7wvy15Q"
+
+export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+
+FAÇA ESSAS MODIFICAÇÕES, MAS LEMBRANDO: o navegador ainda teve se manter funcionando, fazer pesquisas e as ferramentas funcionais.
+
+
+
+
+
+quando clico nos 3 potinhos, me parece quew as opções ficam por tras dos elementos, arrume isso!
+
+Ponos de destaque: Quero que voce coloque a opção dos 3 pontinhgos na barra lateral como na segunda imagem, algo mais minimalista, e com a opção de "destacar" (colocar uma ferramentar fixada na barra lateral como acesso rapido ou não).
+
+Notei que voce tirou muito do meu codigo. Faça o seguinte, vou te reenviar o codigo antigo do app.js e voce pode criar um novo arquivo app2.js pra dividir pra nao ficar mais de 3 mil linhas de java script! ok? segue o meu app.js antigo: 
+
+Enfim, por fim, quero gostei dos sites quew ficaram nos gadgetes, mas veja bem: Não da pra ler com esse tema (fonte errada pro tema verde) e eu nao gostei dessa div englobando todosd eles. façam eles ficarem em um quadradinha para cada um.
