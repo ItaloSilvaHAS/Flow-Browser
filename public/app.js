@@ -28,7 +28,7 @@ const btnTimer = document.getElementById("btn-timer");
 const btnReader = document.getElementById("btn-reader");
 const btnEmpty = document.getElementById("btn-empty");
 const btnHelp = document.getElementById("btn-help");
-const btnThemes = document.getElementById("btn-themes");
+
 const btnMore = document.getElementById("btn-more");
 
 // Home page elements
@@ -46,7 +46,7 @@ let tabIdCounter = 0;
 // Constants
 const NOTES_STORAGE_KEY = "flow_browser_notes";
 const WALLPAPER_STORAGE_KEY = "flow_browser_wallpaper";
-const CHATGPT_API_KEY = "";
+const CHATGPT_API_KEY = "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";
 
 // Timer state
 let timerInterval = null;
@@ -327,6 +327,7 @@ function updateCurrentTabUrl(url) {
   
   tab.url = url;
   tab.title = url;
+  addToHistory(url, url); // Adicionar ao histórico
   setActiveTab(tab.id);
 }
 
@@ -2277,6 +2278,285 @@ function setupTextTools() {
   };
 }
 
+// Favorites Management
+function addToFavorites() {
+  const currentTab = tabs.find(t => t.id === activeTabId);
+  if (!currentTab || currentTab.url === 'home') {
+    alert('Nenhuma página para favoritar!');
+    return;
+  }
+
+  const favorites = JSON.parse(localStorage.getItem('flow_browser_favorites') || '[]');
+  const favorite = {
+    id: Date.now(),
+    title: currentTab.title,
+    url: currentTab.url,
+    favicon: '🌐',
+    date: new Date().toLocaleDateString()
+  };
+
+  // Verificar se já existe
+  const exists = favorites.some(fav => fav.url === favorite.url);
+  if (exists) {
+    alert('Esta página já está nos favoritos!');
+    return;
+  }
+
+  favorites.unshift(favorite);
+  localStorage.setItem('flow_browser_favorites', JSON.stringify(favorites));
+  
+  console.log('⭐ Página adicionada aos favoritos:', favorite.title);
+  
+  // Feedback visual
+  const toast = document.createElement('div');
+  toast.className = 'fixed top-20 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-pulse';
+  toast.innerHTML = '<i class="fas fa-star mr-2"></i>Adicionado aos favoritos!';
+  document.body.appendChild(toast);
+  
+  setTimeout(() => {
+    toast.remove();
+  }, 3000);
+}
+
+// History Management
+function openHistoryModal() {
+  const history = JSON.parse(localStorage.getItem('flow_browser_history') || '[]');
+  
+  let historyHtml = '';
+  if (history.length === 0) {
+    historyHtml = '<div class="text-center text-gray-500 py-8">Nenhum histórico encontrado</div>';
+  } else {
+    historyHtml = history.slice(0, 50).map(item => `
+      <div class="flex items-center justify-between p-3 border-b border-gray-100 hover:bg-gray-50 cursor-pointer" onclick="createTab('${item.url}', '${item.title}'); closeModal();">
+        <div class="flex-1">
+          <div class="font-medium text-gray-800 truncate">${item.title}</div>
+          <div class="text-sm text-gray-500 truncate">${item.url}</div>
+        </div>
+        <div class="text-xs text-gray-400">${item.date}</div>
+      </div>
+    `).join('');
+  }
+
+  const html = `
+    <div class="max-w-4xl">
+      <div class="flex items-center justify-between mb-6">
+        <h2 class="text-2xl font-bold text-gray-800">
+          <i class="fas fa-history mr-2 text-blue-500"></i>Histórico de Navegação
+        </h2>
+        <button onclick="clearHistory()" class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-colors">
+          <i class="fas fa-trash mr-2"></i>Limpar Histórico
+        </button>
+      </div>
+      <div class="bg-white border border-gray-200 rounded-lg max-h-96 overflow-y-auto">
+        ${historyHtml}
+      </div>
+    </div>
+  `;
+  
+  openModal(html);
+}
+
+function clearHistory() {
+  if (confirm('Tem certeza que deseja limpar todo o histórico?')) {
+    localStorage.removeItem('flow_browser_history');
+    console.log('🗑️ Histórico limpo');
+    closeModal();
+    setTimeout(() => openHistoryModal(), 100);
+  }
+}
+
+// Add to history when navigating
+function addToHistory(url, title) {
+  if (url === 'home' || !url) return;
+  
+  const history = JSON.parse(localStorage.getItem('flow_browser_history') || '[]');
+  const item = {
+    url,
+    title: title || url,
+    date: new Date().toLocaleDateString(),
+    timestamp: Date.now()
+  };
+  
+  // Remove duplicates
+  const filtered = history.filter(h => h.url !== url);
+  filtered.unshift(item);
+  
+  // Keep only last 1000 items
+  const limited = filtered.slice(0, 1000);
+  localStorage.setItem('flow_browser_history', JSON.stringify(limited));
+}
+
+// Settings Modal - Complete
+function openSettingsModal() {
+  const currentFontSize = localStorage.getItem('flow_browser_font_size') || '14';
+  const currentFontFamily = localStorage.getItem('flow_browser_font_family') || 'Inter';
+  
+  const html = `
+    <div class="max-w-4xl">
+      <h2 class="text-3xl font-bold text-gray-800 mb-6 text-center">
+        <i class="fas fa-cog mr-3 text-blue-500"></i>Configurações do Navegador
+      </h2>
+      
+      <div class="space-y-6">
+        <!-- Aparência -->
+        <div class="bg-white border border-gray-200 rounded-xl p-6">
+          <h3 class="text-xl font-bold text-gray-800 mb-4 flex items-center">
+            <i class="fas fa-palette mr-2 text-purple-500"></i>Aparência
+          </h3>
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Tema</label>
+              <button onclick="closeModal(); setTimeout(openThemesModal, 100);" class="w-full bg-purple-500 text-white py-3 px-4 rounded-lg hover:bg-purple-600 transition-colors">
+                <i class="fas fa-paint-brush mr-2"></i>Escolher Tema
+              </button>
+            </div>
+            
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Papel de Parede</label>
+              <button onclick="closeModal(); setTimeout(openWallpaperModal, 100);" class="w-full bg-green-500 text-white py-3 px-4 rounded-lg hover:bg-green-600 transition-colors">
+                <i class="fas fa-image mr-2"></i>Alterar Papel de Parede
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Fontes -->
+        <div class="bg-white border border-gray-200 rounded-xl p-6">
+          <h3 class="text-xl font-bold text-gray-800 mb-4 flex items-center">
+            <i class="fas fa-font mr-2 text-orange-500"></i>Tipografia
+          </h3>
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Família da Fonte</label>
+              <select id="font-family-select" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400">
+                <option value="Inter" ${currentFontFamily === 'Inter' ? 'selected' : ''}>Inter (Padrão)</option>
+                <option value="Arial" ${currentFontFamily === 'Arial' ? 'selected' : ''}>Arial</option>
+                <option value="Helvetica" ${currentFontFamily === 'Helvetica' ? 'selected' : ''}>Helvetica</option>
+                <option value="Georgia" ${currentFontFamily === 'Georgia' ? 'selected' : ''}>Georgia</option>
+                <option value="Times New Roman" ${currentFontFamily === 'Times New Roman' ? 'selected' : ''}>Times New Roman</option>
+                <option value="Courier New" ${currentFontFamily === 'Courier New' ? 'selected' : ''}>Courier New</option>
+                <option value="Roboto" ${currentFontFamily === 'Roboto' ? 'selected' : ''}>Roboto</option>
+              </select>
+            </div>
+            
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Tamanho da Fonte</label>
+              <input type="range" id="font-size-slider" min="12" max="24" value="${currentFontSize}" class="w-full" />
+              <div class="flex justify-between text-sm text-gray-500 mt-1">
+                <span>12px</span>
+                <span id="font-size-value" class="font-bold">${currentFontSize}px</span>
+                <span>24px</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Privacidade -->
+        <div class="bg-white border border-gray-200 rounded-xl p-6">
+          <h3 class="text-xl font-bold text-gray-800 mb-4 flex items-center">
+            <i class="fas fa-shield-alt mr-2 text-red-500"></i>Privacidade e Dados
+          </h3>
+          
+          <div class="space-y-4">
+            <button onclick="clearAllData()" class="w-full bg-red-500 text-white py-3 px-4 rounded-lg hover:bg-red-600 transition-colors">
+              <i class="fas fa-trash mr-2"></i>Limpar Todos os Dados (Histórico, Favoritos, Notas)
+            </button>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <button onclick="clearHistory(); closeModal();" class="bg-orange-500 text-white py-2 px-4 rounded-lg hover:bg-orange-600 transition-colors">
+                <i class="fas fa-history mr-2"></i>Limpar Histórico
+              </button>
+              
+              <button onclick="clearFavorites()" class="bg-yellow-500 text-white py-2 px-4 rounded-lg hover:bg-yellow-600 transition-colors">
+                <i class="fas fa-star mr-2"></i>Limpar Favoritos
+              </button>
+              
+              <button onclick="clearNotes()" class="bg-purple-500 text-white py-2 px-4 rounded-lg hover:bg-purple-600 transition-colors">
+                <i class="fas fa-sticky-note mr-2"></i>Limpar Notas
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Ações -->
+        <div class="flex justify-end space-x-4">
+          <button onclick="closeModal()" class="bg-gray-500 text-white px-6 py-3 rounded-lg hover:bg-gray-600 transition-colors">
+            Cancelar
+          </button>
+          <button onclick="applySettings()" class="bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600 transition-colors">
+            <i class="fas fa-save mr-2"></i>Aplicar Configurações
+          </button>
+        </div>
+      </div>
+    </div>
+  `;
+  
+  openModal(html);
+  setupSettingsModal();
+}
+
+function setupSettingsModal() {
+  const fontSizeSlider = document.getElementById('font-size-slider');
+  const fontSizeValue = document.getElementById('font-size-value');
+  
+  if (fontSizeSlider && fontSizeValue) {
+    fontSizeSlider.oninput = () => {
+      fontSizeValue.textContent = fontSizeSlider.value + 'px';
+    };
+  }
+}
+
+function applySettings() {
+  const fontFamily = document.getElementById('font-family-select')?.value;
+  const fontSize = document.getElementById('font-size-slider')?.value;
+  
+  if (fontFamily) {
+    document.body.style.fontFamily = fontFamily;
+    localStorage.setItem('flow_browser_font_family', fontFamily);
+  }
+  
+  if (fontSize) {
+    document.body.style.fontSize = fontSize + 'px';
+    localStorage.setItem('flow_browser_font_size', fontSize);
+  }
+  
+  console.log('⚙️ Configurações aplicadas:', { fontFamily, fontSize });
+  closeModal();
+  
+  // Feedback
+  const toast = document.createElement('div');
+  toast.className = 'fixed top-20 right-4 bg-blue-500 text-white px-6 py-3 rounded-lg shadow-lg z-50';
+  toast.innerHTML = '<i class="fas fa-check mr-2"></i>Configurações salvas!';
+  document.body.appendChild(toast);
+  
+  setTimeout(() => toast.remove(), 3000);
+}
+
+function clearAllData() {
+  if (confirm('⚠️ ATENÇÃO: Isso irá apagar TODOS os seus dados (histórico, favoritos, notas, configurações). Esta ação não pode ser desfeita. Continuar?')) {
+    localStorage.clear();
+    console.log('🗑️ Todos os dados limpos');
+    alert('Todos os dados foram limpos. A página será recarregada.');
+    window.location.reload();
+  }
+}
+
+function clearFavorites() {
+  if (confirm('Tem certeza que deseja limpar todos os favoritos?')) {
+    localStorage.removeItem('flow_browser_favorites');
+    console.log('⭐ Favoritos limpos');
+  }
+}
+
+function clearNotes() {
+  if (confirm('Tem certeza que deseja limpar todas as notas?')) {
+    localStorage.removeItem(NOTES_STORAGE_KEY);
+    console.log('📝 Notas limpas');
+  }
+}
+
 // Theme Management Modal
 function openThemesModal() {
   let themesHtml = "";
@@ -2482,12 +2762,198 @@ function initializeEventListeners() {
     btnReader.onclick = openReaderMode;
   }
   
-  if (btnThemes) {
-    btnThemes.onclick = openThemesModal;
-  }
+  
   
   if (btnMore) {
     btnMore.onclick = openMoreToolsModal;
+  }
+
+  // Dropdown menu functionality
+  const btnMenu = document.getElementById('btn-menu');
+  const dropdownMenu = document.getElementById('dropdown-menu');
+  const sidebar = document.getElementById('sidebar');
+  let currentZoom = 100;
+  let sidebarHidden = false;
+
+  if (btnMenu && dropdownMenu) {
+    btnMenu.onclick = (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      console.log('Menu clicado, dropdown atual:', dropdownMenu.classList.contains('hidden'));
+      
+      if (dropdownMenu.classList.contains('hidden')) {
+        dropdownMenu.classList.remove('hidden');
+        dropdownMenu.style.display = 'block';
+        console.log('Dropdown aberto');
+      } else {
+        dropdownMenu.classList.add('hidden');
+        dropdownMenu.style.display = 'none';
+        console.log('Dropdown fechado');
+      }
+    };
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', (e) => {
+      if (!dropdownMenu.contains(e.target) && !btnMenu.contains(e.target)) {
+        dropdownMenu.classList.add('hidden');
+        dropdownMenu.style.display = 'none';
+      }
+    });
+  }
+
+  // Setup all dropdown menu items
+  setupDropdownMenu();
+
+  function setupDropdownMenu() {
+    // Nova guia
+    const btnNewTab = dropdownMenu?.querySelector('button:nth-child(1)');
+    if (btnNewTab) {
+      btnNewTab.onclick = () => {
+        createTab();
+        dropdownMenu.classList.add('hidden');
+        console.log('✅ Nova aba criada');
+      };
+    }
+
+    // Nova janela (nova aba normal)
+    const btnNewWindow = dropdownMenu?.querySelector('button:nth-child(2)');
+    if (btnNewWindow) {
+      btnNewWindow.onclick = () => {
+        createTab();
+        dropdownMenu.classList.add('hidden');
+        console.log('✅ Nova janela (aba) criada');
+      };
+    }
+
+    // Nova janela privada (nova aba no modo privado)
+    const btnPrivateWindow = dropdownMenu?.querySelector('button:nth-child(3)');
+    if (btnPrivateWindow) {
+      btnPrivateWindow.onclick = () => {
+        const privateTab = createTab('https://www.google.com/search?q=navegação+privada', 'Navegação Privada');
+        // Adicionar indicador visual de modo privado
+        const tabElement = document.querySelector(`[data-tab-id="${privateTab}"]`);
+        if (tabElement) {
+          tabElement.style.background = 'linear-gradient(135deg, #4a5568, #2d3748)';
+          tabElement.style.color = 'white';
+        }
+        dropdownMenu.classList.add('hidden');
+        console.log('✅ Nova janela privada criada');
+      };
+    }
+
+    // Zoom controls
+    const zoomOut = document.getElementById('zoom-out');
+    const zoomIn = document.getElementById('zoom-in');
+    const zoomReset = document.getElementById('zoom-reset');
+    const zoomLevel = document.getElementById('zoom-level');
+
+    if (zoomOut) {
+      zoomOut.onclick = () => {
+        currentZoom = Math.max(currentZoom - 10, 50);
+        updateZoom();
+      };
+    }
+
+    if (zoomIn) {
+      zoomIn.onclick = () => {
+        currentZoom = Math.min(currentZoom + 10, 200);
+        updateZoom();
+      };
+    }
+
+    if (zoomReset) {
+      zoomReset.onclick = () => {
+        currentZoom = 100;
+        updateZoom();
+      };
+    }
+
+    // Favorito
+    const btnFavorite = dropdownMenu?.querySelector('button:nth-child(11)'); // Ajustar índice
+    if (btnFavorite) {
+      btnFavorite.onclick = () => {
+        addToFavorites();
+        dropdownMenu.classList.add('hidden');
+      };
+    }
+
+    // Histórico
+    const btnHistory = dropdownMenu?.querySelector('button:nth-child(12)'); // Ajustar índice
+    if (btnHistory) {
+      btnHistory.onclick = () => {
+        openHistoryModal();
+        dropdownMenu.classList.add('hidden');
+      };
+    }
+
+    // Downloads (placeholder)
+    const btnDownloads = dropdownMenu?.querySelector('button:nth-child(13)'); // Ajustar índice
+    if (btnDownloads) {
+      btnDownloads.onclick = () => {
+        alert('Funcionalidade de Downloads será implementada em breve!');
+        dropdownMenu.classList.add('hidden');
+      };
+    }
+
+    // Extensões - abrir Chrome Web Store
+    const btnExtensions = dropdownMenu?.querySelector('button:nth-child(14)'); // Ajustar índice
+    if (btnExtensions) {
+      btnExtensions.onclick = () => {
+        createTab('https://chrome.google.com/webstore/category/extensions', 'Chrome Web Store');
+        dropdownMenu.classList.add('hidden');
+        console.log('✅ Chrome Web Store aberta');
+      };
+    }
+
+    // Configurações
+    const btnSettings = document.getElementById('btn-settings');
+    if (btnSettings) {
+      btnSettings.onclick = () => {
+        openSettingsModal();
+        dropdownMenu.classList.add('hidden');
+      };
+    }
+
+    // Esconder barra lateral
+    const btnHideSidebar = dropdownMenu?.querySelector('button:nth-child(24)'); // Ajustar índice
+    if (btnHideSidebar) {
+      btnHideSidebar.onclick = () => {
+        toggleSidebar();
+        dropdownMenu.classList.add('hidden');
+      };
+    }
+  }
+
+  function updateZoom() {
+    const zoomLevel = document.getElementById('zoom-level');
+    if (zoomLevel) {
+      zoomLevel.textContent = currentZoom + '%';
+    }
+    
+    // Apply zoom to webview if available
+    if (webview && webview.setZoomFactor) {
+      webview.setZoomFactor(currentZoom / 100);
+    } else {
+      // Fallback for regular HTML pages
+      document.body.style.zoom = currentZoom / 100;
+    }
+    console.log('🔍 Zoom atualizado para:', currentZoom + '%');
+  }
+
+  function toggleSidebar() {
+    if (!sidebar) return;
+    
+    sidebarHidden = !sidebarHidden;
+    
+    if (sidebarHidden) {
+      sidebar.style.transform = 'translateX(-100%)';
+      sidebar.style.opacity = '0';
+      console.log('📱 Barra lateral oculta');
+    } else {
+      sidebar.style.transform = 'translateX(0)';
+      sidebar.style.opacity = '1';
+      console.log('📱 Barra lateral exibida');
+    }
   }
 
   // Modal
@@ -2621,6 +3087,18 @@ function initialize() {
   
   // Apply saved theme
   applyTheme(currentTheme);
+  
+  // Apply saved font settings
+  const savedFontFamily = localStorage.getItem('flow_browser_font_family');
+  const savedFontSize = localStorage.getItem('flow_browser_font_size');
+  
+  if (savedFontFamily) {
+    document.body.style.fontFamily = savedFontFamily;
+  }
+  
+  if (savedFontSize) {
+    document.body.style.fontSize = savedFontSize + 'px';
+  }
   
   // Verifica se webview está disponível
   if (!webview) {

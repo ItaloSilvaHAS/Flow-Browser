@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="pt-BR" class="scroll-smooth">
 <head>
@@ -6,6 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Flow Browser - Navegador de Estudo</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   <link rel="stylesheet" href="style.css" />
 </head>
@@ -64,9 +66,138 @@
       <button id="btn-profile" class="rounded-full p-2 text-gray-600 hover:bg-gray-100 transition-all" title="Perfil">
         <i class="fas fa-user-circle"></i>
       </button>
-      <button id="btn-menu" class="rounded-full p-2 text-gray-600 hover:bg-gray-100 transition-all" title="Menu">
-        <i class="fas fa-ellipsis-v"></i>
-      </button>
+      <div class="relative">
+        <button id="btn-menu" class="rounded-full p-2 text-gray-600 hover:bg-gray-100 transition-all" title="Menu">
+          <i class="fas fa-ellipsis-v"></i>
+        </button>
+        <!-- Dropdown Menu -->
+        <div id="dropdown-menu" class="absolute right-0 top-full mt-2 w-80 bg-white rounded-lg shadow-xl border border-gray-200 z-50 hidden" style="z-index: 9999 !important;">
+          <div class="py-2">
+            <!-- Nova aba -->
+            <button class="w-full flex items-center justify-between px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
+              <div class="flex items-center">
+                <i class="fas fa-plus w-5 h-5 mr-3 text-gray-500"></i>
+                <span>Nova guia</span>
+              </div>
+              <span class="text-xs text-gray-400">Ctrl + T</span>
+            </button>
+            
+            <!-- Nova janela -->
+            <button class="w-full flex items-center justify-between px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
+              <div class="flex items-center">
+                <i class="fas fa-window-maximize w-5 h-5 mr-3 text-gray-500"></i>
+                <span>Nova janela</span>
+              </div>
+              <span class="text-xs text-gray-400">Ctrl + N</span>
+            </button>
+            
+            <!-- Nova janela privada -->
+            <button class="w-full flex items-center justify-between px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
+              <div class="flex items-center">
+                <i class="fas fa-user-secret w-5 h-5 mr-3 text-gray-500"></i>
+                <span>Nova janela privada</span>
+              </div>
+              <span class="text-xs text-gray-400">Ctrl + Shift + N</span>
+            </button>
+            
+            <div class="border-t border-gray-100 my-2"></div>
+            
+            <!-- Zoom -->
+            <div class="px-4 py-2">
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-sm text-gray-700">Zoom</span>
+                <div class="flex items-center space-x-2">
+                  <button id="zoom-out" class="w-6 h-6 rounded bg-gray-100 hover:bg-gray-200 flex items-center justify-center">
+                    <i class="fas fa-minus text-xs"></i>
+                  </button>
+                  <span id="zoom-level" class="text-sm text-gray-600 min-w-[60px] text-center">100%</span>
+                  <button id="zoom-in" class="w-6 h-6 rounded bg-gray-100 hover:bg-gray-200 flex items-center justify-center">
+                    <i class="fas fa-plus text-xs"></i>
+                  </button>
+                  <button id="zoom-reset" class="w-6 h-6 rounded bg-gray-100 hover:bg-gray-200 flex items-center justify-center">
+                    <i class="fas fa-expand-arrows-alt text-xs"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+            
+            <div class="border-t border-gray-100 my-2"></div>
+            
+            <!-- Favorito -->
+            <button class="w-full flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
+              <i class="fas fa-star w-5 h-5 mr-3 text-gray-500"></i>
+              <span>Favorito</span>
+            </button>
+            
+            <!-- Histórico -->
+            <button class="w-full flex items-center justify-between px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
+              <div class="flex items-center">
+                <i class="fas fa-history w-5 h-5 mr-3 text-gray-500"></i>
+                <span>Histórico</span>
+              </div>
+              <i class="fas fa-chevron-right text-xs text-gray-400"></i>
+            </button>
+            
+            <!-- Downloads -->
+            <button class="w-full flex items-center justify-between px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
+              <div class="flex items-center">
+                <i class="fas fa-download w-5 h-5 mr-3 text-gray-500"></i>
+                <span>Downloads</span>
+              </div>
+              <span class="text-xs text-gray-400">Ctrl + J</span>
+            </button>
+            
+            <!-- Extensões -->
+            <button class="w-full flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
+              <i class="fas fa-puzzle-piece w-5 h-5 mr-3 text-gray-500"></i>
+              <span>Extensões</span>
+            </button>
+            
+            <!-- Configurações -->
+            <button id="btn-settings" class="w-full flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
+              <i class="fas fa-cog w-5 h-5 mr-3 text-gray-500"></i>
+              <span>Configurações</span>
+            </button>
+            
+            <div class="border-t border-gray-100 my-2"></div>
+            
+            <!-- Histórico submenu -->
+            <div class="px-4 py-2">
+              <div class="text-xs text-gray-500 mb-2">Histórico</div>
+              <button class="w-full flex items-center justify-between px-2 py-1 text-sm text-gray-700 hover:bg-gray-50 rounded transition-colors">
+                <span>Imprimir</span>
+                <i class="fas fa-chevron-right text-xs text-gray-400"></i>
+              </button>
+              <button class="w-full flex items-center px-2 py-1 text-sm text-gray-700 hover:bg-gray-50 rounded transition-colors">
+                <span>Salvar página como...</span>
+              </button>
+              <button class="w-full flex items-center px-2 py-1 text-sm text-gray-700 hover:bg-gray-50 rounded transition-colors">
+                <span>Traduzir página</span>
+              </button>
+            </div>
+            
+            <div class="border-t border-gray-100 my-2"></div>
+            
+            <!-- Ativar feed de notícia -->
+            <button class="w-full flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
+              <i class="fas fa-rss w-5 h-5 mr-3 text-gray-500"></i>
+              <span>Ativar feed de notícia</span>
+            </button>
+            
+            <!-- Esconder barra lateral -->
+            <button class="w-full flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
+              <i class="fas fa-eye-slash w-5 h-5 mr-3 text-gray-500"></i>
+              <span>Esconder barra lateral</span>
+            </button>
+            
+            <!-- Ajuda -->
+            <button class="w-full flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
+              <i class="fas fa-question-circle w-5 h-5 mr-3 text-gray-500"></i>
+              <span>Ajuda</span>
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -84,78 +215,80 @@
 
   <div class="flex flex-1 min-h-0 overflow-hidden">
     <!-- Left vertical toolbar -->
-    <nav id="sidebar" class="flex flex-col items-center space-y-6 bg-white/95 backdrop-blur-md border-r border-gray-200 w-16 py-6 px-2 shadow-sm">
-      <button
-        id="btn-ia"
-        class="flex flex-col items-center space-y-1 rounded-xl p-3 hover:bg-gradient-to-br hover:from-blue-500 hover:to-purple-600 hover:text-white transition-all w-12 h-12 group"
-        title="IA - Chat GPT"
-      >
-        <i class="fas fa-robot text-xl"></i>
-        <span class="text-xs font-medium">IA</span>
-      </button>
-      
-      <button
-        id="btn-notes"
-        class="flex flex-col items-center space-y-1 rounded-xl p-3 hover:bg-gradient-to-br hover:from-green-500 hover:to-teal-600 hover:text-white transition-all w-12 h-12 group"
-        title="Bloco de Notas"
-      >
-        <i class="fas fa-sticky-note text-xl"></i>
-        <span class="text-xs font-medium">Notas</span>
-      </button>
-      
-      <button
-        id="btn-timer"
-        class="flex flex-col items-center space-y-1 rounded-xl p-3 hover:bg-gradient-to-br hover:from-red-500 hover:to-pink-600 hover:text-white transition-all w-12 h-12 group"
-        title="Temporizador"
-      >
-        <i class="fas fa-clock text-xl"></i>
-        <span class="text-xs font-medium">Timer</span>
-      </button>
-      
-      <button
-        id="btn-reader"
-        class="flex flex-col items-center space-y-1 rounded-xl p-3 hover:bg-gradient-to-br hover:from-yellow-500 hover:to-orange-600 hover:text-white transition-all w-12 h-12 group"
-        title="Modo de Leitura"
-      >
-        <i class="fas fa-book-open text-xl"></i>
-        <span class="text-xs font-medium">Leitura</span>
-      </button>
-      
-      <button
-        id="btn-empty"
-        class="flex flex-col items-center space-y-1 rounded-xl p-3 transition-all w-12 h-12 opacity-50 cursor-not-allowed"
-        title="Em breve"
-      >
-        <i class="fas fa-circle-notch text-xl"></i>
-        <span class="text-xs font-medium">-</span>
-      </button>
-      
-      <button
-        id="btn-help"
-        class="flex flex-col items-center space-y-1 rounded-xl p-3 hover:bg-gradient-to-br hover:from-indigo-500 hover:to-purple-600 hover:text-white transition-all w-12 h-12 group"
-        title="Ajuda"
-      >
-        <i class="fas fa-question text-xl"></i>
-        <span class="text-xs font-medium">Ajuda</span>
-      </button>
-      
-      <button
-        id="btn-themes"
-        class="flex flex-col items-center space-y-1 rounded-xl p-3 hover:bg-gradient-to-br hover:from-purple-500 hover:to-pink-600 hover:text-white transition-all w-12 h-12 group"
-        title="Temas e Cores"
-      >
-        <i class="fas fa-palette text-xl"></i>
-        <span class="text-xs font-medium">Temas</span>
-      </button>
-      
-      <button
-        id="btn-more"
-        class="flex flex-col items-center space-y-1 rounded-xl p-3 hover:bg-gradient-to-br hover:from-gray-500 hover:to-gray-700 hover:text-white transition-all w-12 h-12 group"
-        title="Mais ferramentas"
-      >
-        <i class="fas fa-ellipsis-v text-xl"></i>
-        <span class="text-xs font-medium">Mais</span>
-      </button>
+    <nav id="sidebar" class="flex flex-col items-center bg-white/95 backdrop-blur-md border-r border-gray-200 w-16 py-6 px-2 shadow-sm">
+      <!-- IA no topo com estrela -->
+      <div class="mb-8">
+        <button
+          id="btn-ia"
+          class="flex flex-col items-center space-y-1 rounded-xl p-3 hover:bg-gradient-to-br hover:from-blue-500 hover:to-purple-600 hover:text-white transition-all w-12 h-12 group"
+          title="IA - Chat GPT"
+        >
+          <i class="fas fa-star text-xl"></i>
+          <span class="text-xs font-medium">IA</span>
+        </button>
+      </div>
+
+      <!-- Ícones principais no centro -->
+      <div class="flex-1 flex flex-col items-center justify-center space-y-6">
+        <button
+          id="btn-notes"
+          class="flex flex-col items-center space-y-1 rounded-xl p-3 hover:bg-gradient-to-br hover:from-green-500 hover:to-teal-600 hover:text-white transition-all w-12 h-12 group"
+          title="Bloco de Notas"
+        >
+          <i class="fas fa-sticky-note text-xl"></i>
+          <span class="text-xs font-medium">Notas</span>
+        </button>
+
+        <button
+          id="btn-timer"
+          class="flex flex-col items-center space-y-1 rounded-xl p-3 hover:bg-gradient-to-br hover:from-red-500 hover:to-pink-600 hover:text-white transition-all w-12 h-12 group"
+          title="Temporizador"
+        >
+          <i class="fas fa-clock text-xl"></i>
+          <span class="text-xs font-medium">Timer</span>
+        </button>
+
+        <button
+          id="btn-reader"
+          class="flex flex-col items-center space-y-1 rounded-xl p-3 hover:bg-gradient-to-br hover:from-yellow-500 hover:to-orange-600 hover:text-white transition-all w-12 h-12 group"
+          title="Modo de Leitura"
+        >
+          <i class="fas fa-book-open text-xl"></i>
+          <span class="text-xs font-medium">Leitura</span>
+        </button>
+
+        <button
+          id="btn-empty"
+          class="flex flex-col items-center space-y-1 rounded-xl p-3 transition-all w-12 h-12 opacity-50 cursor-not-allowed"
+          title="Em breve"
+        >
+          <i class="fas fa-circle-notch text-xl"></i>
+          <span class="text-xs font-medium">-</span>
+        </button>
+
+        <button
+          id="btn-help"
+          class="flex flex-col items-center space-y-1 rounded-xl p-3 hover:bg-gradient-to-br hover:from-indigo-500 hover:to-purple-600 hover:text-white transition-all w-12 h-12 group"
+          title="Ajuda"
+        >
+          <i class="fas fa-question text-xl"></i>
+          <span class="text-xs font-medium">Ajuda</span>
+        </button>
+
+        
+      </div>
+
+      <!-- Menu de três pontinhos no final -->
+      <div class="mt-auto">
+        <button
+          id="btn-more"
+          class="flex flex-col items-center space-y-1 rounded-xl p-3 hover:bg-gradient-to-br hover:from-gray-500 hover:to-gray-700 hover:text-white transition-all w-12 h-12 group"
+          title="Mais ferramentas"
+        >
+          <i class="fas fa-ellipsis-v text-xl"></i>
+          <span class="text-xs font-medium">Mais</span>
+        </button>
+      </div>
     </nav>
 
     <!-- Main content area -->
@@ -180,42 +313,44 @@
           />
         </div>
         
-        <div id="home-icons" class="mt-10 flex justify-center space-x-8 bg-white/20 backdrop-blur-md rounded-2xl py-6 px-8 shadow-xl">
-          <a href="#" data-url="https://www.youtube.com" class="flex flex-col items-center space-y-2 cursor-pointer group" title="YouTube">
-            <div class="bg-white/90 backdrop-blur-md rounded-xl p-4 flex items-center justify-center w-16 h-16 shadow-lg group-hover:shadow-xl transition-all">
-              <i class="fab fa-youtube text-red-500 text-2xl"></i>
+        <div id="home-icons" class="mt-16 flex justify-center items-center space-x-12">
+          <a href="#" data-url="https://www.youtube.com" class="flex flex-col items-center space-y-3 cursor-pointer group" title="YouTube">
+            <div class="icon-container flex items-center justify-center w-28 h-28 rounded-2xl transition-all">
+              <i class="fab fa-youtube text-red-500 text-7xl drop-shadow-2xl group-hover:scale-110 transition-all"></i>
             </div>
-            <span class="text-white text-sm font-medium">YouTube</span>
+            <span class="text-white text-xl font-bold drop-shadow-2xl tracking-wide">YouTube</span>
           </a>
           
-          <a href="#" data-url="https://github.com" class="flex flex-col items-center space-y-2 cursor-pointer group" title="GitHub">
-            <div class="bg-white/90 backdrop-blur-md rounded-xl p-4 flex items-center justify-center w-16 h-16 shadow-lg group-hover:shadow-xl transition-all">
-              <i class="fab fa-github text-gray-800 text-2xl"></i>
+          <a href="#" data-url="https://github.com" class="flex flex-col items-center space-y-3 cursor-pointer group" title="GitHub">
+            <div class="icon-container flex items-center justify-center w-28 h-28 rounded-2xl transition-all">
+              <i class="fab fa-github text-white text-7xl drop-shadow-2xl group-hover:scale-110 transition-all"></i>
             </div>
-            <span class="text-white text-sm font-medium">GitHub</span>
+            <span class="text-white text-xl font-bold drop-shadow-2xl tracking-wide">GitHub</span>
           </a>
           
-          <a href="#" data-url="https://drive.google.com" class="flex flex-col items-center space-y-2 cursor-pointer group" title="Google Drive">
-            <div class="bg-white/90 backdrop-blur-md rounded-xl p-4 flex items-center justify-center w-16 h-16 shadow-lg group-hover:shadow-xl transition-all">
-              <i class="fab fa-google-drive text-blue-500 text-2xl"></i>
+          <a href="#" data-url="https://drive.google.com" class="flex flex-col items-center space-y-3 cursor-pointer group" title="Google Drive">
+            <div class="icon-container flex items-center justify-center w-28 h-28 rounded-2xl transition-all">
+              <i class="fab fa-google-drive text-blue-400 text-7xl drop-shadow-2xl group-hover:scale-110 transition-all"></i>
             </div>
-            <span class="text-white text-sm font-medium">Drive</span>
+            <span class="text-white text-xl font-bold drop-shadow-2xl tracking-wide">Drive</span>
           </a>
           
-          <a href="#" data-url="https://netflix.com" class="flex flex-col items-center space-y-2 cursor-pointer group" title="Netflix">
-            <div class="bg-white/90 backdrop-blur-md rounded-xl p-4 flex items-center justify-center w-16 h-16 shadow-lg group-hover:shadow-xl transition-all">
-              <i class="fas fa-film text-red-600 text-2xl"></i>
+          <a href="#" data-url="https://netflix.com" class="flex flex-col items-center space-y-3 cursor-pointer group" title="Netflix">
+            <div class="icon-container flex items-center justify-center w-28 h-28 rounded-2xl transition-all">
+              <i class="fas fa-film text-red-600 text-7xl drop-shadow-2xl group-hover:scale-110 transition-all"></i>
             </div>
-            <span class="text-white text-sm font-medium">Netflix</span>
+            <span class="text-white text-xl font-bold drop-shadow-2xl tracking-wide">Netflix</span>
           </a>
           
           <button
             id="btn-add-home-icon"
-            class="flex flex-col items-center space-y-2 cursor-pointer bg-white/30 backdrop-blur-md rounded-xl p-4 w-16 h-16 justify-center shadow-lg hover:shadow-xl transition-all group"
+            class="flex flex-col items-center space-y-3 cursor-pointer group"
             title="Adicionar site"
           >
-            <i class="fas fa-plus text-white text-2xl group-hover:scale-110 transition-transform"></i>
-            <span class="text-white text-sm font-medium">Adicionar</span>
+            <div class="icon-container flex items-center justify-center w-28 h-28 rounded-2xl transition-all">
+              <i class="fas fa-plus text-white/90 text-6xl drop-shadow-2xl group-hover:rotate-180 group-hover:scale-110 transition-all duration-500"></i>
+            </div>
+            <span class="text-white text-xl font-bold drop-shadow-2xl tracking-wide">Adicionar</span>
           </button>
         </div>
       </div>
@@ -260,6 +395,9 @@
   <!-- Hidden file input for wallpaper -->
   <input type="file" id="file-input" accept="image/*" class="hidden" />
 
+  <!-- Load the wallpaper management module -->
+  <script src="wallpaper.js"></script>
+  
   <!-- Load the main application script -->
   <script src="app.js"></script>
 </body>
