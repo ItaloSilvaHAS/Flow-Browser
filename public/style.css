@@ -96,8 +96,8 @@
 /* Estilos base e redefinição */
 * {
   box-sizing: border-box;
-  transition: color 0.3s ease, background-color 0.3s ease, border-color 0.3s ease, 
-              box-shadow 0.3s ease, transform 0.2s ease;
+  transition: color 0.3s ease, background-color 0.3s ease, border-color 0.3s ease,
+    box-shadow 0.3s ease, transform 0.2s ease;
 }
 
 body {
@@ -151,20 +151,20 @@ header {
   position: relative;
   z-index: 100;
   padding: 0.5rem 1rem;
-  height: 40px; 
+  height: 40px;
 
 }
 
 /* Botões de abas dentro do #tabs */
 #tabs button.tab {
-  padding: 0.25rem 0.75rem; 
-  font-size: 0.75rem;    
-  border-radius: 10px;   
+  padding: 0.25rem 0.75rem;
+  font-size: 0.75rem;
+  border-radius: 10px;
   border: 1px solid var(--theme-border);
   background: var(--theme-surface);
   color: var(--theme-text);
   transition: all 0.2s ease;
-  white-space: nowrap;   
+  white-space: nowrap;
 }
 
 #tabs button.tab:hover {
@@ -201,9 +201,9 @@ header {
 #btn-new-tab::before {
   content: "";
   position: absolute;
-  inset: 0; 
+  inset: 0;
   border-radius: 50%;
-  background: rgba(59, 130, 246, 0.25); 
+  background: rgba(59, 130, 246, 0.25);
   transform: scale(0);
   transition: transform 0.3s ease;
   z-index: 0;
@@ -253,11 +253,11 @@ header {
   border-bottom: 1px solid var(--theme-border);
   position: relative;
   z-index: 100;
-  height: 46px; 
-  padding:  0.5rem 0.75rem; 
+  height: 46px;
+  padding: 0.5rem 0.75rem;
   display: flex;
   align-items: center;
-  gap: 1rem; 
+  gap: 1rem;
 }
 
 /* Botões da barra de endereços com efeito igual ao + */
@@ -274,7 +274,7 @@ header {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: transparent; 
+  background: transparent;
   border: none;
   box-shadow: none;
   color: var(--theme-text);
@@ -294,7 +294,7 @@ header {
   position: absolute;
   inset: 0;
   border-radius: 50%;
-  background: rgba(59, 130, 246, 0.25); 
+  background: rgba(59, 130, 246, 0.25);
   transform: scale(0);
   transition: transform 0.3s ease;
   z-index: 0;
@@ -331,7 +331,7 @@ header {
   padding: 0 1rem;
   font-size: 0.85rem;
   border-radius: 9999px;
-  flex: 1;  
+  flex: 1;
 }
 
 #input-url::placeholder {
@@ -445,14 +445,16 @@ button:active:not(:disabled) {
 }
 
 /* Ícones da página inicial com tema */
-#home-icons a, #home-icons button {
+#home-icons a,
+#home-icons button {
   transition: all 0.3s ease;
   background: transparent !important;
   border: none !important;
   box-shadow: none !important;
 }
 
-#home-icons a:hover, #home-icons button:hover {
+#home-icons a:hover,
+#home-icons button:hover {
   transform: translateY(-8px) scale(1.1);
 }
 
@@ -504,6 +506,7 @@ button:active:not(:disabled) {
     opacity: 0;
     transform: scale(0.9) translateY(-20px);
   }
+
   to {
     opacity: 1;
     transform: scale(1) translateY(0);
@@ -511,18 +514,23 @@ button:active:not(:disabled) {
 }
 
 /* Elementos de modal com tema */
-.modal input, .modal textarea, .modal select {
+.modal input,
+.modal textarea,
+.modal select {
   background: var(--theme-surface);
   border: 2px solid var(--theme-border);
   color: var(--theme-text);
   transition: all 0.3s ease;
 }
 
-.modal input::placeholder, .modal textarea::placeholder {
+.modal input::placeholder,
+.modal textarea::placeholder {
   color: var(--theme-text-secondary);
 }
 
-.modal input:focus, .modal textarea:focus, .modal select:focus {
+.modal input:focus,
+.modal textarea:focus,
+.modal select:focus {
   border-color: var(--theme-primary);
   box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
   outline: none;
@@ -650,7 +658,9 @@ button:active:not(:disabled) {
 }
 
 /* Estilos de foco para acessibilidade */
-button:focus, input:focus, textarea:focus {
+button:focus,
+input:focus,
+textarea:focus {
   outline: 2px solid var(--theme-primary);
   outline-offset: 2px;
 }
@@ -673,9 +683,12 @@ button:disabled:hover {
 }
 
 @keyframes pulse {
-  0%, 100% {
+
+  0%,
+  100% {
     opacity: 1;
   }
+
   50% {
     opacity: 0.5;
   }
@@ -694,6 +707,7 @@ button:disabled:hover {
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }
@@ -701,7 +715,7 @@ button:disabled:hover {
 
 /* Sobreposição de carregamento */
 #loading-overlay {
-  background: linear-gradient(135deg, rgba(255,255,255,0.95), rgba(248,250,252,0.95));
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(248, 250, 252, 0.95));
   backdrop-filter: blur(10px);
   transition: opacity 0.3s ease;
 }
@@ -724,14 +738,24 @@ button:disabled:hover {
 }
 
 /* Contraste de texto aprimorado e legibilidade para todos os temas */
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-weight: 700;
   letter-spacing: -0.025em;
   line-height: 1.2;
 }
 
 /* Melhorias na legibilidade do texto */
-p, span, div, button, input, textarea {
+p,
+span,
+div,
+button,
+input,
+textarea {
   line-height: 1.5;
   letter-spacing: 0.01em;
 }
@@ -759,11 +783,14 @@ button {
 }
 
 /* Melhorias no cabeçalho e na navegação */
-header, nav, .address-bar-container {
+header,
+nav,
+.address-bar-container {
   font-weight: 600;
 }
 
-header button, nav button {
+header button,
+nav button {
   color: var(--theme-text) !important;
   font-weight: 600;
   text-shadow: none;
@@ -778,12 +805,14 @@ header button, nav button {
 }
 
 /* Melhorias na entrada e na busca */
-input, textarea {
+input,
+textarea {
   font-weight: 500;
   font-size: 14px;
 }
 
-input::placeholder, textarea::placeholder {
+input::placeholder,
+textarea::placeholder {
   font-weight: 400;
   opacity: 0.7;
 }
@@ -802,7 +831,9 @@ input::placeholder, textarea::placeholder {
   font-weight: 700;
 }
 
-#modal-content p, #modal-content span, #modal-content div {
+#modal-content p,
+#modal-content span,
+#modal-content div {
   color: var(--theme-text) !important;
 }
 
@@ -812,19 +843,28 @@ button {
 }
 
 /* Estilo especial para texto claro em fundos escuros */
-.bg-blue-500, .bg-green-500, .bg-red-500, .bg-yellow-500, 
-.bg-purple-500, .bg-indigo-500, .bg-pink-500, .bg-gray-500 {
+.bg-blue-500,
+.bg-green-500,
+.bg-red-500,
+.bg-yellow-500,
+.bg-purple-500,
+.bg-indigo-500,
+.bg-pink-500,
+.bg-gray-500 {
   color: white !important;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
 /* Melhorias em campos de entrada e áreas de texto */
-input, textarea, select {
+input,
+textarea,
+select {
   color: var(--theme-text) !important;
   background: var(--theme-surface) !important;
 }
 
-input::placeholder, textarea::placeholder {
+input::placeholder,
+textarea::placeholder {
   color: var(--theme-text-secondary) !important;
   opacity: 0.8;
 }
@@ -863,6 +903,7 @@ button:hover:not(:disabled) {
     opacity: 0;
     transform: translateY(-10px) scale(0.95);
   }
+
   to {
     opacity: 1;
     transform: translateY(0) scale(1);
@@ -894,11 +935,15 @@ button:hover:not(:disabled) {
 }
 
 /* Controles de zoom */
-#zoom-out, #zoom-in, #zoom-reset {
+#zoom-out,
+#zoom-in,
+#zoom-reset {
   transition: all 0.2s ease;
 }
 
-#zoom-out:hover, #zoom-in:hover, #zoom-reset:hover {
+#zoom-out:hover,
+#zoom-in:hover,
+#zoom-reset:hover {
   background-color: var(--theme-border) !important;
   transform: scale(1.1);
 }
@@ -922,8 +967,8 @@ button:hover:not(:disabled) {
   border-color: var(--theme-border) !important;
 }
 
-.theme-dark #zoom-out, 
-.theme-dark #zoom-in, 
+.theme-dark #zoom-out,
+.theme-dark #zoom-in,
 .theme-dark #zoom-reset {
   background-color: var(--theme-background) !important;
   color: var(--theme-text) !important;

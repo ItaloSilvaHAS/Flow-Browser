@@ -45,7 +45,10 @@ window.openURL = (url) => navegar(url);
 // Tema claro/escuro
 btnTema.onclick = () => {
   document.body.classList.toggle("dark");
-  localStorage.setItem("tema", document.body.classList.contains("dark") ? "dark" : "light");
+  localStorage.setItem(
+    "tema",
+    document.body.classList.contains("dark") ? "dark" : "light",
+  );
 };
 
 window.onload = () => {
@@ -57,7 +60,7 @@ window.onload = () => {
 };
 
 // Bloco de notas
-btnNotas.onclick = () => modalNotas.style.display = "block";
+btnNotas.onclick = () => (modalNotas.style.display = "block");
 function salvarNotas() {
   const texto = document.getElementById("notas").value;
   localStorage.setItem("notas", texto);
@@ -72,7 +75,7 @@ let timer = null;
 let tempoRestante = 0;
 let emEstudo = true;
 
-btnPomodoro.onclick = () => modalPomodoro.style.display = "block";
+btnPomodoro.onclick = () => (modalPomodoro.style.display = "block");
 
 function iniciarPomodoro() {
   const estudo = parseInt(document.getElementById("tempo-estudo").value) * 60;
@@ -99,11 +102,17 @@ function pararPomodoro() {
 }
 
 function atualizarTimer() {
-  const min = String(Math.floor(tempoRestante / 60)).padStart(2, '0');
-  const sec = String(tempoRestante % 60).padStart(2, '0');
+  const min = String(Math.floor(tempoRestante / 60)).padStart(2, "0");
+  const sec = String(tempoRestante % 60).padStart(2, "0");
   document.getElementById("timer").textContent = `${min}:${sec}`;
 }
 
 // Tecla Enter nas buscas
-urlBar.addEventListener("keydown", (e) => e.key === "Enter" && navegar(urlBar.value));
-searchInput.addEventListener("keydown", (e) => e.key === "Enter" && navegar(searchInput.value));
+urlBar.addEventListener(
+  "keydown",
+  (e) => e.key === "Enter" && navegar(urlBar.value),
+);
+searchInput.addEventListener(
+  "keydown",
+  (e) => e.key === "Enter" && navegar(searchInput.value),
+);
