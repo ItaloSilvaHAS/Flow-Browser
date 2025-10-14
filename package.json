@@ -36,7 +36,7 @@
         "nsis",
         "portable"
       ],
-      "icon": "assets/icon.ico"
+      "icon": "Assets/flow.ico"
     },
     "nsis": {
       "oneClick": false,

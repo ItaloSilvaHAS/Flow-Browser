@@ -316,7 +316,16 @@ function navigateToInput() {
     if (!val.startsWith("http")) val = "https://" + val;
     url = val;
   } else {
-    url = "https://www.google.com/search?q=" + encodeURIComponent(val);
+    // Adicionar filtro de pesquisa se selecionado
+    const searchFilter = document.getElementById("search-filter");
+    const filter = searchFilter ? searchFilter.value : "";
+    
+    let searchQuery = val;
+    if (filter) {
+      searchQuery = filter + " " + val;
+    }
+    
+    url = "https://www.google.com/search?q=" + encodeURIComponent(searchQuery);
   }
 
   // Se não há aba ativa ou é a home, cria nova aba
@@ -424,6 +433,40 @@ function changeWallpaper(imageSrc) {
       };
     }, 300);
   }
+}
+
+// Alias para compatibilidade com o sistema de configurações
+function applyWallpaperDirect(imageSrc) {
+  // Usar a variável global backgroundImage que já existe
+  if (!backgroundImage) {
+    console.error('❌ Elemento backgroundImage não encontrado');
+    return false;
+  }
+  
+  console.log("🎨 Aplicando novo wallpaper:", imageSrc);
+  backgroundImage.style.opacity = '0';
+  
+  setTimeout(() => {
+    backgroundImage.src = imageSrc;
+    backgroundImage.onload = () => {
+      backgroundImage.style.opacity = '1';
+      localStorage.setItem("flow_browser_wallpaper", imageSrc);
+      localStorage.setItem(WALLPAPER_STORAGE_KEY, imageSrc);
+      console.log('✅ Wallpaper aplicado com sucesso!');
+      
+      // Atualizar preview personalizado se for data URL
+      const customSlot = document.getElementById('custom-wallpaper-slot');
+      if (customSlot && imageSrc.startsWith('data:image')) {
+        customSlot.innerHTML = `<img src="${imageSrc}" class="w-full h-full object-cover" />`;
+      }
+    };
+    backgroundImage.onerror = () => {
+      console.error('❌ Erro ao carregar wallpaper');
+      backgroundImage.style.opacity = '1';
+    };
+  }, 200);
+  
+  return true;
 }
 
 function openWallpaperModal() {
@@ -1837,62 +1880,99 @@ function setupQRGenerator() {
 
 // Password Generator
 function openPasswordGeneratorModal() {
+  const savedPasswords = JSON.parse(localStorage.getItem('saved_passwords') || '[]');
+  
+  const savedPasswordsHtml = savedPasswords.length > 0 ? savedPasswords.map((item, index) => `
+    <div class="flex items-center gap-2 p-2 bg-gray-50 rounded-lg">
+      <div class="flex-1 min-w-0">
+        <p class="text-sm font-medium text-gray-800">${item.name}</p>
+        <p class="text-xs text-gray-600 font-mono truncate">${item.password}</p>
+      </div>
+      <button onclick="copyPasswordFromBank('${item.password}')" class="px-2 py-1 bg-blue-500 text-white rounded text-xs hover:bg-blue-600">
+        <i class="fas fa-copy"></i>
+      </button>
+      <button onclick="deletePasswordFromBank(${index})" class="px-2 py-1 bg-red-500 text-white rounded text-xs hover:bg-red-600">
+        <i class="fas fa-trash"></i>
+      </button>
+    </div>
+  `).join('') : '<p class="text-sm text-gray-500 text-center py-4">Nenhuma senha salva ainda</p>';
+
   const html = `
-    <div class="max-w-lg mx-auto">
+    <div class="max-w-4xl mx-auto">
       <h2 class="text-2xl font-bold text-gray-800 mb-6 text-center">
         <i class="fas fa-shield-alt mr-2 text-red-500"></i>Gerador de Senhas Seguras
       </h2>
       
-      <div class="space-y-4">
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2">Tamanho da Senha</label>
-          <input type="range" id="password-length" min="4" max="64" value="16" class="w-full">
-          <div class="flex justify-between text-sm text-gray-500 mt-1">
-            <span>4</span>
-            <span id="length-value" class="font-bold">16</span>
-            <span>64</span>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Gerador -->
+        <div class="space-y-4">
+          <h3 class="font-semibold text-gray-700">Gerar Nova Senha</h3>
+          
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Tamanho da Senha</label>
+            <input type="range" id="password-length" min="4" max="64" value="16" class="w-full">
+            <div class="flex justify-between text-sm text-gray-500 mt-1">
+              <span>4</span>
+              <span id="length-value" class="font-bold">16</span>
+              <span>64</span>
+            </div>
           </div>
-        </div>
-        
-        <div class="grid grid-cols-2 gap-4">
-          <label class="flex items-center">
-            <input type="checkbox" id="include-uppercase" checked class="mr-2">
-            <span class="text-sm">Maiúsculas (A-Z)</span>
-          </label>
-          <label class="flex items-center">
-            <input type="checkbox" id="include-lowercase" checked class="mr-2">
-            <span class="text-sm">Minúsculas (a-z)</span>
-          </label>
-          <label class="flex items-center">
-            <input type="checkbox" id="include-numbers" checked class="mr-2">
-            <span class="text-sm">Números (0-9)</span>
-          </label>
-          <label class="flex items-center">
-            <input type="checkbox" id="include-symbols" class="mr-2">
-            <span class="text-sm">Símbolos (!@#$)</span>
-          </label>
-        </div>
-        
-        <button id="btn-generate-password" class="w-full bg-red-500 text-white py-3 rounded-lg hover:bg-red-600 transition-colors">
-          <i class="fas fa-key mr-2"></i>Gerar Senha
-        </button>
-        
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2">Senha Gerada</label>
-          <div class="flex">
-            <input type="text" id="generated-password" readonly class="flex-1 border border-gray-300 rounded-l-lg px-3 py-2 bg-gray-50 font-mono">
-            <button id="btn-copy-password" class="bg-blue-500 text-white px-4 rounded-r-lg hover:bg-blue-600 transition-colors">
-              <i class="fas fa-copy"></i>
+          
+          <div class="grid grid-cols-2 gap-4">
+            <label class="flex items-center">
+              <input type="checkbox" id="include-uppercase" checked class="mr-2">
+              <span class="text-sm">Maiúsculas (A-Z)</span>
+            </label>
+            <label class="flex items-center">
+              <input type="checkbox" id="include-lowercase" checked class="mr-2">
+              <span class="text-sm">Minúsculas (a-z)</span>
+            </label>
+            <label class="flex items-center">
+              <input type="checkbox" id="include-numbers" checked class="mr-2">
+              <span class="text-sm">Números (0-9)</span>
+            </label>
+            <label class="flex items-center">
+              <input type="checkbox" id="include-symbols" class="mr-2">
+              <span class="text-sm">Símbolos (!@#$)</span>
+            </label>
+          </div>
+          
+          <button id="btn-generate-password" class="w-full bg-red-500 text-white py-3 rounded-lg hover:bg-red-600 transition-colors">
+            <i class="fas fa-key mr-2"></i>Gerar Senha
+          </button>
+          
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Senha Gerada</label>
+            <div class="flex gap-2">
+              <input type="text" id="generated-password" readonly class="flex-1 border border-gray-300 rounded-lg px-3 py-2 bg-gray-50 font-mono text-sm">
+              <button id="btn-copy-password" class="bg-blue-500 text-white px-4 rounded-lg hover:bg-blue-600 transition-colors">
+                <i class="fas fa-copy"></i>
+              </button>
+            </div>
+          </div>
+          
+          <div class="flex gap-2">
+            <input type="text" id="password-name" placeholder="Nome da senha (ex: Gmail)" class="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm">
+            <button id="btn-save-password" class="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition-colors">
+              <i class="fas fa-save mr-1"></i>Salvar
             </button>
           </div>
+          
+          <div id="password-strength" class="hidden">
+            <label class="block text-sm font-medium text-gray-700 mb-2">Força da Senha</label>
+            <div class="w-full bg-gray-200 rounded-full h-2">
+              <div id="strength-bar" class="h-2 rounded-full transition-all duration-300"></div>
+            </div>
+            <p id="strength-text" class="text-sm mt-1"></p>
+          </div>
         </div>
         
-        <div id="password-strength" class="hidden">
-          <label class="block text-sm font-medium text-gray-700 mb-2">Força da Senha</label>
-          <div class="w-full bg-gray-200 rounded-full h-2">
-            <div id="strength-bar" class="h-2 rounded-full transition-all duration-300"></div>
+        <!-- Banco de Senhas -->
+        <div class="space-y-4">
+          <h3 class="font-semibold text-gray-700">Senhas Salvas</h3>
+          <div id="saved-passwords-list" class="space-y-2 max-h-96 overflow-y-auto">
+            ${savedPasswordsHtml}
           </div>
-          <p id="strength-text" class="text-sm mt-1"></p>
         </div>
       </div>
     </div>
@@ -1967,6 +2047,35 @@ function setupPasswordGenerator() {
     };
   }
 
+  // Save password
+  const btnSavePassword = document.getElementById("btn-save-password");
+  const passwordName = document.getElementById("password-name");
+  
+  if (btnSavePassword) {
+    btnSavePassword.onclick = () => {
+      const password = generatedPassword?.value;
+      const name = passwordName?.value?.trim();
+      
+      if (!password) {
+        alert('Gere uma senha primeiro!');
+        return;
+      }
+      
+      if (!name) {
+        alert('Digite um nome para a senha!');
+        return;
+      }
+      
+      const savedPasswords = JSON.parse(localStorage.getItem('saved_passwords') || '[]');
+      savedPasswords.push({ name, password, date: new Date().toLocaleDateString() });
+      localStorage.setItem('saved_passwords', JSON.stringify(savedPasswords));
+      
+      passwordName.value = '';
+      closeModal();
+      setTimeout(() => openPasswordGeneratorModal(), 100);
+    };
+  }
+
   function updatePasswordStrength(password) {
     let score = 0;
     let feedback = "";
@@ -2012,6 +2121,22 @@ function setupPasswordGenerator() {
     strengthText.textContent = feedback;
   }
 }
+
+// Funções globais para gerenciar senhas salvas
+window.copyPasswordFromBank = function(password) {
+  navigator.clipboard.writeText(password);
+  alert('✅ Senha copiada!');
+};
+
+window.deletePasswordFromBank = function(index) {
+  if (confirm('Deseja realmente excluir esta senha?')) {
+    const savedPasswords = JSON.parse(localStorage.getItem('saved_passwords') || '[]');
+    savedPasswords.splice(index, 1);
+    localStorage.setItem('saved_passwords', JSON.stringify(savedPasswords));
+    closeModal();
+    setTimeout(() => openPasswordGeneratorModal(), 100);
+  }
+};
 
 // Image Converter Modal - Conversor Real
 function openImageConverterModal() {
@@ -3043,11 +3168,6 @@ function openSettingsModal() {
   `;
   overlay.appendChild(sidebar);
 
-  setTimeout(() => {
-    overlay.classList.remove("opacity-0", "pointer-events-none");
-    sidebar.classList.remove("translate-x-full");
-  }, 10);
-
   // --- Eventos ---
   document.getElementById("close-settings").onclick = closeSettingsSidebar;
   overlay.addEventListener("click", (e) => {
@@ -3089,31 +3209,76 @@ function openSettingsModal() {
     localStorage.setItem("flow_browser_font_family", fontSelect.value);
   };
 
-  // Wallpaper - usar funções do wallpaper.js
-  if (typeof setupWallpaperEvents === 'function') {
-    setupWallpaperEvents();
-  } else {
-    // Fallback caso wallpaper.js não esteja carregado
-    const uploadBtn = document.getElementById("upload-wallpaper-btn");
-    const fileInput = document.getElementById("wallpaper-file-input");
-    if (uploadBtn && fileInput) {
-      uploadBtn.onclick = () => fileInput.click();
-      fileInput.onchange = handleWallpaperFileInput;
-    }
-    document
-      .querySelectorAll("#wallpaper-grid > div[data-wallpaper]")
-      .forEach((div) => {
-        div.addEventListener("click", () => {
-          const img = div.querySelector("img").src;
-          if (typeof applyWallpaper === 'function') {
-            applyWallpaper(img);
-          } else {
-            setWallpaperFromDataURL(img);
-            localStorage.setItem("flow_browser_wallpaper", img);
-          }
-        });
-      });
+  // Wallpaper - configurar eventos diretamente
+  const uploadBtn = document.getElementById("upload-wallpaper-btn");
+  const fileInput = document.getElementById("wallpaper-file-input");
+  
+  if (uploadBtn && fileInput) {
+    uploadBtn.onclick = (e) => {
+      e.stopPropagation();
+      console.log('📤 Abrindo seletor de arquivo...');
+      fileInput.click();
+    };
+    
+    fileInput.onchange = (e) => {
+      const file = e.target.files && e.target.files[0];
+      if (!file) return;
+      
+      console.log('📁 Arquivo selecionado:', file.name);
+      
+      if (!file.type.startsWith('image/')) {
+        alert('Por favor, selecione apenas arquivos de imagem!');
+        e.target.value = '';
+        return;
+      }
+      
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        const dataUrl = ev.target.result;
+        console.log('✅ Imagem carregada, aplicando wallpaper...');
+        applyWallpaperDirect(dataUrl);
+      };
+      reader.onerror = () => {
+        console.error('❌ Erro ao ler arquivo');
+        alert('Erro ao ler o arquivo. Tente novamente.');
+      };
+      reader.readAsDataURL(file);
+      e.target.value = '';
+    };
   }
+  
+  // Wallpapers predefinidos
+  document
+    .querySelectorAll("#wallpaper-grid > div[data-wallpaper]")
+    .forEach((div) => {
+      div.addEventListener("click", (e) => {
+        e.stopPropagation();
+        const img = div.querySelector("img");
+        if (img && img.src) {
+          console.log('🖼️ Wallpaper predefinido selecionado:', img.src);
+          applyWallpaperDirect(img.src);
+        }
+      });
+    });
+  
+  // Slot personalizado
+  const customSlot = document.getElementById('custom-wallpaper-slot');
+  if (customSlot) {
+    customSlot.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const savedWallpaper = localStorage.getItem("flow_browser_wallpaper");
+      if (savedWallpaper && savedWallpaper.startsWith('data:image')) {
+        applyWallpaperDirect(savedWallpaper);
+      } else {
+        fileInput.click();
+      }
+    });
+  }
+
+  setTimeout(() => {
+    overlay.classList.remove("opacity-0", "pointer-events-none");
+    sidebar.classList.remove("translate-x-full");
+  }, 10);
 
   // Limpar tudo + individuais
   document.getElementById("clear-all-btn").onclick = () => {
