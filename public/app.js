@@ -1,4 +1,3 @@
-
 // Flow Browser - Complete JavaScript Application
 console.log("🚀 Iniciando Flow Browser...");
 
@@ -203,7 +202,7 @@ function showLoadingAnimation() {
 }
 
 // Tab Management
-function createTab(url = "home", title = "Nova aba") {
+function createTab(url = "home", title = "Nova separador") {
   const id = ++tabIdCounter;
   
   const tab = { id, url, title };
@@ -219,15 +218,18 @@ function renderTabs() {
   tabsContainer.innerHTML = "";
   tabs.forEach((tab) => {
     const btn = document.createElement("button");
-    btn.className = `flex items-center space-x-2 rounded-t-lg border border-b-0 px-4 py-2 text-sm max-w-[200px] truncate transition-all duration-200 ${
-      tab.id === activeTabId
-        ? "bg-white border-gray-300 text-gray-800 shadow-sm"
-        : "bg-gray-100 border-gray-200 text-gray-600 hover:bg-gray-200"
+    btn.className =  `
+      tab flex items-center justify-between px-3 py-1 text-sm rounded-[10px] border shadow-sm truncate
+      w-[160px] h-8 transition-all duration-200
+      ${tab.id === activeTabId 
+        ? "bg-white text-gray-900 border-gray-400 opacity-100"
+        : "bg-white text-gray-600 border-gray-200 opacity-30 hover:opacity-100"}
     }`;
+
     btn.title = tab.title;
     btn.innerHTML = `
       <span class="truncate">${tab.title}</span> 
-      <i class="fas fa-times text-xs ml-2 opacity-60 hover:opacity-100"></i>
+       <i class="fas fa-times text-xs opacity-60 hover:opacity-100"></i>
     `;
     
     btn.addEventListener('click', () => setActiveTab(tab.id));
@@ -284,6 +286,7 @@ function createHomeTab() {
   return id;
 }
 
+
 // Navigation
 function navigateToInput() {
   if (!inputUrl) return;
@@ -311,7 +314,7 @@ function navigateToInput() {
   
   // Se não há aba ativa ou é a home, cria nova aba
   const currentTab = tabs.find(t => t.id === activeTabId);
-  if (!activeTabId || !currentTab || currentTab.url === "home") {
+  if (!activeTabId || !currentTab || currentTab.url === "") {
     createTab(url, val);
   } else {
     updateCurrentTabUrl(url);
@@ -512,56 +515,89 @@ function setupWallpaperModal() {
   }
 }
 
-// Profile Modal
+// Profile arrombado
 function openProfileModal() {
-  const html = `
-    <div class="max-w-md mx-auto">
-      <h2 class="text-2xl font-bold text-gray-800 mb-6 text-center">
-        <i class="fas fa-user-circle mr-2 text-blue-500"></i>Entrar na sua conta
-      </h2>
-      
-      <div class="space-y-4">
-        <button class="w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center space-x-2">
-          <i class="fab fa-google"></i>
-          <span>Entrar com Google</span>
-        </button>
-        
-        <button class="w-full bg-blue-800 text-white py-3 px-4 rounded-lg hover:bg-blue-900 transition-colors flex items-center justify-center space-x-2">
-          <i class="fab fa-facebook-f"></i>
-          <span>Entrar com Facebook</span>
-        </button>
-        
-        <div class="text-center text-gray-500 text-sm py-2">ou</div>
-        
-        <div class="space-y-3">
-          <input type="email" placeholder="Email" class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-400">
-          <input type="password" placeholder="Senha" class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-400">
-        </div>
-        
-        <button class="w-full bg-green-600 text-white py-3 px-4 rounded-lg hover:bg-green-700 transition-colors">
-          Entrar
-        </button>
-        
-        <div class="text-center text-sm text-gray-600 space-y-2">
-          <div>
-            <a href="#" class="text-blue-600 hover:underline">Esqueceu a senha?</a>
-          </div>
-          <div>
-            Não tem conta? 
-            <a href="#" class="text-blue-600 hover:underline font-semibold">Cadastrar-se</a>
-          </div>
-        </div>
-      </div>
-      
-      <div class="mt-6 text-center text-xs text-gray-500 bg-gray-50 p-3 rounded-lg">
-        <i class="fas fa-info-circle mr-1"></i>
-        Em breve: sincronização com banco de dados Supabase
-      </div>
+  const btn = document.getElementById('btn-profile');
+  if (!btn) return;
+
+  const existing = document.getElementById('profile-popup');
+  if (existing) return existing.remove();
+
+  // Detecta tema do sistema
+  const dark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  const bgColor = dark ? '#111827' : '#fff';
+  const borderColor = dark ? '#374151' : '#d1d5db';
+  const textColor = dark ? '#f9fafb' : '#1f2937';
+  const subTextColor = dark ? '#9ca3af' : '#6b7280';
+
+  const popup = document.createElement('div');
+  popup.id = 'profile-popup';
+  popup.style.cssText = `
+    position:absolute; z-index:9999;
+    background:${bgColor}; border:1px solid ${borderColor};
+    border-radius:1rem; padding:1rem; text-align:center; width:320px;
+    box-shadow:0 10px 25px rgba(0,0,0,0.2);
+  `;
+
+  popup.innerHTML = `
+    <h2 style="color:${textColor}; margin-bottom:1rem; display:flex; justify-content:center; align-items:center;">
+      <i class="fas fa-user-circle text-blue-500 mr-2"></i>Entrar na conta
+    </h2>
+    <div style="margin-bottom:1rem;">
+      <button style="width:100%; background:#4285F4; color:white; padding:.5rem; border-radius:.5rem; margin-bottom:.5rem;">
+        <i class="fab fa-google mr-1"></i> Entrar com Google
+      </button>
+    </div>
+    <div style="color:${subTextColor}; margin-bottom:.5rem;">ou</div>
+    <input type="email" placeholder="Email" style="width:100%; padding:.5rem; margin-bottom:.5rem; border:1px solid ${borderColor}; border-radius:.5rem; background:${bgColor}; color:${textColor};" />
+    <input type="password" placeholder="Senha" style="width:100%; padding:.5rem; margin-bottom:.5rem; border:1px solid ${borderColor}; border-radius:.5rem; background:${bgColor}; color:${textColor};" />
+    <button style="width:100%; background:#10b981; color:white; padding:.5rem; border-radius:.5rem; margin-bottom:.5rem;">Entrar</button>
+    <div style="font-size:.75rem; color:${subTextColor};">
+      <div><a href="#" style="color:#3b82f6; text-decoration:underline;">Esqueceu a senha?</a></div>
+      <div>Não tem conta? <a href="#" style="color:#3b82f6; font-weight:600; text-decoration:underline;">Cadastrar-se</a></div>
     </div>
   `;
   
-  openModal(html);
+  document.body.appendChild(popup);
+
+  // Posiciona embaixo do botão
+  requestAnimationFrame(() => {
+    const rect = btn.getBoundingClientRect();
+    const popupRect = popup.getBoundingClientRect();
+    const padding = 8;
+    let top = rect.bottom + window.scrollY + padding;
+    let left = rect.right - popupRect.width;
+    if (left < padding) left = padding;
+    if (left + popupRect.width > window.innerWidth - padding) left = window.innerWidth - popupRect.width - padding;
+    popup.style.top = `${top}px`;
+    popup.style.left = `${left}px`;
+  });
+
+  // Fecha ao clicar fora
+  const closeOnClickOutside = (e) => {
+    if (!popup.contains(e.target) && e.target !== btn) {
+      popup.remove();
+      document.removeEventListener('click', closeOnClickOutside);
+    }
+  };
+  document.addEventListener('click', closeOnClickOutside);
+
+  // Atualiza cores se o tema do sistema mudar
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+    const dark = e.matches;
+    popup.style.background = dark ? '#111827' : '#fff';
+    popup.style.border = `1px solid ${dark ? '#374151' : '#d1d5db'}`;
+    popup.querySelectorAll('h2, input, button, div').forEach(el => {
+      if (el.tagName === 'H2' || el.tagName === 'INPUT' || el.tagName === 'BUTTON') {
+        el.style.color = dark ? '#f9fafb' : '#1f2937';
+        if (el.tagName === 'INPUT') el.style.background = dark ? '#1f2937' : '#fff';
+      } else if (el.tagName === 'DIV') {
+        el.style.color = dark ? '#9ca3af' : '#6b7280';
+      }
+    });
+  });
 }
+
 
 // Modal Management
 function openModal(contentHtml) {
@@ -582,195 +618,224 @@ function closeModal() {
 
 // Notes Management
 function openNotesModal() {
-  const savedNotes = JSON.parse(localStorage.getItem(NOTES_STORAGE_KEY) || "{}");
-  let notesListHtml = "";
-  
-  for (const id in savedNotes) {
-    notesListHtml += `
-      <li class="border-b border-gray-200 py-2 px-3 cursor-pointer hover:bg-gray-50 truncate transition-colors" 
-          data-id="${id}" title="${savedNotes[id].title}">
-        ${savedNotes[id].title}
-      </li>
-    `;
-  }
-  
-  if (!notesListHtml) {
-    notesListHtml = "<li class='text-gray-500 p-3 text-center'>Nenhuma nota salva</li>";
-  }
+  const existing = document.getElementById("notes-modal");
+  if (existing) return existing.remove();
+
+  const dark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  const colors = {
+    modalBg: dark ? '#1f2937' : '#fff',
+    modalText: dark ? '#f9fafb' : '#1f2937',
+    tabBg: dark ? '#374151' : '#e5e7eb',
+    tabActiveBg: dark ? '#4b5563' : '#d1d5db',
+    tabText: dark ? '#f9fafb' : '#111827',
+    inputBg: dark ? '#374151' : '#fff',
+    inputText: dark ? '#f9fafb' : '#111827',
+    btnBg: dark ? '#6b7280' : '#d1d5db',
+    btnText: dark ? '#f9fafb' : '#111827',
+    border: dark ? '#4b5563' : '#d1d5db'
+  };
+
+  let notes = JSON.parse(localStorage.getItem(NOTES_STORAGE_KEY) || "{}");
+  const firstId = Object.keys(notes)[0] || null;
 
   const html = `
-    <div class="flex flex-col h-[70vh]">
-      <div class="flex justify-between items-center mb-4">
-        <h2 class="text-2xl font-bold text-gray-800">Bloco de Notas</h2>
-        <button id="btn-new-note" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors">
-          <i class="fas fa-plus mr-2"></i>Nova Nota
-        </button>
-      </div>
-      <div class="flex flex-1 overflow-hidden border border-gray-200 rounded-lg shadow-sm">
-        <ul id="notes-list" class="w-1/3 bg-gray-50 overflow-auto notes-scroll border-r border-gray-200">${notesListHtml}</ul>
-        <div class="flex flex-col flex-1 p-4">
-          <input id="note-title" type="text" placeholder="Título da nota" 
-                 class="border border-gray-300 mb-3 px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent" />
-          <textarea id="note-content" 
-                    class="flex-1 resize-none border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent" 
-                    placeholder="Escreva sua nota aqui..."></textarea>
-          <div class="mt-3 flex justify-end space-x-2">
-            <button id="btn-save-note" class="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition-colors">
-              <i class="fas fa-save mr-2"></i>Salvar
-            </button>
-            <button id="btn-delete-note" class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-colors">
-              <i class="fas fa-trash mr-2"></i>Excluir
-            </button>
-          </div>
-        </div>
+  <div id="notes-modal" style="
+      position:fixed; left:4.2rem; top:150px; width:350px; height:50vh;
+      background:${colors.modalBg}; color:${colors.modalText}; border:1px solid ${colors.border};
+      border-radius:.75rem; display:flex; flex-direction:column; z-index:9999; padding:.5rem;">
+    
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:.25rem;">
+      <h2 style="font-size:.875rem; display:flex; align-items:center;">
+        <i class="fas fa-sticky-note mr-1"></i>Notas
+      </h2>
+      <button id="close-notes" style="background:none; border:none; color:${colors.modalText};"><i class="fas fa-times"></i></button>
+    </div>
+
+    <div id="notes-tabs" style="display:flex; gap:.25rem; overflow-x:auto; margin-bottom:.25rem;">
+      ${Object.keys(notes).map(id => `
+        <button data-id="${id}" style="
+          background:${id===firstId?colors.tabActiveBg:colors.tabBg};
+          color:${colors.tabText}; border:1px solid ${colors.border}; border-radius:.5rem;
+          padding:.25rem .5rem; font-size:.75rem; cursor:pointer; white-space:nowrap;">
+          ${notes[id].title || "Sem título"}
+        </button>`).join('')}
+    </div>
+
+    <div style="flex:1; display:flex; flex-direction:column; gap:.25rem;">
+      <input id="note-title" placeholder="Título" style="
+        padding:.25rem; border-radius:.5rem; border:1px solid ${colors.border};
+        background:${colors.inputBg}; color:${colors.inputText}; font-size:.75rem;" />
+      <textarea id="note-content" placeholder="Digite a nota..." style="
+        flex:1; padding:.25rem; border-radius:.5rem; border:1px solid ${colors.border};
+        background:${colors.inputBg}; color:${colors.inputText}; font-size:.75rem; resize:none;"></textarea>
+      
+      <div style="display:flex; justify-content:space-between; gap:.25rem;">
+        <button id="btn-new-note" style="flex:1; background:${colors.btnBg}; color:${colors.btnText}; padding:.25rem; border-radius:.5rem;">Nova</button>
+        <button id="btn-save-note" style="flex:1; background:${colors.btnBg}; color:${colors.btnText}; padding:.25rem; border-radius:.5rem;">Salvar</button>
+        <button id="btn-delete-note" style="flex:1; background:${colors.btnBg}; color:${colors.btnText}; padding:.25rem; border-radius:.5rem;">Excluir</button>
       </div>
     </div>
+  </div>
   `;
   
-  openModal(html);
-  setupNotesModal();
-}
+  document.body.insertAdjacentHTML("beforeend", html);
 
-function setupNotesModal() {
-  const notesList = document.getElementById("notes-list");
-  const noteTitle = document.getElementById("note-title");
-  const noteContent = document.getElementById("note-content");
-  const btnSaveNote = document.getElementById("btn-save-note");
-  const btnDeleteNote = document.getElementById("btn-delete-note");
-  const btnNewNote = document.getElementById("btn-new-note");
+  const modal = document.getElementById("notes-modal");
+  const tabs = modal.querySelector("#notes-tabs");
+  const title = modal.querySelector("#note-title");
+  const content = modal.querySelector("#note-content");
+  const btnNew = modal.querySelector("#btn-new-note");
+  const btnSave = modal.querySelector("#btn-save-note");
+  const btnDelete = modal.querySelector("#btn-delete-note");
 
-  let currentNoteId = null;
-  let notes = JSON.parse(localStorage.getItem(NOTES_STORAGE_KEY) || "{}");
+  let currentNoteId = firstId;
 
-  function refreshNotesList() {
-    if (!notesList) return;
-    
-    notesList.innerHTML = "";
-    const keys = Object.keys(notes);
-    
-    if (keys.length === 0) {
-      notesList.innerHTML = "<li class='text-gray-500 p-3 text-center'>Nenhuma nota salva</li>";
-      clearNote();
-      return;
-    }
-    
-    keys.forEach((id) => {
-      const li = document.createElement("li");
-      li.textContent = notes[id].title;
-      li.title = notes[id].title;
-      li.dataset.id = id;
-      li.className = `border-b border-gray-200 py-2 px-3 cursor-pointer hover:bg-gray-50 truncate transition-colors ${
-        id === currentNoteId ? 'bg-blue-50 border-blue-200' : ''
-      }`;
-      
-      li.onclick = () => {
-        currentNoteId = id;
-        loadNote(id);
-        refreshNotesList();
-      };
-      
-      notesList.appendChild(li);
+  function renderTabs() {
+    tabs.innerHTML = Object.keys(notes).map(id => `
+      <button data-id="${id}" style="
+        background:${id===currentNoteId?colors.tabActiveBg:colors.tabBg};
+        color:${colors.tabText}; border:1px solid ${colors.border}; border-radius:.5rem;
+        padding:.25rem .5rem; font-size:.75rem; cursor:pointer; white-space:nowrap;">
+        ${notes[id].title || "Sem título"}
+      </button>`).join('');
+    tabs.querySelectorAll("button").forEach(btn => {
+      btn.onclick = () => loadNote(btn.dataset.id);
     });
   }
 
   function loadNote(id) {
-    if (!notes[id] || !noteTitle || !noteContent) return;
-    noteTitle.value = notes[id].title;
-    noteContent.value = notes[id].content;
+    currentNoteId = id;
+    title.value = notes[id]?.title || "";
+    content.value = notes[id]?.content || "";
+    renderTabs();
   }
 
-  function clearNote() {
-    currentNoteId = null;
-    if (noteTitle) noteTitle.value = "";
-    if (noteContent) noteContent.value = "";
+  function saveNote() {
+    const id = currentNoteId || Date.now().toString();
+    notes[id] = { title: title.value.trim() || "Sem título", content: content.value };
+    localStorage.setItem(NOTES_STORAGE_KEY, JSON.stringify(notes));
+    currentNoteId = id;
+    renderTabs();
   }
 
-  if (btnSaveNote) {
-    btnSaveNote.onclick = () => {
-      const title = noteTitle?.value?.trim() || "Sem título";
-      const content = noteContent?.value || "";
-      
-      if (!currentNoteId) {
-        currentNoteId = Date.now().toString();
-      }
-      
-      notes[currentNoteId] = { title, content };
-      localStorage.setItem(NOTES_STORAGE_KEY, JSON.stringify(notes));
-      refreshNotesList();
-      
-      // Show success feedback
-      btnSaveNote.innerHTML = '<i class="fas fa-check mr-2"></i>Salvo!';
-      setTimeout(() => {
-        btnSaveNote.innerHTML = '<i class="fas fa-save mr-2"></i>Salvar';
-      }, 1500);
-    };
-  }
-
-  if (btnDeleteNote) {
-    btnDeleteNote.onclick = () => {
-      if (!currentNoteId) {
-        alert("Nenhuma nota selecionada para excluir.");
-        return;
-      }
-      
-      if (confirm("Tem certeza que deseja excluir esta nota?")) {
-        delete notes[currentNoteId];
-        localStorage.setItem(NOTES_STORAGE_KEY, JSON.stringify(notes));
-        clearNote();
-        refreshNotesList();
-      }
-    };
-  }
-
-  if (btnNewNote) {
-    btnNewNote.onclick = () => {
-      clearNote();
-      refreshNotesList();
-      if (noteTitle) noteTitle.focus();
-    };
-  }
-
-  // Load first note if exists
-  if (Object.keys(notes).length > 0) {
-    currentNoteId = Object.keys(notes)[0];
+  function deleteNote() {
+    if (!currentNoteId) return alert("Nenhuma nota selecionada.");
+    delete notes[currentNoteId];
+    localStorage.setItem(NOTES_STORAGE_KEY, JSON.stringify(notes));
+    currentNoteId = Object.keys(notes)[0] || null;
     loadNote(currentNoteId);
-  } else {
-    clearNote();
   }
-  
-  refreshNotesList();
+
+  function newNote() {
+    title.value = "";
+    content.value = "";
+    currentNoteId = null;
+    renderTabs();
+  }
+
+  btnSave.onclick = saveNote;
+  btnDelete.onclick = deleteNote;
+  btnNew.onclick = newNote;
+  modal.querySelector("#close-notes").onclick = () => modal.remove();
+
+  // Carrega primeira nota
+  if (currentNoteId) loadNote(currentNoteId);
+
+  // Atualiza cores se o usuário trocar tema
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+    const dark = e.matches;
+    const c = {
+      modalBg: dark ? '#1f2937' : '#fff',
+      modalText: dark ? '#f9fafb' : '#1f2937',
+      tabBg: dark ? '#374151' : '#e5e7eb',
+      tabActiveBg: dark ? '#4b5563' : '#d1d5db',
+      tabText: dark ? '#f9fafb' : '#111827',
+      inputBg: dark ? '#374151' : '#fff',
+      inputText: dark ? '#f9fafb' : '#111827',
+      btnBg: dark ? '#6b7280' : '#d1d5db',
+      btnText: dark ? '#f9fafb' : '#111827',
+      border: dark ? '#4b5563' : '#d1d5db'
+    };
+    modal.style.background = c.modalBg;
+    modal.style.color = c.modalText;
+    tabs.querySelectorAll("button").forEach(b => {
+      b.style.background = b.dataset.id===currentNoteId?c.tabActiveBg:c.tabBg;
+      b.style.color = c.tabText;
+      b.style.border = `1px solid ${c.border}`;
+    });
+    title.style.background = c.inputBg;
+    title.style.color = c.inputText;
+    title.style.border = `1px solid ${c.border}`;
+    content.style.background = c.inputBg;
+    content.style.color = c.inputText;
+    content.style.border = `1px solid ${c.border}`;
+    [btnNew, btnSave, btnDelete].forEach(b=>{b.style.background=c.btnBg;b.style.color=c.btnText});
+  });
 }
 
 // Timer Management
 function openTimerModal() {
+  const existing = document.getElementById("timer-modal");
+  if (existing) return existing.remove();
+
+  const dark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  const colors = {
+    modalBg: dark ? '#1f2937' : '#fff',
+    modalText: dark ? '#f9fafb' : '#1f2937',
+    border: dark ? '#4b5563' : '#d1d5db',
+    inputBg: dark ? '#374151' : '#f9fafb',
+    inputText: dark ? '#f9fafb' : '#1f2937'
+  };
   const html = `
-    <div class="flex flex-col h-[50vh] max-w-md mx-auto">
-      <h2 class="text-2xl font-bold text-gray-800 mb-6 text-center">Temporizador de Estudo</h2>
-      <div class="flex justify-center items-center space-x-4 mb-6">
-        <input id="input-minutes" type="number" min="1" max="180" value="25" 
-               class="w-20 text-center rounded-lg border border-gray-300 p-3 text-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent" />
-        <span class="text-lg text-gray-600">minutos</span>
-      </div>
-      <div class="text-center text-6xl font-mono mb-8 text-gray-800" id="timer-display">25:00</div>
-      <div class="flex justify-center space-x-3">
-        <button id="btn-start-timer" class="bg-green-500 text-white px-6 py-3 rounded-lg hover:bg-green-600 transition-colors flex items-center">
-          <i class="fas fa-play mr-2"></i>Iniciar
-        </button>
-        <button id="btn-pause-timer" class="bg-yellow-500 text-white px-6 py-3 rounded-lg hover:bg-yellow-600 transition-colors flex items-center" disabled>
-          <i class="fas fa-pause mr-2"></i>Pausar
-        </button>
-        <button id="btn-reset-timer" class="bg-red-500 text-white px-6 py-3 rounded-lg hover:bg-red-600 transition-colors flex items-center">
-          <i class="fas fa-redo mr-2"></i>Resetar
-        </button>
-      </div>
-      <div class="mt-6 text-center text-sm text-gray-600 bg-gray-50 p-3 rounded-lg">
-        <i class="fas fa-info-circle mr-2"></i>Após o tempo, um alerta será exibido para descanso.
-      </div>
-    </div>
-  `;
+<div id="timer-modal" style="
+  position:fixed; left:4.2rem; top:220px; width:300px; height:50vh;
+  background:${colors.modalBg}; color:${colors.modalText};
+  border:1px solid ${colors.border}; border-radius:.75rem; padding:.5rem;
+  display:flex; flex-direction:column; z-index:9999;">
+
+  <div style="display:flex; justify-content:space-between; align-items:center; font-size:.9rem;">
+    <h2 style="display:flex; align-items:center; gap:.25rem;"><i class='fas fa-hourglass-half text-blue-500'></i>Temporizador</h2>
+    <button id="close-timer" style="background:none;border:none;color:${colors.modalText}"><i class='fas fa-times'></i></button>
+  </div>
+
+  <div style="display:flex; justify-content:center; align-items:center; gap:.25rem; font-size:.8rem; margin:.25rem 0;">
+    <input id="input-minutes" type="number" min="1" max="180" value="25"
+      style="width:3rem;text-align:center;border-radius:.5rem;border:1px solid ${colors.border};padding:.2rem;background:${colors.inputBg};color:${colors.inputText}"/>
+    <span>minutos</span>
+  </div>
+
+  <div id="timer-display" style="text-align:center;font-size:2.5rem;font-family:monospace;margin-bottom:.25rem;">25:00</div>
+
+  <div style="display:flex; justify-content:center; gap:.25rem; font-size:.85rem; margin-bottom:.25rem;">
+    <button id="btn-start-timer" style="background:#10b981;color:#fff;padding:.25rem .5rem;border-radius:.5rem">Iniciar</button>
+    <button id="btn-pause-timer" style="background:#facc15;color:#fff;padding:.25rem .5rem;border-radius:.5rem" disabled>Pausar</button>
+    <button id="btn-reset-timer" style="background:#ef4444;color:#fff;padding:.25rem .5rem;border-radius:.5rem">Resetar</button>
+  </div>
+
+  <!-- INFO FINAL FIXO NO FUNDO -->
+  <div style="margin-top:auto;text-align:center;font-size:.65rem;background:${dark?'#374151':'#f9fafb'};padding:.2rem;border:1px solid ${colors.border};border-radius:.5rem">
+    <i class="fas fa-info-circle mr-1"></i>Ao finalizar o tempo, um alerta será exibido para descanso.
+  </div>
+</div>`;
+
   
-  openModal(html);
+   document.body.insertAdjacentHTML("beforeend", html);
+
+  document.getElementById("close-timer").onclick = () => document.getElementById("timer-modal")?.remove();
+
   setupTimerModal();
+
+  // Atualiza cores caso o usuário mude o tema
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+    const modal = document.getElementById('timer-modal');
+    if (!modal) return;
+    const dark = e.matches;
+    modal.style.background = dark ? '#1f2937' : '#fff';
+    modal.style.color = dark ? '#f9fafb' : '#1f2937';
+    modal.style.border = `1px solid ${dark ? '#4b5563' : '#d1d5db'}`;
+    modal.querySelector('input') && (modal.querySelector('input').style.background = dark ? '#374151' : '#f9fafb');
+    modal.querySelector('input') && (modal.querySelector('input').style.color = dark ? '#f9fafb' : '#1f2937');
+  });
 }
 
 function setupTimerModal() {
@@ -851,46 +916,79 @@ function setupTimerModal() {
 
 // Chat GPT Integration - Funcional com API real
 function openChatGPTModal() {
+  const existing = document.getElementById("chatgpt-modal");
+  if (existing) return existing.remove();
+
+  const dark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+  const colors = {
+    modalBg: dark ? '#1f2937' : '#fff',
+    modalText: dark ? '#f9fafb' : '#1f2937',
+    messagesBg: dark ? '#374151' : '#f3f4f6',
+    messagesText: dark ? '#f3f4f6' : '#1e40af',
+    inputBg: dark ? '#374151' : '#fff',
+    inputText: dark ? '#f9fafb' : '#1f2937',
+    border: dark ? '#4b5563' : '#d1d5db',
+    btnBg: dark ? '#2563eb' : '#3b82f6',
+    btnHover: dark ? '#1d4ed8' : '#2563eb'
+  };
+
   const html = `
-    <div class="flex flex-col h-[70vh] max-w-4xl w-full">
-      <div class="flex items-center justify-between mb-4">
-        <h2 class="text-2xl font-bold text-gray-800">
-          <i class="fas fa-robot mr-2 text-blue-500"></i>Chat GPT - IA para estudos
-        </h2>
-        <div class="flex items-center space-x-2 text-sm">
-          <div id="api-status" class="flex items-center">
-            <div class="w-3 h-3 bg-green-500 rounded-full mr-2 animate-pulse"></div>
-            <span class="text-green-600 font-medium">API Conectada</span>
-          </div>
-        </div>
-      </div>
-      
-      <div id="chat-messages" class="flex-1 overflow-auto border border-gray-200 rounded-lg p-4 mb-4 bg-gray-50 space-y-3">
-        <div class="bg-blue-100 border border-blue-200 text-blue-800 p-3 rounded-lg">
-          <i class="fas fa-info-circle mr-2"></i>
-          <strong>Bem-vindo ao assistente de estudos!</strong><br>
-          Pergunte sobre qualquer matéria, peça explicações, tire dúvidas ou solicite resumos. Estou aqui para ajudar! 🚀
-        </div>
-      </div>
-      
-      <form id="chat-form" class="flex space-x-3">
-        <input id="chat-input" type="text" placeholder="Ex: Explique a lei de Newton, resumo de história do Brasil..." 
-               class="flex-1 rounded-lg border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent" 
-               autocomplete="off" />
-        <button type="submit" id="send-btn" class="bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600 transition-colors flex items-center">
-          <i class="fas fa-paper-plane mr-2"></i>Enviar
-        </button>
-      </form>
-      
-      <div class="text-xs text-gray-500 mt-2 flex items-center justify-between">
-        <span>💡 Dica: Seja específico em suas perguntas para respostas mais precisas</span>
-        <span id="char-counter">0/500</span>
-      </div>
-    </div>
-  `;
+<div id="chatgpt-modal" style="position:fixed;left:4.2rem;top:80px;width:380px;height:70vh;
+  background:${colors.modalBg};color:${colors.modalText};border:1px solid ${colors.border};
+  border-radius:1rem;display:flex;flex-direction:column;z-index:9999;padding:.5rem;">
+
+  <!-- Header -->
+  <div style="display:flex;justify-content:center;align-items:center;position:relative;margin-bottom:.25rem;">
+    <h2 style="margin:0;font-size:1rem;font-weight:bold;">Chat IA</h2>
+    <button id="close-chat" style="position:absolute;right:0;background:none;border:none;color:${colors.modalText};">
+      <i class="fas fa-times"></i>
+    </button>
+  </div>
+
+  <!-- Mensagens -->
+  <div id="chat-messages" style="flex:1;overflow:auto;padding:.25rem;margin-bottom:.25rem;
+    background:${colors.messagesBg};color:${colors.messagesText};border-radius:.5rem;border:1px solid ${colors.border};
+    display:flex;flex-direction:column;gap:.25rem;">
+    <div style="padding:.25rem;border-radius:.5rem;border:1px solid ${colors.messagesText};
+      background:${colors.messagesBg};color:${colors.messagesText};"><strong>Olá!</strong> Pergunte o que quiser.</div>
+  </div>
+
+  <!-- Input -->
+  <form id="chat-form" style="position:relative;display:flex;width:100%;max-width:100%;">
+    <input id="chat-input" type="text" placeholder="Digite sua pergunta..." 
+      style="flex:1;padding:.5rem 2.5rem;border-radius:.5rem;border:1px solid ${colors.border};
+      background:${colors.inputBg};color:${colors.inputText};height:2.5rem;"/>
+    <button type="button" id="attach-btn" style="position:absolute;left:.25rem;top:50%;transform:translateY(-50%);
+      border:none;background:none;cursor:pointer;"><i class="fas fa-paperclip"></i></button>
+    <button type="submit" id="send-btn" style="position:absolute;right:.25rem;top:50%;transform:translateY(-50%);
+      border:none;background:none;cursor:pointer;"><i class="fas fa-paper-plane"></i></button>
+  </form>
+</div>`;
+
+
   
-  openModal(html);
-  setupChatGPT();
+    document.body.insertAdjacentHTML("beforeend", html);
+    document.getElementById("close-chat").onclick = () => document.getElementById("chatgpt-modal")?.remove();
+    setupChatGPT();
+
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+    const modal = document.getElementById('chatgpt-modal');
+    if (!modal) return;
+    const dark = e.matches;
+    modal.style.background = dark ? '#1f2937' : '#fff';
+    modal.style.color = dark ? '#f9fafb' : '#1f2937';
+    const messages = modal.querySelector('#chat-messages');
+    messages.style.background = dark ? '#374151' : '#f3f4f6';
+    messages.style.color = dark ? '#f3f4f6' : '#1e40af';
+    const input = modal.querySelector('#chat-input');
+    input.style.background = dark ? '#374151' : '#fff';
+    input.style.color = dark ? '#f9fafb' : '#1f2937';
+    const border = dark ? '#4b5563' : '#d1d5db';
+    modal.style.border = `1px solid ${border}`;
+    input.style.border = `1px solid ${border}`;
+    modal.querySelector('#send-btn').style.background = dark ? '#2563eb' : '#3b82f6';
+  });
 }
 
 function setupChatGPT() {
@@ -1069,72 +1167,74 @@ function setupChatGPT() {
 
 // More Tools Modal
 function openMoreToolsModal() {
+  const existing = document.getElementById("more-tools-modal");
+  if (existing) return existing.remove();
+
+  const dark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+  const colors = {
+    modalBg: dark ? '#1f2937' : '#fff',
+    modalText: dark ? '#f9fafb' : '#1f2937',
+    border: dark ? '#4b5563' : '#d1d5db',
+    buttonText: '#fff'
+  };
+
+  const tools = [
+    { id:'btn-image-converter', icon:'fa-image', title:'Converter Imagem', desc:'Remova fundo e otimize imagens', from:'#8b5cf6', to:'#ec4899' },
+    { id:'btn-calculator', icon:'fa-calculator', title:'Calculadora', desc:'Modo científico incluso', from:'#3b82f6', to:'#06b6d4' },
+    { id:'btn-color-picker', icon:'fa-palette', title:'Seletor de Cores', desc:'Escolha e converta cores', from:'#10b981', to:'#14b8a6' },
+    { id:'btn-text-tools', icon:'fa-font', title:'Ferramentas de Texto', desc:'Contar palavras e converter casos', from:'#f97316', to:'#ef4444' },
+    { id:'btn-qr-generator', icon:'fa-qrcode', title:'Gerador QR Code', desc:'Crie QR codes instantâneos', from:'#6366f1', to:'#8b5cf6' },
+    { id:'btn-password-generator', icon:'fa-shield-alt', title:'Gerador de Senhas', desc:'Crie senhas seguras', from:'#ef4444', to:'#ec4899' },
+    { id:'btn-unit-converter', icon:'fa-exchange-alt', title:'Conversor', desc:'Unidades e moedas', from:'#f59e0b', to:'#f97316' },
+    { id:'btn-markdown-editor', icon:'fab fa-markdown', title:'Editor Markdown', desc:'Escreva e visualize docs', from:'#4b5563', to:'#1f2937' },
+    { id:'btn-json-formatter', icon:'fa-code', title:'Formatador JSON', desc:'Formate e valide JSON', from:'#14b8a6', to:'#06b6d4' }
+  ];
+
+  const buttonsHtml = tools.map(t => `
+    <button id="${t.id}" style="
+      background:linear-gradient(90deg, ${t.from}, ${t.to}); color:${colors.buttonText}; padding:.5rem; border-radius:.5rem; border:none;
+      display:flex; flex-direction:column; align-items:flex-start; margin-bottom:.25rem;"
+    >
+      <i class="fas ${t.icon}" style="font-size:1.25rem; margin-bottom:.25rem;"></i>
+      <span style="font-weight:600;">${t.title}</span>
+      <p style="font-size:.75rem; opacity:.9;">${t.desc}</p>
+    </button>
+  `).join('');
+
   const html = `
-    <div class="max-w-4xl">
-      <h2 class="text-3xl font-bold text-gray-800 mb-6 text-center">
-        <i class="fas fa-tools mr-3 text-purple-500"></i>Ferramentas Extras
-      </h2>
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        <button id="btn-image-converter" class="bg-gradient-to-r from-purple-500 to-pink-500 text-white p-6 rounded-xl hover:from-purple-600 hover:to-pink-600 transition-all transform hover:scale-105 shadow-lg">
-          <i class="fas fa-image text-3xl mb-3"></i>
-          <h3 class="text-xl font-bold mb-2">Converter Imagem</h3>
-          <p class="text-sm opacity-90">Converta formatos, remova fundos e otimize imagens</p>
-        </button>
-        
-        <button id="btn-calculator" class="bg-gradient-to-r from-blue-500 to-cyan-500 text-white p-6 rounded-xl hover:from-blue-600 hover:to-cyan-600 transition-all transform hover:scale-105 shadow-lg">
-          <i class="fas fa-calculator text-3xl mb-3"></i>
-          <h3 class="text-xl font-bold mb-2">Calculadora</h3>
-          <p class="text-sm opacity-90">Calculadora científica para estudos</p>
-        </button>
-        
-        <button id="btn-color-picker" class="bg-gradient-to-r from-green-500 to-teal-500 text-white p-6 rounded-xl hover:from-green-600 hover:to-teal-600 transition-all transform hover:scale-105 shadow-lg">
-          <i class="fas fa-palette text-3xl mb-3"></i>
-          <h3 class="text-xl font-bold mb-2">Seletor de Cores</h3>
-          <p class="text-sm opacity-90">Escolha e converta cores para projetos</p>
-        </button>
-        
-        <button id="btn-text-tools" class="bg-gradient-to-r from-orange-500 to-red-500 text-white p-6 rounded-xl hover:from-orange-600 hover:to-red-600 transition-all transform hover:scale-105 shadow-lg">
-          <i class="fas fa-font text-3xl mb-3"></i>
-          <h3 class="text-xl font-bold mb-2">Ferramentas de Texto</h3>
-          <p class="text-sm opacity-90">Contar palavras, converter casos e mais</p>
-        </button>
-        
-        <button id="btn-qr-generator" class="bg-gradient-to-r from-indigo-500 to-purple-500 text-white p-6 rounded-xl hover:from-indigo-600 hover:to-purple-600 transition-all transform hover:scale-105 shadow-lg">
-          <i class="fas fa-qrcode text-3xl mb-3"></i>
-          <h3 class="text-xl font-bold mb-2">Gerador QR Code</h3>
-          <p class="text-sm opacity-90">Crie QR codes para links, textos e mais</p>
-        </button>
-        
-        <button id="btn-password-generator" class="bg-gradient-to-r from-red-500 to-pink-500 text-white p-6 rounded-xl hover:from-red-600 hover:to-pink-600 transition-all transform hover:scale-105 shadow-lg">
-          <i class="fas fa-shield-alt text-3xl mb-3"></i>
-          <h3 class="text-xl font-bold mb-2">Gerador de Senhas</h3>
-          <p class="text-sm opacity-90">Gere senhas seguras e personalizadas</p>
-        </button>
-        
-        <button id="btn-unit-converter" class="bg-gradient-to-r from-yellow-500 to-orange-500 text-white p-6 rounded-xl hover:from-yellow-600 hover:to-orange-600 transition-all transform hover:scale-105 shadow-lg">
-          <i class="fas fa-exchange-alt text-3xl mb-3"></i>
-          <h3 class="text-xl font-bold mb-2">Conversor de Unidades</h3>
-          <p class="text-sm opacity-90">Converta medidas, moedas e temperaturas</p>
-        </button>
-        
-        <button id="btn-markdown-editor" class="bg-gradient-to-r from-gray-600 to-gray-800 text-white p-6 rounded-xl hover:from-gray-700 hover:to-gray-900 transition-all transform hover:scale-105 shadow-lg">
-          <i class="fab fa-markdown text-3xl mb-3"></i>
-          <h3 class="text-xl font-bold mb-2">Editor Markdown</h3>
-          <p class="text-sm opacity-90">Escreva e visualize documentos markdown</p>
-        </button>
-        
-        <button id="btn-json-formatter" class="bg-gradient-to-r from-teal-500 to-cyan-500 text-white p-6 rounded-xl hover:from-teal-600 hover:to-cyan-600 transition-all transform hover:scale-105 shadow-lg">
-          <i class="fas fa-code text-3xl mb-3"></i>
-          <h3 class="text-xl font-bold mb-2">Formatador JSON</h3>
-          <p class="text-sm opacity-90">Formate e valide código JSON</p>
-        </button>
+    <div id="more-tools-modal" style="
+      position:fixed; left:4.2rem; top:220px; width:420px; height:65vh; overflow:auto;
+      background:${colors.modalBg}; color:${colors.modalText}; border:1px solid ${colors.border};
+      border-radius:1rem; padding:1rem; display:flex; flex-direction:column; z-index:9999;"
+    >
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:.5rem;">
+        <h2 style="display:flex; align-items:center;"><i class="fas fa-tools mr-2 text-purple-500"></i>Ferramentas Extras</h2>
+        <button id="close-more-tools" style="color:${colors.modalText};"><i class="fas fa-times"></i></button>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:.25rem;">
+        ${buttonsHtml}
       </div>
     </div>
   `;
-  
-  openModal(html);
+
+  document.body.insertAdjacentHTML("beforeend", html);
+
+  document.getElementById("close-more-tools").onclick = () => document.getElementById("more-tools-modal")?.remove();
+
   setupMoreToolsModal();
+
+  // Atualiza cores se o usuário mudar o tema
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+    const modal = document.getElementById('more-tools-modal');
+    if (!modal) return;
+    const dark = e.matches;
+    modal.style.background = dark ? '#1f2937' : '#fff';
+    modal.style.color = dark ? '#f9fafb' : '#1f2937';
+    modal.style.border = `1px solid ${dark ? '#4b5563' : '#d1d5db'}`;
+  });
 }
+
 
 function setupMoreToolsModal() {
   const btnImageConverter = document.getElementById('btn-image-converter');
@@ -2390,239 +2490,249 @@ function addToHistory(url, title) {
 function openSettingsModal() {
   const currentFontSize = localStorage.getItem('flow_browser_font_size') || '14';
   const currentFontFamily = localStorage.getItem('flow_browser_font_family') || 'Inter';
-  
-  const html = `
-    <div class="max-w-4xl">
-      <h2 class="text-3xl font-bold text-gray-800 mb-6 text-center">
-        <i class="fas fa-cog mr-3 text-blue-500"></i>Configurações do Navegador
-      </h2>
-      
-      <div class="space-y-6">
-        <!-- Aparência -->
-        <div class="bg-white border border-gray-200 rounded-xl p-6">
-          <h3 class="text-xl font-bold text-gray-800 mb-4 flex items-center">
-            <i class="fas fa-palette mr-2 text-purple-500"></i>Aparência
-          </h3>
-          
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Tema</label>
-              <button onclick="closeModal(); setTimeout(openThemesModal, 100);" class="w-full bg-purple-500 text-white py-3 px-4 rounded-lg hover:bg-purple-600 transition-colors">
-                <i class="fas fa-paint-brush mr-2"></i>Escolher Tema
-              </button>
+  const currentTheme = localStorage.getItem('flow_browser_theme') || 'default';
+  const currentThemeMode = localStorage.getItem('flow_browser_theme_mode') || 'system';
+  const currentWallpaper = localStorage.getItem('flow_browser_wallpaper') || '';
+
+  if (document.getElementById('settings-overlay')) return;
+  const overlay = document.createElement('div');
+  overlay.id = 'settings-overlay';
+  overlay.className = 'fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex justify-end opacity-0 pointer-events-none transition-opacity duration-300';
+  document.body.appendChild(overlay);
+
+  const sidebar = document.createElement('div');
+  sidebar.id = 'settings-sidebar';
+  sidebar.className = 'bbg-white dark:bg-neutral-900 dark:text-gray-100 w-[340px] max-w-full h-[85vh] rounded-l-2xl shadow-2xl transform translate-x-full transition-transform duration-300 ease-out fixed right-0 top-1/2 -translate-y-1/2 border-l border-gray-200 dark:border-neutral-800 overflow-y-auto';
+
+  sidebar.innerHTML = `
+    <div class="p-5 space-y-6">
+
+      <!-- Cabeçalho -->
+      <div class="flex items-center justify-between">
+        <h2 class="text-lg font-bold flex items-center gap-2">
+          <i class="fas fa-cog"></i>Configurações
+        </h2>
+        <button id="close-settings" class="text-gray-600 dark:text-gray-200">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+
+      <!-- Tema -->
+      <div>
+        <h3 class="text-sm font-semibold mb-2">Tema</h3>
+        <div class="flex gap-2">
+          <button id="theme-light" class="flex-1 py-2 rounded-lg border border-gray-200 dark:border-gray-700 text-sm">Claro</button>
+          <button id="theme-dark"  class="flex-1 py-2 rounded-lg border border-gray-200 dark:border-gray-700 text-sm">Escuro</button>
+          <button id="theme-system" class="flex-1 py-2 rounded-lg border border-gray-200 dark:border-gray-700 text-sm">Sistema</button>
+        </div>
+      </div>
+
+      <!-- Papel de Parede -->
+      <div>
+        <h3 class="text-sm font-semibold mb-2">Papel de Parede</h3>
+        <div class="flex items-end gap-3">
+          <div id="wallpaper-grid" class="grid grid-cols-3 gap-3 flex-1">
+            <div class="h-20 rounded-lg overflow-hidden bg-gray-200 dark:bg-neutral-700 cursor-pointer hover:opacity-80 transition-opacity" data-wallpaper="default1">
+              <img src="https://images.unsplash.com/photo-1503264116251-35a269479413?auto=format&fit=crop&w=400&q=60" class="w-full h-full object-cover" />
             </div>
-            
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Papel de Parede</label>
-              <button onclick="closeModal(); setTimeout(openWallpaperModal, 100);" class="w-full bg-green-500 text-white py-3 px-4 rounded-lg hover:bg-green-600 transition-colors">
-                <i class="fas fa-image mr-2"></i>Alterar Papel de Parede
-              </button>
+            <div class="h-20 rounded-lg overflow-hidden bg-gray-200 dark:bg-neutral-700 cursor-pointer hover:opacity-80 transition-opacity" data-wallpaper="default2">
+              <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=400&q=60" class="w-full h-full object-cover" />
+            </div>
+            <div id="custom-wallpaper-slot" class="relative h-20 rounded-lg overflow-hidden bg-gray-200 dark:bg-neutral-700 flex items-center justify-center text-xs text-gray-500 cursor-pointer hover:opacity-80 transition-opacity">
+              Personalizado
             </div>
           </div>
+
+          <!-- Botão de Upload refinado -->
+          <button id="upload-wallpaper-btn" 
+            title="Enviar imagem"
+            class="bg-white dark:bg-neutral-800 border border-gray-300 dark:border-gray-600 rounded-full p-2 shadow-sm hover:bg-gray-100 dark:hover:bg-neutral-700 transition-all flex items-center justify-center -translate-y-2">
+            <i class="fas fa-upload text-gray-600 dark:text-gray-300 text-sm"></i>
+          </button>
+          <input id="wallpaper-file-input" type="file" accept="image/*" class="hidden" />
         </div>
-        
-        <!-- Fontes -->
-        <div class="bg-white border border-gray-200 rounded-xl p-6">
-          <h3 class="text-xl font-bold text-gray-800 mb-4 flex items-center">
-            <i class="fas fa-font mr-2 text-orange-500"></i>Tipografia
-          </h3>
-          
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Família da Fonte</label>
-              <select id="font-family-select" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400">
-                <option value="Inter" ${currentFontFamily === 'Inter' ? 'selected' : ''}>Inter (Padrão)</option>
-                <option value="Arial" ${currentFontFamily === 'Arial' ? 'selected' : ''}>Arial</option>
-                <option value="Helvetica" ${currentFontFamily === 'Helvetica' ? 'selected' : ''}>Helvetica</option>
-                <option value="Georgia" ${currentFontFamily === 'Georgia' ? 'selected' : ''}>Georgia</option>
-                <option value="Times New Roman" ${currentFontFamily === 'Times New Roman' ? 'selected' : ''}>Times New Roman</option>
-                <option value="Courier New" ${currentFontFamily === 'Courier New' ? 'selected' : ''}>Courier New</option>
-                <option value="Roboto" ${currentFontFamily === 'Roboto' ? 'selected' : ''}>Roboto</option>
-              </select>
-            </div>
-            
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Tamanho da Fonte</label>
-              <input type="range" id="font-size-slider" min="12" max="24" value="${currentFontSize}" class="w-full" />
-              <div class="flex justify-between text-sm text-gray-500 mt-1">
-                <span>12px</span>
-                <span id="font-size-value" class="font-bold">${currentFontSize}px</span>
-                <span>24px</span>
-              </div>
-            </div>
-          </div>
-        </div>
-        
-        <!-- Privacidade -->
-        <div class="bg-white border border-gray-200 rounded-xl p-6">
-          <h3 class="text-xl font-bold text-gray-800 mb-4 flex items-center">
-            <i class="fas fa-shield-alt mr-2 text-red-500"></i>Privacidade e Dados
-          </h3>
-          
-          <div class="space-y-4">
-            <button onclick="clearAllData()" class="w-full bg-red-500 text-white py-3 px-4 rounded-lg hover:bg-red-600 transition-colors">
-              <i class="fas fa-trash mr-2"></i>Limpar Todos os Dados (Histórico, Favoritos, Notas)
+      </div>
+
+      <!-- Cores -->
+      <div>
+        <h3 class="text-sm font-semibold mb-3">Cores do Navegador</h3>
+        <div class="flex justify-center gap-3 flex-nowrap overflow-x-auto pb-2">
+          ${Object.entries(THEMES).map(([key, theme]) => `
+            <button
+              class="color-dot w-8 h-8 rounded-full shadow-sm border border-gray-200 dark:border-gray-700 transform transition-transform hover:scale-110"
+              data-theme="${key}"
+              title="${theme.name}"
+              style="background: ${theme.primary};">
             </button>
-            
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <button onclick="clearHistory(); closeModal();" class="bg-orange-500 text-white py-2 px-4 rounded-lg hover:bg-orange-600 transition-colors">
-                <i class="fas fa-history mr-2"></i>Limpar Histórico
-              </button>
-              
-              <button onclick="clearFavorites()" class="bg-yellow-500 text-white py-2 px-4 rounded-lg hover:bg-yellow-600 transition-colors">
-                <i class="fas fa-star mr-2"></i>Limpar Favoritos
-              </button>
-              
-              <button onclick="clearNotes()" class="bg-purple-500 text-white py-2 px-4 rounded-lg hover:bg-purple-600 transition-colors">
-                <i class="fas fa-sticky-note mr-2"></i>Limpar Notas
-              </button>
-            </div>
+          `).join('')}
+        </div>
+      </div>
+
+      <!-- Tipografia -->
+      <div>
+        <h3 class="text-sm font-semibold mb-2">Tipografia</h3>
+        <div class="space-y-3">
+          <div>
+            <label class="block text-xs mb-1">Família da Fonte</label>
+            <select id="font-family-select" class="w-full border dark:border-gray-700 rounded-lg px-3 py-2 bg-transparent text-sm">
+              <option value="Inter" ${currentFontFamily === 'Inter' ? 'selected' : ''}>Inter</option>
+              <option value="Arial" ${currentFontFamily === 'Arial' ? 'selected' : ''}>Arial</option>
+              <option value="Georgia" ${currentFontFamily === 'Georgia' ? 'selected' : ''}>Georgia</option>
+              <option value="Roboto" ${currentFontFamily === 'Roboto' ? 'selected' : ''}>Roboto</option>
+            </select>
+          </div>
+
+           <div>
+            <label class="block text-xs mb-1">Tamanho da Fonte: <span id="font-size-value">${currentFontSize}px</span></label>
+            <input type="range" id="font-size-slider" min="12" max="24" value="${currentFontSize}" class="w-full" />
           </div>
         </div>
-        
-        <!-- Ações -->
-        <div class="flex justify-end space-x-4">
-          <button onclick="closeModal()" class="bg-gray-500 text-white px-6 py-3 rounded-lg hover:bg-gray-600 transition-colors">
-            Cancelar
+      </div>
+
+      <!-- Privacidade e Dados -->
+      <div class="pt-4 border-t dark:border-gray-700 space-y-3">
+        <h3 class="text-sm font-semibold mb-3">Privacidade e Dados</h3>
+        <button id="clear-all-btn" class="w-full bg-red-500 text-white py-2 rounded-lg hover:bg-red-600 transition-colors">
+          Limpar Todos os Dados
+        </button>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
+          <button id="clear-history-btn" class="bg-orange-500 text-white py-2 rounded-lg hover:bg-orange-600 transition-colors text-sm">
+            Limpar Histórico
           </button>
-          <button onclick="applySettings()" class="bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600 transition-colors">
-            <i class="fas fa-save mr-2"></i>Aplicar Configurações
+          <button id="clear-favorites-btn" class="bg-yellow-500 text-white py-2 rounded-lg hover:bg-yellow-600 transition-colors text-sm">
+            Limpar Favoritos
+          </button>
+          <button id="clear-notes-btn" class="bg-purple-500 text-white py-2 rounded-lg hover:bg-purple-600 transition-colors text-sm">
+            Limpar Notas
           </button>
         </div>
       </div>
     </div>
   `;
-  
-  openModal(html);
-  setupSettingsModal();
-}
+  overlay.appendChild(sidebar);
 
-function setupSettingsModal() {
-  const fontSizeSlider = document.getElementById('font-size-slider');
-  const fontSizeValue = document.getElementById('font-size-value');
-  
-  if (fontSizeSlider && fontSizeValue) {
-    fontSizeSlider.oninput = () => {
-      fontSizeValue.textContent = fontSizeSlider.value + 'px';
-    };
-  }
-}
+  setTimeout(() => {
+    overlay.classList.remove('opacity-0', 'pointer-events-none');
+    sidebar.classList.remove('translate-x-full');
+  }, 10);
 
-function applySettings() {
-  const fontFamily = document.getElementById('font-family-select')?.value;
-  const fontSize = document.getElementById('font-size-slider')?.value;
-  
-  if (fontFamily) {
-    document.body.style.fontFamily = fontFamily;
-    localStorage.setItem('flow_browser_font_family', fontFamily);
-  }
-  
-  if (fontSize) {
-    document.body.style.fontSize = fontSize + 'px';
-    localStorage.setItem('flow_browser_font_size', fontSize);
-  }
-  
-  console.log('⚙️ Configurações aplicadas:', { fontFamily, fontSize });
-  closeModal();
-  
-  // Feedback
-  const toast = document.createElement('div');
-  toast.className = 'fixed top-20 right-4 bg-blue-500 text-white px-6 py-3 rounded-lg shadow-lg z-50';
-  toast.innerHTML = '<i class="fas fa-check mr-2"></i>Configurações salvas!';
-  document.body.appendChild(toast);
-  
-  setTimeout(() => toast.remove(), 3000);
-}
+  // --- Eventos ---
+  document.getElementById('close-settings').onclick = closeSettingsSidebar;
+  overlay.addEventListener('click', e => { if (e.target === overlay) closeSettingsSidebar(); });
 
-function clearAllData() {
-  if (confirm('⚠️ ATENÇÃO: Isso irá apagar TODOS os seus dados (histórico, favoritos, notas, configurações). Esta ação não pode ser desfeita. Continuar?')) {
-    localStorage.clear();
-    console.log('🗑️ Todos os dados limpos');
-    alert('Todos os dados foram limpos. A página será recarregada.');
-    window.location.reload();
-  }
-}
+  // Temas claros/escuros/sistema
+  document.getElementById('theme-light').onclick = () => applyThemeModeAndPersist('light');
+  document.getElementById('theme-dark').onclick = () => applyThemeModeAndPersist('dark');
+  document.getElementById('theme-system').onclick = () => applyThemeModeAndPersist('system');
 
-function clearFavorites() {
-  if (confirm('Tem certeza que deseja limpar todos os favoritos?')) {
-    localStorage.removeItem('flow_browser_favorites');
-    console.log('⭐ Favoritos limpos');
-  }
-}
-
-function clearNotes() {
-  if (confirm('Tem certeza que deseja limpar todas as notas?')) {
-    localStorage.removeItem(NOTES_STORAGE_KEY);
-    console.log('📝 Notas limpas');
-  }
-}
-
-// Theme Management Modal
-function openThemesModal() {
-  let themesHtml = "";
-  
-  for (const [key, theme] of Object.entries(THEMES)) {
-    const isActive = key === currentTheme ? "ring-4 ring-blue-500" : "";
-    themesHtml += `
-      <div class="theme-option ${isActive} cursor-pointer rounded-xl p-4 border-2 border-gray-200 hover:border-gray-300 transition-all" 
-           data-theme="${key}">
-        <div class="flex items-center space-x-3 mb-3">
-          <div class="w-8 h-8 rounded-full shadow-md" style="background: ${theme.primary}"></div>
-          <div class="w-6 h-6 rounded-full shadow-md" style="background: ${theme.secondary}"></div>
-          <div class="w-4 h-4 rounded-full shadow-md" style="background: ${theme.accent}"></div>
-          <span class="font-semibold text-gray-800">${theme.name}</span>
-        </div>
-        <div class="flex space-x-2">
-          <div class="w-16 h-10 rounded shadow-sm" style="background: ${theme.background}"></div>
-          <div class="w-16 h-10 rounded shadow-sm" style="background: ${theme.surface}"></div>
-          <div class="w-16 h-10 rounded shadow-sm" style="background: ${theme.text}"></div>
-        </div>
-        ${key === currentTheme ? '<div class="mt-2 text-blue-600 text-sm font-semibold"><i class="fas fa-check mr-1"></i>Tema Ativo</div>' : ''}
-      </div>
-    `;
-  }
-
-  const html = `
-    <div class="max-w-4xl">
-      <h2 class="text-3xl font-bold text-gray-800 mb-6 text-center">
-        <i class="fas fa-palette mr-3 text-purple-500"></i>Escolher Tema
-      </h2>
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
-        ${themesHtml}
-      </div>
-      <div class="text-center text-gray-600 bg-gray-50 p-4 rounded-xl">
-        <i class="fas fa-info-circle mr-2"></i>Clique em qualquer tema para aplicá-lo instantaneamente
-      </div>
-    </div>
-  `;
-  
-  openModal(html);
-  setupThemesModal();
-}
-
-function setupThemesModal() {
-  const themeOptions = document.querySelectorAll('.theme-option');
-  
-  themeOptions.forEach(option => {
-    option.addEventListener('click', () => {
-      const themeName = option.dataset.theme;
-      applyTheme(themeName);
-      
-      // Update active state
-      themeOptions.forEach(opt => {
-        opt.classList.remove('ring-4', 'ring-blue-500');
-        const activeIndicator = opt.querySelector('.text-blue-600');
-        if (activeIndicator) activeIndicator.remove();
-      });
-      
-      option.classList.add('ring-4', 'ring-blue-500');
-      option.innerHTML += '<div class="mt-2 text-blue-600 text-sm font-semibold"><i class="fas fa-check mr-1"></i>Tema Ativo</div>';
-      
-      // Close modal after a short delay
-      setTimeout(() => closeModal(), 800);
+  // Cores
+  document.querySelectorAll('.color-dot').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const themeKey = btn.dataset.theme;
+      if (typeof applyTheme === 'function') applyTheme(themeKey);
+      localStorage.setItem('flow_browser_theme', themeKey);
+      document.querySelectorAll('.color-dot').forEach(b => b.classList.remove('ring-2', 'ring-offset-1'));
+      btn.classList.add('ring-2', 'ring-offset-1');
     });
   });
+
+  // Tipografia
+  const fontSlider = document.getElementById('font-size-slider');
+  const fontSizeValue = document.getElementById('font-size-value');
+  const fontSelect = document.getElementById('font-family-select');
+  fontSlider.oninput = () => {
+    fontSizeValue.textContent = fontSlider.value + 'px';
+    document.body.style.fontSize = fontSlider.value + 'px';
+    localStorage.setItem('flow_browser_font_size', fontSlider.value);
+  };
+  fontSelect.onchange = () => {
+    document.body.style.fontFamily = fontSelect.value;
+    localStorage.setItem('flow_browser_font_family', fontSelect.value);
+  };
+
+  // Wallpaper
+  document.getElementById('upload-wallpaper-btn').onclick = () => document.getElementById('wallpaper-file-input').click();
+  document.getElementById('wallpaper-file-input').onchange = handleWallpaperFileInput;
+  document.querySelectorAll('#wallpaper-grid > div[data-wallpaper]').forEach(div => {
+    div.addEventListener('click', () => {
+      const key = div.dataset.wallpaper;
+      const img = div.querySelector('img').src;
+      setWallpaperFromDataURL(img);
+      localStorage.setItem('flow_browser_wallpaper', img);
+    });
+  });
+
+  // Limpar tudo + individuais
+  document.getElementById('clear-all-btn').onclick = () => {
+    if (typeof clearAllData === 'function') clearAllData();
+    else {
+      localStorage.clear();
+      location.reload();
+    }
+  };
+
+  document.getElementById('clear-all-btn').onclick = () => {
+  if (confirm("Tem certeza que deseja limpar tudo?")) {
+    if (typeof clearAllData === 'function') clearAllData();
+    else localStorage.clear();
+    location.reload();
+  }
+};
+
+  document.getElementById('clear-history-btn').onclick = () => {
+    if (typeof clearHistory === 'function') clearHistory();
+  };
+  document.getElementById('clear-favorites-btn').onclick = () => {
+    if (typeof clearFavorites === 'function') clearFavorites();
+  };
+  document.getElementById('clear-notes-btn').onclick = () => {
+    if (typeof clearNotes === 'function') clearNotes();
+  };
 }
+
+function closeSettingsSidebar() {
+  const overlay = document.getElementById('settings-overlay');
+  const sidebar = document.getElementById('settings-sidebar');
+  if (!overlay || !sidebar) return;
+  overlay.classList.add('opacity-0', 'pointer-events-none');
+  sidebar.classList.add('translate-x-full');
+  setTimeout(() => overlay.remove(), 300);
+}
+
+function applyThemeModeAndPersist(mode) {
+  localStorage.setItem('flow_browser_theme_mode', mode);
+  if (mode === 'light') {
+    if (THEMES.light) applyTheme('light');
+  } else if (mode === 'dark') {
+    if (THEMES.dark) applyTheme('dark');
+  } else {
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    applyTheme(prefersDark ? 'dark' : 'light');
+  }
+}
+
+function handleWallpaperFileInput(e) {
+  const file = e.target.files && e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(ev) {
+    const dataUrl = ev.target.result;
+    localStorage.setItem('flow_browser_wallpaper', dataUrl);
+    setWallpaperFromDataURL(dataUrl);
+    const customSlot = document.getElementById('custom-wallpaper-slot');
+    customSlot.innerHTML = `<img src="${dataUrl}" class="w-full h-full object-cover rounded-lg"/>`;
+  };
+  reader.readAsDataURL(file);
+  e.target.value = '';
+}
+
+function setWallpaperFromDataURL(dataUrl) {
+  document.body.style.backgroundImage = `url('${dataUrl}')`;
+  document.body.style.backgroundSize = 'cover';
+  document.body.style.backgroundPosition = 'center center';
+}
+
 
 // Reader Mode
 async function openReaderMode() {
@@ -2708,9 +2818,8 @@ function initializeEventListeners() {
   }
 
   // Profile button
-  if (btnProfile) {
-    btnProfile.onclick = openProfileModal;
-  }
+const btnProfile = document.getElementById('btn-profile');
+if (btnProfile) btnProfile.onclick = openProfileModal;
 
   // Input events
   if (inputUrl) {

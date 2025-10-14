@@ -39,7 +39,7 @@ function navegar(query) {
   urlBar.value = url;
 }
 
-// Shortcuts
+// Atalhos
 window.openURL = (url) => navegar(url);
 
 // Tema claro/escuro

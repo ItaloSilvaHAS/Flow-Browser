@@ -1,7 +1,7 @@
-/* Modern Flow Browser Styles with Theme System */
+/* Estilos Modernos de Navegador Flow com Sistema de Tema */
 
 :root {
-  /* Light Theme - Default */
+  /* Tema Claro - Padrão */
   --theme-primary: #667eea;
   --theme-secondary: #764ba2;
   --theme-background: #ffffff;
@@ -12,7 +12,7 @@
   --theme-accent: #3b82f6;
 }
 
-/* Dark Theme */
+/* Tema escuro */
 .theme-dark {
   --theme-primary: #818cf8;
   --theme-secondary: #a78bfa;
@@ -24,7 +24,7 @@
   --theme-accent: #6366f1;
 }
 
-/* Pink Theme */
+/* Tema rosa */
 .theme-pink {
   --theme-primary: #ec4899;
   --theme-secondary: #be185d;
@@ -36,7 +36,7 @@
   --theme-accent: #f472b6;
 }
 
-/* Purple Theme */
+/* Tema roxo */
 .theme-purple {
   --theme-primary: #8b5cf6;
   --theme-secondary: #7c3aed;
@@ -48,7 +48,7 @@
   --theme-accent: #a855f7;
 }
 
-/* Green Theme */
+/* Tema verde */
 .theme-green {
   --theme-primary: #10b981;
   --theme-secondary: #059669;
@@ -60,7 +60,7 @@
   --theme-accent: #22c55e;
 }
 
-/* Blue Theme */
+/* Tema azul */
 .theme-blue {
   --theme-primary: #3b82f6;
   --theme-secondary: #1d4ed8;
@@ -72,7 +72,7 @@
   --theme-accent: #60a5fa;
 }
 
-/* Orange Theme */
+/* Tema laranja */
 .theme-orange {
   --theme-primary: #f97316;
   --theme-secondary: #ea580c;
@@ -84,7 +84,7 @@
   --theme-accent: #fb923c;
 }
 
-/* Spacing and sizing */
+/* Espaçamento e dimensionamento */
 :root {
   --border-radius: 12px;
   --border-radius-lg: 16px;
@@ -93,7 +93,7 @@
   --shadow-lg: 0 8px 25px rgba(0, 0, 0, 0.2);
 }
 
-/* Reset and base styles */
+/* Estilos base e redefinição */
 * {
   box-sizing: border-box;
   transition: color 0.3s ease, background-color 0.3s ease, border-color 0.3s ease, 
@@ -113,7 +113,7 @@ body {
   text-rendering: optimizeLegibility;
 }
 
-/* Custom scrollbars with theme colors */
+/* Barras de rolagem personalizadas com cores do tema */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
@@ -142,14 +142,80 @@ body {
   scrollbar-width: none;
 }
 
-/* Header styles with theme */
+/* Estilos de Header com tema */
 header {
-  background: rgba(255, 255, 255, 0.95);
+  background: hsla(202, 52%, 76%, 0.95);
   backdrop-filter: blur(20px);
   border-bottom: 1px solid var(--theme-border);
   box-shadow: var(--shadow-sm);
   position: relative;
   z-index: 100;
+  padding: 0.5rem 1rem;
+  height: 40px; 
+
+}
+
+/* Botões de abas dentro do #tabs */
+#tabs button.tab {
+  padding: 0.25rem 0.75rem; 
+  font-size: 0.75rem;    
+  border-radius: 10px;   
+  border: 1px solid var(--theme-border);
+  background: var(--theme-surface);
+  color: var(--theme-text);
+  transition: all 0.2s ease;
+  white-space: nowrap;   
+}
+
+#tabs button.tab:hover {
+  background: var(--theme-background);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+#tabs button.tab.active {
+  background: var(--theme-primary);
+  color: #fff;
+  border-color: var(--theme-primary);
+}
+
+/* Botão de nova aba (+) transparente */
+#btn-new-tab {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  color: var(--theme-text);
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Circulo no hover */
+#btn-new-tab::before {
+  content: "";
+  position: absolute;
+  inset: 0; 
+  border-radius: 50%;
+  background: rgba(59, 130, 246, 0.25); 
+  transform: scale(0);
+  transition: transform 0.3s ease;
+  z-index: 0;
+}
+
+#btn-new-tab:hover::before {
+  transform: scale(1);
+}
+
+#btn-new-tab i {
+  position: relative;
+  z-index: 1;
 }
 
 .theme-dark header {
@@ -157,13 +223,15 @@ header {
   border-bottom-color: var(--theme-border);
 }
 
-/* Tab styles with theme colors */
+
+/* Estilos de abas com cores do tema */
 #tabs button {
   transition: all 0.2s ease;
   font-weight: 500;
   background: var(--theme-surface);
   border-color: var(--theme-border);
   color: var(--theme-text);
+
 }
 
 #tabs button:hover {
@@ -178,25 +246,97 @@ header {
   border-color: var(--theme-primary);
 }
 
-/* Address bar with theme */
+/* Barra de endereço com tema */
 .address-bar-container {
   background: var(--theme-background);
   backdrop-filter: blur(15px);
   border-bottom: 1px solid var(--theme-border);
   position: relative;
   z-index: 100;
+  height: 46px; 
+  padding:  0.5rem 0.75rem; 
+  display: flex;
+  align-items: center;
+  gap: 1rem; 
 }
 
-/* Input styles with theme */
+/* Botões da barra de endereços com efeito igual ao + */
+#btn-back,
+#btn-forward,
+#btn-reload,
+#btn-search,
+#btn-profile,
+#btn-menu {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent; 
+  border: none;
+  box-shadow: none;
+  color: var(--theme-text);
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Círculo no hover */
+#btn-back::before,
+#btn-forward::before,
+#btn-reload::before,
+#btn-search::before,
+#btn-profile::before,
+#btn-menu::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: rgba(59, 130, 246, 0.25); 
+  transform: scale(0);
+  transition: transform 0.3s ease;
+  z-index: 0;
+}
+
+#btn-back:hover::before,
+#btn-forward:hover::before,
+#btn-reload:hover::before,
+#btn-search:hover::before,
+#btn-profile:hover::before,
+#btn-menu:hover::before {
+  transform: scale(1);
+}
+
+/* Ícone acima do círculo */
+#btn-back i,
+#btn-forward i,
+#btn-reload i,
+#btn-search i,
+#btn-profile i,
+#btn-menu i {
+  position: relative;
+  z-index: 1;
+}
+
+
+/* Estilos de entrada com tema */
 #input-url {
   background: var(--theme-surface);
   border: 2px solid transparent;
   color: var(--theme-text);
   transition: all 0.3s ease;
+  height: 32px;
+  padding: 0 1rem;
+  font-size: 0.85rem;
+  border-radius: 9999px;
+  flex: 1;  
 }
 
 #input-url::placeholder {
   color: var(--theme-text-secondary);
+  font-size: 0.85rem;
 }
 
 #input-url:focus {
@@ -205,7 +345,6 @@ header {
   box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
 
-/* Button styles with theme */
 button {
   transition: all 0.2s ease;
   color: var(--theme-text);
@@ -221,7 +360,7 @@ button:active:not(:disabled) {
   transform: scale(0.98);
 }
 
-/* Favorites bar with theme */
+/* Barra de favoritos com tema */
 .favorites-bar {
   background: var(--theme-surface);
   backdrop-filter: blur(10px);
@@ -229,9 +368,14 @@ button:active:not(:disabled) {
   color: var(--theme-text-secondary);
   position: relative;
   z-index: 100;
+
+
+  height: 26px;
+  font-size: 0.75rem;
+  padding: 0 0.5rem;
 }
 
-/* Sidebar with theme */
+/* Barra lateral com tema */
 #sidebar {
   background: var(--theme-background);
   backdrop-filter: blur(20px);
@@ -279,8 +423,9 @@ button:active:not(:disabled) {
   background: linear-gradient(135deg, var(--theme-background), var(--theme-surface));
 }
 
-/* Home search with theme */
+/* Pesquisa doméstica com tema */
 #home-search {
+  border-radius: 9999px;
   background: var(--theme-background);
   backdrop-filter: blur(15px);
   border: 2px solid var(--theme-border);
@@ -299,7 +444,7 @@ button:active:not(:disabled) {
   transform: translateY(-2px);
 }
 
-/* Home icons with theme */
+/* Ícones da página inicial com tema */
 #home-icons a, #home-icons button {
   transition: all 0.3s ease;
   background: transparent !important;
@@ -324,7 +469,7 @@ button:active:not(:disabled) {
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
 }
 
-/* Wallpaper button with theme */
+/* Botão de papel de parede com tema */
 #btn-change-wallpaper {
   background: var(--theme-background);
   backdrop-filter: blur(15px);
@@ -340,7 +485,7 @@ button:active:not(:disabled) {
   color: var(--theme-primary);
 }
 
-/* Modal with theme */
+/* Modal com tema */
 #modal-overlay {
   backdrop-filter: blur(8px);
   background: rgba(0, 0, 0, 0.6);
@@ -365,7 +510,7 @@ button:active:not(:disabled) {
   }
 }
 
-/* Modal elements with theme */
+/* Elementos de modal com tema */
 .modal input, .modal textarea, .modal select {
   background: var(--theme-surface);
   border: 2px solid var(--theme-border);
@@ -384,7 +529,7 @@ button:active:not(:disabled) {
   background: var(--theme-background);
 }
 
-/* Theme option styles */
+/* Estilos de opções do tema ------------------------------------------------------------ */
 .theme-option {
   background: var(--theme-surface);
   border-color: var(--theme-border) !important;
@@ -397,7 +542,7 @@ button:active:not(:disabled) {
   box-shadow: var(--shadow-md);
 }
 
-/* Button styles in modals with theme */
+/* Estilos de botão em modais com tema */
 .modal button {
   font-weight: 600;
   transition: all 0.2s ease;
@@ -426,7 +571,7 @@ button:active:not(:disabled) {
   left: 100%;
 }
 
-/* Notes specific styles with theme */
+/* Observações estilos específicos com tema */
 .notes-scroll {
   background: var(--theme-surface);
   border-right: 1px solid var(--theme-border);
@@ -446,7 +591,7 @@ button:active:not(:disabled) {
   color: white !important;
 }
 
-/* Timer display with theme */
+/* Exibição do temporizador com tema */
 #timer-display {
   background: linear-gradient(135deg, var(--theme-primary), var(--theme-secondary));
   -webkit-background-clip: text;
@@ -455,7 +600,7 @@ button:active:not(:disabled) {
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-/* Chat messages with theme */
+/* Mensagens de chat com tema */
 #chat-messages {
   background: var(--theme-surface);
   border-color: var(--theme-border);
@@ -471,7 +616,7 @@ button:active:not(:disabled) {
   background: var(--theme-primary) !important;
 }
 
-/* Dark theme specific adjustments */
+/* Ajustes específicos para o tema escuro */
 .theme-dark {
   --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.3);
   --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
@@ -482,7 +627,7 @@ button:active:not(:disabled) {
   filter: brightness(0.4) contrast(1.2);
 }
 
-/* Responsive design */
+/* Designe responsivo */
 @media (max-width: 768px) {
   #sidebar {
     width: 50px;
@@ -504,13 +649,13 @@ button:active:not(:disabled) {
   }
 }
 
-/* Focus styles for accessibility */
+/* Estilos de foco para acessibilidade */
 button:focus, input:focus, textarea:focus {
   outline: 2px solid var(--theme-primary);
   outline-offset: 2px;
 }
 
-/* Disabled state */
+/* Estado desativado */
 button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
@@ -522,7 +667,7 @@ button:disabled:hover {
   color: var(--theme-text-secondary);
 }
 
-/* Loading animations */
+/* Animações de carregamento */
 .loading {
   animation: pulse 2s infinite;
 }
@@ -536,7 +681,7 @@ button:disabled:hover {
   }
 }
 
-/* Custom loading spinner */
+/* Carregador personalizado */
 .animate-spin {
   animation: spin 1s linear infinite;
 }
@@ -554,14 +699,14 @@ button:disabled:hover {
   }
 }
 
-/* Loading overlay */
+/* Sobreposição de carregamento */
 #loading-overlay {
   background: linear-gradient(135deg, rgba(255,255,255,0.95), rgba(248,250,252,0.95));
   backdrop-filter: blur(10px);
   transition: opacity 0.3s ease;
 }
 
-/* Wallpaper option improvements */
+/* Melhorias nas opções de papel de parede */
 .wallpaper-option {
   position: relative;
   overflow: hidden;
@@ -578,20 +723,20 @@ button:disabled:hover {
   filter: brightness(1.1);
 }
 
-/* Enhanced text contrast and legibility for all themes */
+/* Contraste de texto aprimorado e legibilidade para todos os temas */
 h1, h2, h3, h4, h5, h6 {
   font-weight: 700;
   letter-spacing: -0.025em;
   line-height: 1.2;
 }
 
-/* Text legibility improvements */
+/* Melhorias na legibilidade do texto */
 p, span, div, button, input, textarea {
   line-height: 1.5;
   letter-spacing: 0.01em;
 }
 
-/* Strong contrast for all text elements */
+/* Contraste forte para todos os elementos de texto */
 .theme-dark {
   --theme-text: #ffffff;
   --theme-text-secondary: #e2e8f0;
@@ -601,19 +746,19 @@ p, span, div, button, input, textarea {
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
 }
 
-/* Light theme better contrast */
+/* Tema claro com melhor contraste */
 :root {
   --theme-text: #111827;
   --theme-text-secondary: #374151;
 }
 
-/* Ensure button text is always high contrast */
+/* Garantir que o texto do botão tenha sempre alto contraste */
 button {
   font-weight: 600;
   letter-spacing: 0.025em;
 }
 
-/* Header and navigation text improvements */
+/* Melhorias no cabeçalho e na navegação */
 header, nav, .address-bar-container {
   font-weight: 600;
 }
@@ -624,7 +769,7 @@ header button, nav button {
   text-shadow: none;
 }
 
-/* Sidebar improvements */
+/* Melhorias na barra lateral */
 #sidebar span {
   font-weight: 700;
   font-size: 0.75rem;
@@ -632,7 +777,7 @@ header button, nav button {
   letter-spacing: 0.05em;
 }
 
-/* Input and search improvements */
+/* Melhorias na entrada e na busca */
 input, textarea {
   font-weight: 500;
   font-size: 14px;
@@ -643,7 +788,7 @@ input::placeholder, textarea::placeholder {
   opacity: 0.7;
 }
 
-/* Home page text improvements */
+/* Melhorias no texto da página inicial */
 #home-icons span {
   font-weight: 800;
   font-size: 1.125rem;
@@ -651,7 +796,7 @@ input::placeholder, textarea::placeholder {
   letter-spacing: 0.025em;
 }
 
-/* Better modal text contrast */
+/* Melhor contraste de texto do modal */
 #modal-content h2 {
   color: var(--theme-text) !important;
   font-weight: 700;
@@ -661,19 +806,19 @@ input::placeholder, textarea::placeholder {
   color: var(--theme-text) !important;
 }
 
-/* Ensure button text is always readable */
+/* Garanta que o texto do botão seja sempre legível */
 button {
   font-weight: 500;
 }
 
-/* Special styling for light text on dark backgrounds */
+/* Estilo especial para texto claro em fundos escuros */
 .bg-blue-500, .bg-green-500, .bg-red-500, .bg-yellow-500, 
 .bg-purple-500, .bg-indigo-500, .bg-pink-500, .bg-gray-500 {
   color: white !important;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
-/* Input and textarea improvements */
+/* Melhorias em campos de entrada e áreas de texto */
 input, textarea, select {
   color: var(--theme-text) !important;
   background: var(--theme-surface) !important;
@@ -684,33 +829,24 @@ input::placeholder, textarea::placeholder {
   opacity: 0.8;
 }
 
-/* Enhanced button hover effects */
+/* Efeitos aprimorados de hover para botões */
 button:hover:not(:disabled) {
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
-/* Wallpaper transition */
+/* Transição de papel de parede */
 #home-bg {
   transition: all 0.7s ease;
 }
 
-/* Profile modal animations */
-.profile-button {
-  transition: all 0.2s ease;
-}
 
-.profile-button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
-}
-
-/* Enhanced theme transitions */
+/* Transições de tema aprimoradas */
 * {
   transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
 }
 
-/* Dropdown Menu Styles */
+/* Estilos do Menu Dropdown */
 #dropdown-menu {
   animation: dropdownSlideIn 0.2s ease-out;
   max-height: 80vh;
@@ -751,13 +887,13 @@ button:hover:not(:disabled) {
   background: #a8a8a8;
 }
 
-/* Dropdown button hover effects */
+/* Efeitos de passar o mouse no botão de dropdown */
 #dropdown-menu button:hover {
   background-color: var(--theme-surface) !important;
   transform: translateX(2px);
 }
 
-/* Zoom controls */
+/* Controles de zoom */
 #zoom-out, #zoom-in, #zoom-reset {
   transition: all 0.2s ease;
 }
@@ -767,7 +903,7 @@ button:hover:not(:disabled) {
   transform: scale(1.1);
 }
 
-/* Theme integration for dropdown */
+/* Integração de tema para dropdown */
 .theme-dark #dropdown-menu {
   background: var(--theme-surface);
   border-color: var(--theme-border);
