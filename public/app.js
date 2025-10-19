@@ -1559,6 +1559,46 @@ function openMoreToolsModal() {
       from: "#14b8a6",
       to: "#06b6d4",
     },
+    {
+      id: "btn-verb-conjugator",
+      icon: "fa-language",
+      title: "Conjugador de Verbos",
+      desc: "Português e Inglês",
+      from: "#ec4899",
+      to: "#be185d",
+    },
+    {
+      id: "btn-scientific-calc",
+      icon: "fa-calculator",
+      title: "Calculadora Científica",
+      desc: "Funções trigonométricas",
+      from: "#2563eb",
+      to: "#1d4ed8",
+    },
+    {
+      id: "btn-flashcards",
+      icon: "fa-lightbulb",
+      title: "Flashcards Inteligentes",
+      desc: "Memorização ativa",
+      from: "#f59e0b",
+      to: "#d97706",
+    },
+    {
+      id: "btn-periodic-table",
+      icon: "fa-atom",
+      title: "Tabela Periódica",
+      desc: "Elementos químicos",
+      from: "#10b981",
+      to: "#059669",
+    },
+    {
+      id: "btn-mind-map",
+      icon: "fa-project-diagram",
+      title: "Mapa Mental",
+      desc: "Organize suas ideias",
+      from: "#8b5cf6",
+      to: "#7c3aed",
+    },
   ];
 
   const buttonsHtml = tools
@@ -1625,6 +1665,12 @@ function setupMoreToolsModal() {
   const btnUnitConverter = document.getElementById("btn-unit-converter");
   const btnMarkdownEditor = document.getElementById("btn-markdown-editor");
   const btnJsonFormatter = document.getElementById("btn-json-formatter");
+  
+  const btnVerbConjugator = document.getElementById("btn-verb-conjugator");
+  const btnScientificCalc = document.getElementById("btn-scientific-calc");
+  const btnFlashcards = document.getElementById("btn-flashcards");
+  const btnPeriodicTable = document.getElementById("btn-periodic-table");
+  const btnMindMap = document.getElementById("btn-mind-map");
 
   if (btnImageConverter) {
     btnImageConverter.onclick = () => {
@@ -1703,6 +1749,46 @@ function setupMoreToolsModal() {
       document.getElementById("more-tools-modal")?.remove();
       closeModal();
       setTimeout(openJSONFormatterModal, 100);
+    };
+  }
+  
+  if (btnVerbConjugator) {
+    btnVerbConjugator.onclick = () => {
+      document.getElementById("more-tools-modal")?.remove();
+      closeModal();
+      setTimeout(openVerbConjugatorModal, 100);
+    };
+  }
+  
+  if (btnScientificCalc) {
+    btnScientificCalc.onclick = () => {
+      document.getElementById("more-tools-modal")?.remove();
+      closeModal();
+      setTimeout(openScientificCalculatorModal, 100);
+    };
+  }
+  
+  if (btnFlashcards) {
+    btnFlashcards.onclick = () => {
+      document.getElementById("more-tools-modal")?.remove();
+      closeModal();
+      setTimeout(openFlashcardsModal, 100);
+    };
+  }
+  
+  if (btnPeriodicTable) {
+    btnPeriodicTable.onclick = () => {
+      document.getElementById("more-tools-modal")?.remove();
+      closeModal();
+      setTimeout(openPeriodicTableModal, 100);
+    };
+  }
+  
+  if (btnMindMap) {
+    btnMindMap.onclick = () => {
+      document.getElementById("more-tools-modal")?.remove();
+      closeModal();
+      setTimeout(openMindMapModal, 100);
     };
   }
 }

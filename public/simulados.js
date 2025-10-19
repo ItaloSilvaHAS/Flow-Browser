@@ -2,19 +2,95 @@
 
 // Função para abrir o modal do Gerador de Simulados
 async function openSimuladosModal() {
-  // Mostrar loading
+  // Mostrar interface de seleção de categoria
+  if (typeof openModal === 'function') {
+    openModal(getCategorySelectionHTML());
+  }
+}
+
+// Interface minimalista de seleção de categoria
+function getCategorySelectionHTML() {
+  return `
+    <div class="max-w-4xl mx-auto">
+      <div class="text-center mb-8">
+        <h2 class="text-3xl font-bold text-gray-800 mb-3">
+          <i class="fas fa-graduation-cap mr-3 text-blue-500"></i>
+          Gerador de Simulados
+        </h2>
+        <p class="text-gray-600">Escolha o tipo de simulado que deseja fazer</p>
+      </div>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-3xl mx-auto">
+        <!-- ENEM -->
+        <button onclick="startSimulado('ENEM')" 
+                class="group bg-gradient-to-br from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all transform hover:scale-105">
+          <div class="text-center">
+            <i class="fas fa-book-open text-5xl mb-4 group-hover:scale-110 transition-transform"></i>
+            <h3 class="text-2xl font-bold mb-2">ENEM</h3>
+            <p class="text-blue-100 text-sm">Exame Nacional do Ensino Médio</p>
+          </div>
+        </button>
+        
+        <!-- ETEC -->
+        <button onclick="startSimulado('ETEC')" 
+                class="group bg-gradient-to-br from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all transform hover:scale-105">
+          <div class="text-center">
+            <i class="fas fa-laptop-code text-5xl mb-4 group-hover:scale-110 transition-transform"></i>
+            <h3 class="text-2xl font-bold mb-2">ETEC</h3>
+            <p class="text-purple-100 text-sm">Escola Técnica Estadual</p>
+          </div>
+        </button>
+        
+        <!-- FATEC -->
+        <button onclick="startSimulado('FATEC')" 
+                class="group bg-gradient-to-br from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all transform hover:scale-105">
+          <div class="text-center">
+            <i class="fas fa-university text-5xl mb-4 group-hover:scale-110 transition-transform"></i>
+            <h3 class="text-2xl font-bold mb-2">FATEC</h3>
+            <p class="text-green-100 text-sm">Faculdade de Tecnologia</p>
+          </div>
+        </button>
+        
+        <!-- Vestibulinho -->
+        <button onclick="startSimulado('VESTIBULINHO')" 
+                class="group bg-gradient-to-br from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all transform hover:scale-105">
+          <div class="text-center">
+            <i class="fas fa-pen-fancy text-5xl mb-4 group-hover:scale-110 transition-transform"></i>
+            <h3 class="text-2xl font-bold mb-2">Vestibulinho</h3>
+            <p class="text-orange-100 text-sm">Vestibular de Ensino Médio</p>
+          </div>
+        </button>
+        
+        <!-- Todos -->
+        <button onclick="startSimulado('TODOS')" 
+                class="group md:col-span-2 bg-gradient-to-br from-gray-700 to-gray-800 hover:from-gray-800 hover:to-gray-900 text-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all transform hover:scale-105">
+          <div class="text-center">
+            <i class="fas fa-layer-group text-4xl mb-3 group-hover:scale-110 transition-transform"></i>
+            <h3 class="text-xl font-bold mb-2">Simulado Completo</h3>
+            <p class="text-gray-300 text-sm">Todas as questões disponíveis</p>
+          </div>
+        </button>
+      </div>
+    </div>
+  `;
+}
+
+// Iniciar simulado com categoria selecionada
+async function startSimulado(categoria) {
+  console.log(`📚 Iniciando simulado: ${categoria}`);
+  
   if (typeof openModal === 'function') {
     openModal(`
       <div class="flex items-center justify-center h-64">
         <div class="text-center">
           <i class="fas fa-spinner fa-spin text-4xl text-blue-500 mb-4"></i>
-          <p class="text-gray-600">Carregando questões do simulado...</p>
+          <p class="text-gray-600">Carregando questões de ${categoria}...</p>
         </div>
       </div>
     `);
   }
   
-  const questoes = await obterQuestoesDoSupabase();
+  const questoes = await obterQuestoesDoSupabase(categoria);
   
   if (questoes.length === 0) {
     if (typeof openModal === 'function') {
@@ -22,7 +98,10 @@ async function openSimuladosModal() {
         <div class="text-center">
           <i class="fas fa-exclamation-triangle text-5xl text-yellow-500 mb-4"></i>
           <h2 class="text-2xl font-bold text-gray-800 mb-4">Nenhuma questão encontrada</h2>
-          <p class="text-gray-600">Não há questões cadastradas no banco de dados.</p>
+          <p class="text-gray-600 mb-6">Não há questões de ${categoria} cadastradas no banco de dados.</p>
+          <button onclick="openSimuladosModal()" class="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600">
+            <i class="fas fa-arrow-left mr-2"></i>Voltar
+          </button>
         </div>
       `);
     }
@@ -33,7 +112,7 @@ async function openSimuladosModal() {
     <div class="max-w-5xl mx-auto h-full flex flex-col">
       <div class="flex justify-between items-center mb-6">
         <h2 class="text-2xl font-bold text-gray-800">
-          <i class="fas fa-graduation-cap mr-2 text-blue-500"></i>Gerador de Simulados
+          <i class="fas fa-graduation-cap mr-2 text-blue-500"></i>${categoria}
           <span class="text-sm text-gray-500 ml-2">(${questoes.length} questões)</span>
         </h2>
         <div class="flex items-center gap-4">
@@ -54,32 +133,39 @@ async function openSimuladosModal() {
   
   if (typeof openModal === 'function') {
     openModal(html);
-    iniciarTimer(30 * 60); // 30 minutos em segundos
+    iniciarTimer(30 * 60);
     setupSimulado(questoes);
   }
 }
 
-// Função para obter questões do Supabase
-async function obterQuestoesDoSupabase() {
+// Função para obter questões do Supabase com filtro por categoria
+async function obterQuestoesDoSupabase(categoria = 'TODOS') {
   try {
-    // Verificar se o supabaseClient está disponível (do auth.js)
     if (typeof supabaseClient === 'undefined' || !supabaseClient) {
       console.error('❌ Supabase não inicializado');
       alert('Erro: Supabase não inicializado. Verifique a conexão.');
       return [];
     }
 
-    console.log('🔍 Buscando questões da tabela Simulados...');
+    console.log(`🔍 Buscando questões de ${categoria}...`);
     
-    // Tentar buscar da tabela Simulados (com S maiúsculo)
-    let { data, error } = await supabaseClient
-      .from('Simulados')
-      .select('*');
+    let query = supabaseClient.from('Simulados').select('*');
+    
+    // Filtrar por banca se não for TODOS
+    if (categoria !== 'TODOS') {
+      query = query.ilike('Banca', `%${categoria}%`);
+    }
+    
+    let { data, error } = await query;
 
-    // Se der erro, tentar com s minúsculo
+    // Tentar com tabela minúscula se der erro
     if (error) {
       console.log('⚠️ Tentando tabela "simulados" (minúsculo)...');
-      const result = await supabaseClient.from('simulados').select('*');
+      query = supabaseClient.from('simulados').select('*');
+      if (categoria !== 'TODOS') {
+        query = query.ilike('Banca', `%${categoria}%`);
+      }
+      const result = await query;
       data = result.data;
       error = result.error;
     }
@@ -93,13 +179,12 @@ async function obterQuestoesDoSupabase() {
     console.log('📊 Dados retornados:', data);
 
     if (!data || data.length === 0) {
-      console.log('⚠️ A tabela existe mas está vazia');
+      console.log(`⚠️ Nenhuma questão encontrada para ${categoria}`);
       return [];
     }
 
     // Converter dados do Supabase para o formato esperado
     const questoes = data.map(q => {
-      // Montar array de alternativas (R1, R2, R3, R4, R5)
       const alternativas = [];
       if (q.R1) alternativas.push(q.R1);
       if (q.R2) alternativas.push(q.R2);
@@ -107,9 +192,8 @@ async function obterQuestoesDoSupabase() {
       if (q.R4) alternativas.push(q.R4);
       if (q.R5) alternativas.push(q.R5);
 
-      // Converter gabarito (A, B, C, D, E) para índice (0, 1, 2, 3, 4)
       const gabarito = q.Gabarito ? q.Gabarito.toUpperCase() : 'A';
-      const respostaCorreta = gabarito.charCodeAt(0) - 65; // 'A' = 65, então 'A' = 0, 'B' = 1, etc.
+      const respostaCorreta = gabarito.charCodeAt(0) - 65;
 
       return {
         id: q.id,
@@ -121,7 +205,7 @@ async function obterQuestoesDoSupabase() {
       };
     });
 
-    console.log(`✅ ${questoes.length} questões carregadas do Supabase`);
+    console.log(`✅ ${questoes.length} questões carregadas`);
     return questoes;
 
   } catch (error) {
@@ -162,140 +246,107 @@ function iniciarTimer(segundos) {
   let tempoRestante = segundos;
   const timerText = document.getElementById('timer-text');
   
-  const intervalo = setInterval(() => {
+  if (!timerText) return;
+  
+  const interval = setInterval(() => {
     tempoRestante--;
     
     const minutos = Math.floor(tempoRestante / 60);
-    const segs = tempoRestante % 60;
+    const segundosRestantes = tempoRestante % 60;
     
-    timerText.textContent = `${minutos.toString().padStart(2, '0')}:${segs.toString().padStart(2, '0')}`;
+    timerText.textContent = `${String(minutos).padStart(2, '0')}:${String(segundosRestantes).padStart(2, '0')}`;
     
-    // Mudar cor quando faltar menos de 5 minutos
-    if (tempoRestante < 300) {
-      timerText.parentElement.className = 'text-xl font-bold text-red-600 animate-pulse';
+    if (tempoRestante <= 300) {
+      timerText.classList.add('animate-pulse');
     }
     
-    // Tempo esgotado
     if (tempoRestante <= 0) {
-      clearInterval(intervalo);
-      finalizarSimulado(true, window.questoesAtivas);
+      clearInterval(interval);
+      alert('⏰ Tempo esgotado!');
+      finalizarSimulado();
     }
   }, 1000);
   
-  // Salvar o intervalo para poder limpar depois
-  window.simuladoInterval = intervalo;
+  window.simuladoTimer = interval;
 }
 
-// Função para configurar o simulado
+// Configurar eventos do simulado
 function setupSimulado(questoes) {
   const btnFinalizar = document.getElementById('btn-finalizar-simulado');
   
   if (btnFinalizar) {
-    btnFinalizar.onclick = () => finalizarSimulado(false, questoes);
+    btnFinalizar.addEventListener('click', () => finalizarSimulado(questoes));
   }
-  
-  // Salvar referência das questões para uso no timer
-  window.questoesAtivas = questoes;
 }
 
-// Função para finalizar o simulado
-function finalizarSimulado(tempoEsgotado, questoes) {
-  // Limpar o timer
-  if (window.simuladoInterval) {
-    clearInterval(window.simuladoInterval);
+// Finalizar simulado e mostrar resultado
+function finalizarSimulado(questoes) {
+  if (window.simuladoTimer) {
+    clearInterval(window.simuladoTimer);
   }
   
-  // Se questões não foram passadas, usar as salvas
-  if (!questoes) {
-    questoes = window.questoesAtivas || [];
+  if (!questoes || questoes.length === 0) {
+    alert('Simulado finalizado!');
+    return;
   }
   
   let acertos = 0;
-  const respostas = [];
+  let respondidas = 0;
   
   questoes.forEach(questao => {
-    const respostaSelecionada = document.querySelector(`input[name="questao-${questao.id}"]:checked`);
-    const resposta = respostaSelecionada ? parseInt(respostaSelecionada.value) : -1;
+    const resposta = document.querySelector(`input[name="questao-${questao.id}"]:checked`);
     
-    respostas.push({
-      questao: questao.enunciado,
-      respostaUsuario: resposta,
-      respostaCorreta: questao.respostaCorreta,
-      correto: resposta === questao.respostaCorreta
-    });
-    
-    if (resposta === questao.respostaCorreta) {
-      acertos++;
+    if (resposta) {
+      respondidas++;
+      if (parseInt(resposta.value) === questao.respostaCorreta) {
+        acertos++;
+      }
     }
   });
   
-  const percentual = ((acertos / questoes.length) * 100).toFixed(1);
+  const percentual = respondidas > 0 ? ((acertos / respondidas) * 100).toFixed(1) : 0;
   
-  mostrarResultado(acertos, questoes.length, percentual, respostas, tempoEsgotado);
-}
-
-// Função para mostrar o resultado
-function mostrarResultado(acertos, total, percentual, respostas, tempoEsgotado) {
-  const status = percentual >= 70 ? 'Aprovado' : 'Reprovado';
-  const statusColor = percentual >= 70 ? 'text-green-600' : 'text-red-600';
-  const statusIcon = percentual >= 70 ? 'fa-check-circle' : 'fa-times-circle';
-  
-  const html = `
-    <div class="max-w-4xl mx-auto">
-      <h2 class="text-3xl font-bold text-center mb-6">
-        <i class="fas ${statusIcon} mr-2 ${statusColor}"></i>
-        <span class="${statusColor}">${status}!</span>
-      </h2>
+  const resultado = `
+    <div class="text-center max-w-2xl mx-auto">
+      <div class="mb-6">
+        <i class="fas fa-trophy text-7xl ${percentual >= 70 ? 'text-yellow-500' : percentual >= 50 ? 'text-gray-400' : 'text-orange-500'} mb-4"></i>
+      </div>
       
-      ${tempoEsgotado ? '<p class="text-center text-red-600 font-semibold mb-4"><i class="fas fa-exclamation-triangle mr-2"></i>Tempo esgotado!</p>' : ''}
+      <h2 class="text-3xl font-bold text-gray-800 mb-6">Resultado do Simulado</h2>
       
-      <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
-        <div class="grid grid-cols-3 gap-4 text-center">
-          <div>
-            <p class="text-3xl font-bold text-blue-600">${acertos}/${total}</p>
-            <p class="text-gray-600">Acertos</p>
-          </div>
-          <div>
-            <p class="text-3xl font-bold ${statusColor}">${percentual}%</p>
-            <p class="text-gray-600">Percentual</p>
-          </div>
-          <div>
-            <p class="text-3xl font-bold text-gray-600">${total - acertos}</p>
-            <p class="text-gray-600">Erros</p>
-          </div>
+      <div class="grid grid-cols-3 gap-4 mb-8">
+        <div class="bg-blue-50 rounded-lg p-4">
+          <div class="text-3xl font-bold text-blue-600">${respondidas}</div>
+          <div class="text-sm text-gray-600">Respondidas</div>
+        </div>
+        
+        <div class="bg-green-50 rounded-lg p-4">
+          <div class="text-3xl font-bold text-green-600">${acertos}</div>
+          <div class="text-sm text-gray-600">Acertos</div>
+        </div>
+        
+        <div class="bg-purple-50 rounded-lg p-4">
+          <div class="text-3xl font-bold text-purple-600">${percentual}%</div>
+          <div class="text-sm text-gray-600">Aproveitamento</div>
         </div>
       </div>
       
-      <h3 class="text-xl font-bold mb-4">Gabarito:</h3>
-      <div class="space-y-3 max-h-96 overflow-y-auto">
-        ${respostas.map((r, i) => `
-          <div class="bg-white rounded-lg p-4 ${r.correto ? 'border-l-4 border-green-500' : 'border-l-4 border-red-500'}">
-            <p class="font-semibold mb-2">${i + 1}. ${r.questao}</p>
-            <div class="text-sm">
-              ${r.respostaUsuario === -1 ? 
-                '<p class="text-gray-500">Não respondida</p>' : 
-                `<p class="${r.correto ? 'text-green-600' : 'text-red-600'}">Sua resposta: ${String.fromCharCode(65 + r.respostaUsuario)}</p>`
-              }
-              ${!r.correto ? `<p class="text-green-600">Resposta correta: ${String.fromCharCode(65 + r.respostaCorreta)}</p>` : ''}
-            </div>
-          </div>
-        `).join('')}
+      <div class="text-gray-600 mb-6">
+        ${percentual >= 70 ? '🎉 Parabéns! Excelente desempenho!' : 
+          percentual >= 50 ? '👍 Bom trabalho! Continue estudando!' : 
+          '💪 Continue se esforçando! A prática leva à perfeição!'}
       </div>
       
-      <div class="mt-6 flex gap-3">
-        <button onclick="closeModal()" class="flex-1 bg-blue-500 text-white py-3 rounded-lg hover:bg-blue-600">
-          <i class="fas fa-home mr-2"></i>Voltar
-        </button>
-        <button onclick="closeModal(); setTimeout(openSimuladosModal, 100);" class="flex-1 bg-green-500 text-white py-3 rounded-lg hover:bg-green-600">
-          <i class="fas fa-redo mr-2"></i>Novo Simulado
-        </button>
-      </div>
+      <button onclick="openSimuladosModal()" class="bg-blue-500 text-white px-8 py-3 rounded-lg hover:bg-blue-600 text-lg">
+        <i class="fas fa-redo mr-2"></i>Fazer Outro Simulado
+      </button>
     </div>
   `;
   
   if (typeof openModal === 'function') {
-    openModal(html);
+    openModal(resultado);
   }
 }
 
-console.log('✅ Gerador de Simulados carregado com sucesso!');
+// Expor funções globalmente
+window.startSimulado = startSimulado;
