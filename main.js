@@ -1,4 +1,4 @@
-const { app, BrowserWindow, session } = require('electron');
+const { app, BrowserWindow, session, Menu } = require('electron'); // <- adicionado Menu
 const path = require('path');
 
 function createWindow() {
@@ -18,8 +18,9 @@ function createWindow() {
     }
   });
 
-  // Remove completamente o menu
+  // Esconde e bloqueia o menu (mesmo ao pressionar ALT)
   win.setMenuBarVisibility(false);
+  Menu.setApplicationMenu(null); // <-- aqui está o truque final
 
   // Bloqueador de anúncios simples (domínios comuns)
   const adBlockList = ["doubleclick.net", "googlesyndication.com", "adnxs.com", "popads.net"];

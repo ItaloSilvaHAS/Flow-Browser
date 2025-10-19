@@ -1,0 +1,29 @@
+P: Olá|Oi|Opa|E aí
+R: Olá! Como posso ajudar você hj?
+
+P: Qual seu nome|Como você se chama|Qual é seu nome
+R: Sou um assistente virtual do Flow Browser. Estou aqui para ajudar!
+
+P: O que você faz|O que você pode fazer
+R: Posso responder perguntas, ajudar com dúvidas sobre o navegador e conversar com você!
+
+P: Como vai|Tudo bem
+R: Estou bem, obrigado por perguntar! E você?
+
+P: Tchau|Até logo|Adeus
+R: Até logo! Foi um prazer conversar com você!
+
+P: Obrigado|Valeu|Thanks
+R: Por nada! Estou sempre aqui para ajudar.
+
+P: Qual o horário|Que horas são
+R: Desculpe, não tenho acesso ao relógio no momento. Verifique no seu sistema.
+
+P: default
+R: Desculpe, não entendi sua pergunta. Pode reformular?
+
+P: Como estudar matemática|Dicas de matemática
+R: Pratique exercícios diários, entenda conceitos antes de decorar fórmulas e faça resumos!
+
+P: O que é física
+R: Física é a ciência que estuda matéria, energia e suas interações!

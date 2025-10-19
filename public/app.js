@@ -1415,82 +1415,40 @@ function setupChatGPT() {
       const typingBubble = appendMessage("", false, true);
 
       try {
-        console.log("🤖 Enviando pergunta para GPT:", question);
+        console.log("🤖 Pergunta para IA local:", question);
 
-        const response = await fetch(
-          "https://api.openai.com/v1/chat/completions",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${CHATGPT_API_KEY}`,
-            },
-            body: JSON.stringify({
-              model: "gpt-3.5-turbo",
-              messages: [
-                {
-                  role: "system",
-                  content:
-                    "Você é um assistente de estudos inteligente. Responda de forma clara, didática e útil. Use formatação markdown quando apropriado. Seja conciso mas completo.",
-                },
-                {
-                  role: "user",
-                  content: question,
-                },
-              ],
-              max_tokens: 1000,
-              temperature: 0.7,
-            }),
-          },
-        );
+        // Simular delay de digitação
+        await new Promise(resolve => setTimeout(resolve, 500 + Math.random() * 1000));
+
+        // Usar IA local
+        const resposta = buscarResposta(question);
 
         // Remove typing indicator
         typingBubble.parentElement.remove();
 
-        if (!response.ok) {
-          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-        }
-
-        const data = await response.json();
-        const answer =
-          data.choices?.[0]?.message?.content ||
-          "Desculpe, não consegui gerar uma resposta.";
-
-        console.log("✅ Resposta recebida do GPT");
-        appendMessage(answer, false);
+        console.log("✅ Resposta da IA local");
+        appendMessage(resposta, false);
 
         // Update API status
         if (apiStatus) {
           apiStatus.innerHTML = `
             <div class="w-3 h-3 bg-green-500 rounded-full mr-2"></div>
-            <span class="text-green-600 font-medium">✓ Funcionando</span>
+            <span class="text-green-600 font-medium">✓ IA Local Ativa</span>
           `;
         }
       } catch (error) {
-        console.error("❌ Erro na API do ChatGPT:", error);
+        console.error("❌ Erro na IA:", error);
 
         // Remove typing indicator
         typingBubble.parentElement.remove();
 
-        let errorMessage = "Erro na comunicação com a IA. ";
-        if (error.message.includes("401")) {
-          errorMessage += "Verifique sua chave da API.";
-        } else if (error.message.includes("429")) {
-          errorMessage +=
-            "Muitas solicitações. Tente novamente em alguns segundos.";
-        } else if (error.message.includes("network")) {
-          errorMessage += "Verifique sua conexão com a internet.";
-        } else {
-          errorMessage += "Tente novamente em alguns momentos.";
-        }
-
-        appendMessage(errorMessage, false);
+        appendMessage("Desculpe, houve um erro ao processar sua mensagem.", false);
 
         // Update API status
         if (apiStatus) {
           apiStatus.innerHTML = `
             <div class="w-3 h-3 bg-red-500 rounded-full mr-2"></div>
-            <span class="text-red-600 font-medium">Erro na conexão</span>
+            <span class="text-red-600 font-medium">Erro</span>
           `;
         }
       } finally {
@@ -1568,6 +1526,14 @@ function openMoreToolsModal() {
       desc: "Crie senhas seguras",
       from: "#ef4444",
       to: "#ec4899",
+    },
+    {
+      id: "btn-simulados",
+      icon: "fa-graduation-cap",
+      title: "Gerador de Simulados",
+      desc: "Pratique com questões e timer",
+      from: "#0ea5e9",
+      to: "#3b82f6",
     },
     {
       id: "btn-unit-converter",
@@ -1655,12 +1621,14 @@ function setupMoreToolsModal() {
   const btnPasswordGenerator = document.getElementById(
     "btn-password-generator",
   );
+  const btnSimulados = document.getElementById("btn-simulados");
   const btnUnitConverter = document.getElementById("btn-unit-converter");
   const btnMarkdownEditor = document.getElementById("btn-markdown-editor");
   const btnJsonFormatter = document.getElementById("btn-json-formatter");
 
   if (btnImageConverter) {
     btnImageConverter.onclick = () => {
+      document.getElementById("more-tools-modal")?.remove();
       closeModal();
       setTimeout(openImageConverterModal, 100);
     };
@@ -1668,6 +1636,7 @@ function setupMoreToolsModal() {
 
   if (btnCalculator) {
     btnCalculator.onclick = () => {
+      document.getElementById("more-tools-modal")?.remove();
       closeModal();
       setTimeout(openCalculatorModal, 100);
     };
@@ -1675,6 +1644,7 @@ function setupMoreToolsModal() {
 
   if (btnColorPicker) {
     btnColorPicker.onclick = () => {
+      document.getElementById("more-tools-modal")?.remove();
       closeModal();
       setTimeout(openColorPickerModal, 100);
     };
@@ -1682,6 +1652,7 @@ function setupMoreToolsModal() {
 
   if (btnTextTools) {
     btnTextTools.onclick = () => {
+      document.getElementById("more-tools-modal")?.remove();
       closeModal();
       setTimeout(openTextToolsModal, 100);
     };
@@ -1689,6 +1660,7 @@ function setupMoreToolsModal() {
 
   if (btnQrGenerator) {
     btnQrGenerator.onclick = () => {
+      document.getElementById("more-tools-modal")?.remove();
       closeModal();
       setTimeout(openQRGeneratorModal, 100);
     };
@@ -1696,13 +1668,23 @@ function setupMoreToolsModal() {
 
   if (btnPasswordGenerator) {
     btnPasswordGenerator.onclick = () => {
+      document.getElementById("more-tools-modal")?.remove();
       closeModal();
       setTimeout(openPasswordGeneratorModal, 100);
     };
   }
 
+  if (btnSimulados) {
+    btnSimulados.onclick = () => {
+      document.getElementById("more-tools-modal")?.remove();
+      closeModal();
+      setTimeout(openSimuladosModal, 100);
+    };
+  }
+
   if (btnUnitConverter) {
     btnUnitConverter.onclick = () => {
+      document.getElementById("more-tools-modal")?.remove();
       closeModal();
       setTimeout(openUnitConverterModal, 100);
     };
@@ -1710,6 +1692,7 @@ function setupMoreToolsModal() {
 
   if (btnMarkdownEditor) {
     btnMarkdownEditor.onclick = () => {
+      document.getElementById("more-tools-modal")?.remove();
       closeModal();
       setTimeout(openMarkdownEditorModal, 100);
     };
@@ -1717,6 +1700,7 @@ function setupMoreToolsModal() {
 
   if (btnJsonFormatter) {
     btnJsonFormatter.onclick = () => {
+      document.getElementById("more-tools-modal")?.remove();
       closeModal();
       setTimeout(openJSONFormatterModal, 100);
     };
