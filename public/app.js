@@ -1599,6 +1599,46 @@ function openMoreToolsModal() {
       from: "#8b5cf6",
       to: "#7c3aed",
     },
+    {
+      id: "btn-text-summarizer",
+      icon: "fa-file-alt",
+      title: "Resumidor de Textos",
+      desc: "Crie resumos automáticos",
+      from: "#6366f1",
+      to: "#8b5cf6",
+    },
+    {
+      id: "btn-focus-timer",
+      icon: "fa-brain",
+      title: "Cronômetro de Foco",
+      desc: "Técnica 52-17 de concentração",
+      from: "#8b5cf6",
+      to: "#a855f7",
+    },
+    {
+      id: "btn-formula-generator",
+      icon: "fa-square-root-alt",
+      title: "Biblioteca de Fórmulas",
+      desc: "Fórmulas de Mat, Fís e Quím",
+      from: "#ef4444",
+      to: "#f97316",
+    },
+    {
+      id: "btn-study-tasks",
+      icon: "fa-tasks",
+      title: "Organizador de Estudos",
+      desc: "Gerencie suas tarefas",
+      from: "#14b8a6",
+      to: "#10b981",
+    },
+    {
+      id: "btn-dictionary",
+      icon: "fa-book-open",
+      title: "Dicionário Rápido",
+      desc: "Consulta offline de palavras",
+      from: "#f59e0b",
+      to: "#f97316",
+    },
   ];
 
   const buttonsHtml = tools
@@ -1789,6 +1829,53 @@ function setupMoreToolsModal() {
       document.getElementById("more-tools-modal")?.remove();
       closeModal();
       setTimeout(openMindMapModal, 100);
+    };
+  }
+  
+  // Novas ferramentas de estudo
+  const btnTextSummarizer = document.getElementById("btn-text-summarizer");
+  const btnFocusTimer = document.getElementById("btn-focus-timer");
+  const btnFormulaGenerator = document.getElementById("btn-formula-generator");
+  const btnStudyTasks = document.getElementById("btn-study-tasks");
+  const btnDictionary = document.getElementById("btn-dictionary");
+  
+  if (btnTextSummarizer) {
+    btnTextSummarizer.onclick = () => {
+      document.getElementById("more-tools-modal")?.remove();
+      closeModal();
+      setTimeout(openTextSummarizerModal, 100);
+    };
+  }
+  
+  if (btnFocusTimer) {
+    btnFocusTimer.onclick = () => {
+      document.getElementById("more-tools-modal")?.remove();
+      closeModal();
+      setTimeout(openFocusTimerModal, 100);
+    };
+  }
+  
+  if (btnFormulaGenerator) {
+    btnFormulaGenerator.onclick = () => {
+      document.getElementById("more-tools-modal")?.remove();
+      closeModal();
+      setTimeout(openFormulaGeneratorModal, 100);
+    };
+  }
+  
+  if (btnStudyTasks) {
+    btnStudyTasks.onclick = () => {
+      document.getElementById("more-tools-modal")?.remove();
+      closeModal();
+      setTimeout(openStudyTasksModal, 100);
+    };
+  }
+  
+  if (btnDictionary) {
+    btnDictionary.onclick = () => {
+      document.getElementById("more-tools-modal")?.remove();
+      closeModal();
+      setTimeout(openDictionaryModal, 100);
     };
   }
 }
@@ -3886,12 +3973,7 @@ function initializeEventListeners() {
 
     webview.addEventListener("did-fail-load", (e) => {
       console.error("❌ Falha ao carregar:", e.errorDescription);
-      if (!e.validatedURL.includes("google.com")) {
-        const searchUrl =
-          "https://www.google.com/search?q=" +
-          encodeURIComponent(e.validatedURL);
-        webview.src = searchUrl;
-      }
+      // Removido código que transformava URLs em pesquisas
     });
   }
 

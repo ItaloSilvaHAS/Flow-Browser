@@ -213,65 +213,106 @@ async function fetchEducationNews() {
   if (!articlesContainer) return;
   
   try {
-    const newsData = [
-      {
-        title: "MEC anuncia novas diretrizes para o ENEM 2025",
-        source: "Portal do MEC",
-        url: "https://www.gov.br/mec",
-        publishedAt: "2h atrás"
-      },
-      {
-        title: "Universidades brasileiras entre as melhores da América Latina",
-        source: "Folha Educação",
-        url: "https://www.folha.uol.com.br/educacao",
-        publishedAt: "5h atrás"
-      },
-      {
-        title: "Plataformas digitais revolucionam o aprendizado online",
-        source: "Tech Edu",
-        url: "https://www.example.com",
-        publishedAt: "1 dia atrás"
-      },
-      {
-        title: "Dicas para melhorar o desempenho nos vestibulares",
-        source: "Guia do Estudante",
-        url: "https://guiadoestudante.abril.com.br",
-        publishedAt: "2 dias atrás"
-      },
-      {
-        title: "Bolsas de estudo: programas abrem inscrições para 2025",
-        source: "Educa Mais",
-        url: "https://www.example.com",
-        publishedAt: "3 dias atrás"
-      }
-    ];
+    // Buscar notícias do Supabase
+    console.log('📡 Buscando notícias do Supabase...');
     
-    articlesContainer.innerHTML = newsData.map(article => `
-      <div class="bg-gray-50 rounded-lg p-2 hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
-        <a href="${article.url}" target="_blank" class="block">
-          <h4 class="text-xs font-medium text-gray-800 mb-1 line-clamp-1">${article.title}</h4>
-          <div class="flex items-center justify-between text-[10px] text-gray-500">
-            <span class="flex items-center">
-              <i class="fas fa-newspaper mr-1"></i>
-              ${article.source}
-            </span>
-            <span>${article.publishedAt}</span>
-          </div>
-        </a>
-      </div>
-    `).join('');
+    if (!supabaseClient) {
+      console.warn('⚠️ Supabase não inicializado, usando notícias padrão');
+      loadDefaultNews(articlesContainer);
+      return;
+    }
     
-    console.log("✅ Notícias carregadas com sucesso");
+    const { data: newsData, error } = await supabaseClient
+      .from('Noticias')
+      .select('*')
+      .order('id', { ascending: false })
+      .limit(10);
+    
+    if (error) {
+      console.error('❌ Erro ao buscar notícias:', error);
+      loadDefaultNews(articlesContainer);
+      return;
+    }
+    
+    if (!newsData || newsData.length === 0) {
+      console.warn('⚠️ Nenhuma notícia encontrada no banco');
+      loadDefaultNews(articlesContainer);
+      return;
+    }
+    
+    // Renderizar notícias do Supabase estilo Bing
+    articlesContainer.innerHTML = newsData.map((article, index) => {
+      const hasImage = article.Imagem && article.Imagem.trim() !== '';
+      
+      return `
+        <div class="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all border border-gray-200 mb-2 ${index === 0 ? 'col-span-2' : ''}">
+          <a href="${article.Link || '#'}" target="_blank" class="block">
+            ${hasImage ? `
+              <div class="relative h-32 overflow-hidden">
+                <img src="${article.Imagem}" 
+                     alt="${article.Titulo}" 
+                     class="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                     onerror="this.parentElement.style.display='none'"/>
+              </div>
+            ` : ''}
+            <div class="p-3">
+              <h4 class="text-sm font-semibold text-gray-800 mb-1 line-clamp-2 hover:text-blue-600 transition-colors">
+                ${article.Titulo}
+              </h4>
+              ${article.Manchete ? `
+                <p class="text-xs text-gray-600 mb-2 line-clamp-2">${article.Manchete}</p>
+              ` : ''}
+              <div class="flex items-center text-xs text-gray-500">
+                <i class="fas fa-newspaper mr-1"></i>
+                <span>Flow News</span>
+              </div>
+            </div>
+          </a>
+        </div>
+      `;
+    }).join('');
+    
+    console.log(`✅ ${newsData.length} notícias carregadas do Supabase`);
     
   } catch (error) {
     console.error("❌ Erro ao carregar notícias:", error);
-    articlesContainer.innerHTML = `
-      <div class="text-center py-4 text-gray-500 text-xs">
-        <i class="fas fa-exclamation-circle mb-1"></i>
-        <p>Não foi possível carregar as notícias.</p>
-      </div>
-    `;
+    loadDefaultNews(articlesContainer);
   }
+}
+
+function loadDefaultNews(container) {
+  const defaultNews = [
+    {
+      Titulo: "MEC anuncia novas diretrizes para o ENEM 2025",
+      Manchete: "Mudanças nas provas visam melhor avaliar competências dos estudantes",
+      Link: "https://www.gov.br/mec",
+      Imagem: ""
+    },
+    {
+      Titulo: "Universidades brasileiras entre as melhores da América Latina",
+      Manchete: "Ranking internacional destaca qualidade do ensino superior no Brasil",
+      Link: "https://www.folha.uol.com.br/educacao",
+      Imagem: ""
+    },
+    {
+      Titulo: "Plataformas digitais revolucionam o aprendizado online",
+      Manchete: "Tecnologia permite personalização e flexibilidade nos estudos",
+      Link: "https://www.example.com",
+      Imagem: ""
+    }
+  ];
+  
+  container.innerHTML = defaultNews.map(article => `
+    <div class="bg-gray-50 rounded-lg p-2 hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
+      <a href="${article.Link}" target="_blank" class="block">
+        <h4 class="text-xs font-medium text-gray-800 mb-1 line-clamp-1">${article.Titulo}</h4>
+        <div class="flex items-center text-[10px] text-gray-500">
+          <i class="fas fa-newspaper mr-1"></i>
+          <span>Flow News</span>
+        </div>
+      </a>
+    </div>
+  `).join('');
 }
 
 // Tradução de páginas agora está em browser-features.js

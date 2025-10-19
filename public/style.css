@@ -973,3 +973,96 @@ button:hover:not(:disabled) {
   background-color: var(--theme-background) !important;
   color: var(--theme-text) !important;
 }
+/* ============================================
+   Menu de Contexto (Botão Direito)
+   ============================================ */
+
+.context-menu {
+  background: var(--theme-background);
+  border: 1px solid var(--theme-border);
+  border-radius: 8px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  min-width: 250px;
+  padding: 4px;
+  font-size: 13px;
+  animation: contextMenuFadeIn 0.15s ease-out;
+}
+
+@keyframes contextMenuFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.context-menu-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all 0.1s ease;
+  color: var(--theme-text);
+}
+
+.context-menu-item:hover {
+  background: var(--theme-surface);
+  color: var(--theme-primary);
+}
+
+.context-menu-item-content {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.context-menu-item i {
+  width: 16px;
+  text-align: center;
+  font-size: 12px;
+}
+
+.context-menu-shortcut {
+  font-size: 11px;
+  color: var(--theme-text-secondary);
+  margin-left: 20px;
+}
+
+.context-menu-divider {
+  height: 1px;
+  background: var(--theme-border);
+  margin: 4px 0;
+}
+
+/* Notificação do menu de contexto */
+.context-notification {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: var(--theme-surface);
+  color: var(--theme-text);
+  padding: 12px 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  border: 1px solid var(--theme-border);
+  font-size: 14px;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.3s ease;
+  z-index: 999999;
+}
+
+.context-notification.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Tema escuro para menu de contexto */
+.theme-dark .context-menu {
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+}

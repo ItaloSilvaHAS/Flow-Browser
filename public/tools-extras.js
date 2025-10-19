@@ -887,3 +887,570 @@ function setupMindMap() {
 }
 
 console.log('✨ 5 Novas Ferramentas Autorais Carregadas!');
+
+// ========== NOVAS FERRAMENTAS DE ESTUDO ==========
+
+// 1. RESUMO AUTOMÁTICO DE TEXTO
+function openTextSummarizerModal() {
+  const html = `
+    <div class="max-w-4xl mx-auto">
+      <h2 class="text-3xl font-bold text-gray-800 mb-6 text-center">
+        <i class="fas fa-file-alt mr-3 text-indigo-500"></i>Resumidor de Textos
+      </h2>
+      
+      <div class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Cole o texto para resumir</label>
+          <textarea id="text-to-summarize" 
+                    class="w-full h-64 border border-gray-300 rounded-lg p-4 text-sm"
+                    placeholder="Cole aqui o texto que você quer resumir..."></textarea>
+        </div>
+        
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Nível de Resumo</label>
+            <select id="summary-level" class="w-full border border-gray-300 rounded-lg px-4 py-3">
+              <option value="short">Curto (30%)</option>
+              <option value="medium" selected>Médio (50%)</option>
+              <option value="detailed">Detalhado (70%)</option>
+            </select>
+          </div>
+          
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Formato</label>
+            <select id="summary-format" class="w-full border border-gray-300 rounded-lg px-4 py-3">
+              <option value="bullets">Tópicos</option>
+              <option value="paragraph">Parágrafo</option>
+            </select>
+          </div>
+        </div>
+        
+        <button id="btn-summarize" class="w-full bg-indigo-500 text-white py-3 rounded-lg hover:bg-indigo-600">
+          <i class="fas fa-compress-alt mr-2"></i>Gerar Resumo
+        </button>
+        
+        <div id="summary-result" class="hidden">
+          <label class="block text-sm font-medium text-gray-700 mb-2">Resumo Gerado</label>
+          <div id="summary-content" class="bg-indigo-50 border border-indigo-200 rounded-lg p-4 text-sm"></div>
+          <button id="btn-copy-summary" class="mt-2 w-full bg-green-500 text-white py-2 rounded-lg hover:bg-green-600">
+            <i class="fas fa-copy mr-2"></i>Copiar Resumo
+          </button>
+        </div>
+      </div>
+    </div>
+  `;
+  
+  if (typeof openModal === 'function') {
+    openModal(html);
+    setupTextSummarizer();
+  }
+}
+
+function setupTextSummarizer() {
+  const btnSummarize = document.getElementById('btn-summarize');
+  const textInput = document.getElementById('text-to-summarize');
+  const level = document.getElementById('summary-level');
+  const format = document.getElementById('summary-format');
+  const result = document.getElementById('summary-result');
+  const content = document.getElementById('summary-content');
+  const btnCopy = document.getElementById('btn-copy-summary');
+  
+  btnSummarize.addEventListener('click', () => {
+    const text = textInput.value.trim();
+    if (!text) {
+      alert('Cole um texto para resumir!');
+      return;
+    }
+    
+    const sentences = text.match(/[^.!?]+[.!?]+/g) || [text];
+    const percentage = level.value === 'short' ? 0.3 : level.value === 'medium' ? 0.5 : 0.7;
+    const numSentences = Math.max(1, Math.floor(sentences.length * percentage));
+    
+    const summary = sentences.slice(0, numSentences);
+    
+    if (format.value === 'bullets') {
+      content.innerHTML = '<ul class="space-y-2">' + 
+        summary.map(s => `<li class="flex items-start"><i class="fas fa-check text-indigo-500 mr-2 mt-1"></i><span>${s.trim()}</span></li>`).join('') + 
+        '</ul>';
+    } else {
+      content.innerHTML = `<p class="leading-relaxed">${summary.join(' ')}</p>`;
+    }
+    
+    result.classList.remove('hidden');
+  });
+  
+  btnCopy.addEventListener('click', () => {
+    navigator.clipboard.writeText(content.textContent);
+    btnCopy.innerHTML = '<i class="fas fa-check mr-2"></i>Copiado!';
+    setTimeout(() => {
+      btnCopy.innerHTML = '<i class="fas fa-copy mr-2"></i>Copiar Resumo';
+    }, 2000);
+  });
+}
+
+// 2. CRONÔMETRO DE CONCENTRAÇÃO (Técnica 52-17)
+function openFocusTimerModal() {
+  const html = `
+    <div class="max-w-3xl mx-auto">
+      <h2 class="text-3xl font-bold text-gray-800 mb-6 text-center">
+        <i class="fas fa-brain mr-3 text-purple-500"></i>Cronômetro de Concentração
+      </h2>
+      
+      <div class="bg-gradient-to-br from-purple-100 to-indigo-100 rounded-2xl p-8 text-center">
+        <div class="mb-6">
+          <h3 class="text-lg font-semibold text-gray-700 mb-2">Técnica 52-17</h3>
+          <p class="text-sm text-gray-600">52 min de foco intenso + 17 min de pausa</p>
+        </div>
+        
+        <div class="mb-8">
+          <div id="focus-timer-display" class="text-7xl font-bold text-purple-600 mb-4">52:00</div>
+          <div id="focus-timer-status" class="text-xl font-medium text-gray-700">Pronto para começar</div>
+        </div>
+        
+        <div class="flex gap-4 justify-center mb-6">
+          <button id="btn-start-focus" class="bg-purple-500 text-white px-8 py-3 rounded-lg hover:bg-purple-600 font-semibold">
+            <i class="fas fa-play mr-2"></i>Iniciar
+          </button>
+          <button id="btn-pause-focus" class="bg-yellow-500 text-white px-8 py-3 rounded-lg hover:bg-yellow-600 font-semibold" disabled>
+            <i class="fas fa-pause mr-2"></i>Pausar
+          </button>
+          <button id="btn-reset-focus" class="bg-red-500 text-white px-8 py-3 rounded-lg hover:bg-red-600 font-semibold">
+            <i class="fas fa-redo mr-2"></i>Reiniciar
+          </button>
+        </div>
+        
+        <div class="bg-white rounded-lg p-4">
+          <div class="flex justify-between text-sm text-gray-600 mb-2">
+            <span>Sessões completadas hoje:</span>
+            <span id="sessions-count" class="font-bold text-purple-600">0</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+  
+  if (typeof openModal === 'function') {
+    openModal(html);
+    setupFocusTimer();
+  }
+}
+
+function setupFocusTimer() {
+  let timer = null;
+  let timeLeft = 52 * 60; // 52 minutos em segundos
+  let isWorking = true;
+  let isPaused = false;
+  let sessionsToday = parseInt(localStorage.getItem('focus_sessions_today') || '0');
+  
+  const display = document.getElementById('focus-timer-display');
+  const status = document.getElementById('focus-timer-status');
+  const btnStart = document.getElementById('btn-start-focus');
+  const btnPause = document.getElementById('btn-pause-focus');
+  const btnReset = document.getElementById('btn-reset-focus');
+  const sessionsCount = document.getElementById('sessions-count');
+  
+  sessionsCount.textContent = sessionsToday;
+  
+  function updateDisplay() {
+    const minutes = Math.floor(timeLeft / 60);
+    const seconds = timeLeft % 60;
+    display.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+  }
+  
+  function startTimer() {
+    if (timer) clearInterval(timer);
+    isPaused = false;
+    
+    btnStart.disabled = true;
+    btnPause.disabled = false;
+    status.textContent = isWorking ? '🎯 Modo Foco Ativo' : '☕ Tempo de Pausa';
+    
+    timer = setInterval(() => {
+      timeLeft--;
+      updateDisplay();
+      
+      if (timeLeft <= 0) {
+        clearInterval(timer);
+        
+        if (isWorking) {
+          sessionsToday++;
+          localStorage.setItem('focus_sessions_today', sessionsToday);
+          sessionsCount.textContent = sessionsToday;
+          alert('🎉 Parabéns! Sessão de foco completa! Hora de uma pausa de 17 minutos.');
+          timeLeft = 17 * 60;
+          isWorking = false;
+        } else {
+          alert('✅ Pausa finalizada! Pronto para outra sessão de foco?');
+          timeLeft = 52 * 60;
+          isWorking = true;
+        }
+        
+        btnStart.disabled = false;
+        btnPause.disabled = true;
+        status.textContent = 'Sessão finalizada';
+      }
+    }, 1000);
+  }
+  
+  btnStart.addEventListener('click', startTimer);
+  
+  btnPause.addEventListener('click', () => {
+    if (timer) {
+      clearInterval(timer);
+      btnStart.disabled = false;
+      btnPause.disabled = true;
+      status.textContent = '⏸️ Pausado';
+    }
+  });
+  
+  btnReset.addEventListener('click', () => {
+    if (timer) clearInterval(timer);
+    timeLeft = 52 * 60;
+    isWorking = true;
+    isPaused = false;
+    btnStart.disabled = false;
+    btnPause.disabled = true;
+    status.textContent = 'Reiniciado';
+    updateDisplay();
+  });
+}
+
+// 3. GERADOR DE FÓRMULAS MATEMÁTICAS
+function openFormulaGeneratorModal() {
+  const html = `
+    <div class="max-w-4xl mx-auto">
+      <h2 class="text-3xl font-bold text-gray-800 mb-6 text-center">
+        <i class="fas fa-square-root-alt mr-3 text-red-500"></i>Biblioteca de Fórmulas
+      </h2>
+      
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <button onclick="showFormulas('matematica')" class="bg-red-500 text-white py-3 rounded-lg hover:bg-red-600">
+          <i class="fas fa-calculator mr-2"></i>Matemática
+        </button>
+        <button onclick="showFormulas('fisica')" class="bg-blue-500 text-white py-3 rounded-lg hover:bg-blue-600">
+          <i class="fas fa-atom mr-2"></i>Física
+        </button>
+        <button onclick="showFormulas('quimica')" class="bg-green-500 text-white py-3 rounded-lg hover:bg-green-600">
+          <i class="fas fa-flask mr-2"></i>Química
+        </button>
+      </div>
+      
+      <div id="formulas-container" class="bg-gray-50 rounded-xl p-6 min-h-[400px]">
+        <p class="text-center text-gray-500">Selecione uma matéria acima para ver as fórmulas</p>
+      </div>
+    </div>
+  `;
+  
+  if (typeof openModal === 'function') {
+    openModal(html);
+    setupFormulaGenerator();
+  }
+}
+
+function setupFormulaGenerator() {
+  window.showFormulas = function(subject) {
+    const container = document.getElementById('formulas-container');
+    
+    const formulas = {
+      matematica: [
+        { name: 'Bhaskara', formula: 'x = (-b ± √(b² - 4ac)) / 2a', desc: 'Resolução de equações do 2º grau' },
+        { name: 'Área do Círculo', formula: 'A = πr²', desc: 'Área de um círculo com raio r' },
+        { name: 'Teorema de Pitágoras', formula: 'a² + b² = c²', desc: 'Relação nos triângulos retângulos' },
+        { name: 'Distância entre pontos', formula: 'd = √((x₂-x₁)² + (y₂-y₁)²)', desc: 'Distância no plano cartesiano' },
+        { name: 'Progressão Aritmética', formula: 'aₙ = a₁ + (n-1)·r', desc: 'Termo geral da PA' },
+        { name: 'Progressão Geométrica', formula: 'aₙ = a₁ · qⁿ⁻¹', desc: 'Termo geral da PG' }
+      ],
+      fisica: [
+        { name: 'Velocidade Média', formula: 'v = Δs / Δt', desc: 'Variação de espaço sobre tempo' },
+        { name: 'Energia Cinética', formula: 'Ec = mv² / 2', desc: 'Energia de movimento' },
+        { name: 'Lei de Newton', formula: 'F = m · a', desc: 'Força igual a massa vezes aceleração' },
+        { name: 'Energia Potencial', formula: 'Ep = m · g · h', desc: 'Energia gravitacional' },
+        { name: 'Trabalho', formula: 'τ = F · d · cos(θ)', desc: 'Trabalho de uma força' },
+        { name: 'Lei de Ohm', formula: 'V = R · I', desc: 'Tensão, resistência e corrente' }
+      ],
+      quimica: [
+        { name: 'Mol', formula: 'n = m / MM', desc: 'Quantidade de matéria' },
+        { name: 'Concentração Molar', formula: 'M = n / V', desc: 'Mols por litro' },
+        { name: 'pH', formula: 'pH = -log[H⁺]', desc: 'Potencial hidrogeniônico' },
+        { name: 'Gases Ideais', formula: 'PV = nRT', desc: 'Equação de Clapeyron' },
+        { name: 'Diluição', formula: 'C₁V₁ = C₂V₂', desc: 'Diluição de soluções' },
+        { name: 'Lei de Hess', formula: 'ΔH = ΣH(produtos) - ΣH(reagentes)', desc: 'Entalpia de reação' }
+      ]
+    };
+    
+    const selectedFormulas = formulas[subject] || [];
+    
+    container.innerHTML = `
+      <h3 class="text-xl font-bold text-gray-800 mb-4 capitalize">
+        <i class="fas fa-book mr-2"></i>${subject}
+      </h3>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        ${selectedFormulas.map(f => `
+          <div class="bg-white rounded-lg p-4 border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+            <h4 class="font-semibold text-gray-800 mb-2">${f.name}</h4>
+            <div class="bg-gray-100 rounded p-3 mb-2 font-mono text-lg text-center">${f.formula}</div>
+            <p class="text-sm text-gray-600">${f.desc}</p>
+          </div>
+        `).join('')}
+      </div>
+    `;
+  };
+}
+
+// 4. ORGANIZADOR DE TAREFAS DE ESTUDO
+function openStudyTasksModal() {
+  const html = `
+    <div class="max-w-4xl mx-auto">
+      <h2 class="text-3xl font-bold text-gray-800 mb-6 text-center">
+        <i class="fas fa-tasks mr-3 text-teal-500"></i>Organizador de Estudos
+      </h2>
+      
+      <div class="mb-6">
+        <div class="flex gap-2">
+          <input type="text" id="task-input" placeholder="Nova tarefa de estudo..." 
+                 class="flex-1 border border-gray-300 rounded-lg px-4 py-3"/>
+          <select id="task-priority" class="border border-gray-300 rounded-lg px-4 py-3">
+            <option value="high">🔴 Alta</option>
+            <option value="medium">🟡 Média</option>
+            <option value="low">🟢 Baixa</option>
+          </select>
+          <button id="btn-add-task" class="bg-teal-500 text-white px-6 py-3 rounded-lg hover:bg-teal-600">
+            <i class="fas fa-plus"></i>
+          </button>
+        </div>
+      </div>
+      
+      <div class="space-y-4">
+        <div>
+          <h3 class="font-semibold text-gray-700 mb-2">📋 Pendentes</h3>
+          <div id="pending-tasks" class="space-y-2"></div>
+        </div>
+        
+        <div>
+          <h3 class="font-semibold text-gray-700 mb-2">✅ Concluídas</h3>
+          <div id="completed-tasks" class="space-y-2"></div>
+        </div>
+      </div>
+      
+      <div class="mt-6 flex gap-2">
+        <button id="btn-clear-completed" class="flex-1 bg-red-500 text-white py-2 rounded-lg hover:bg-red-600">
+          <i class="fas fa-trash mr-2"></i>Limpar Concluídas
+        </button>
+      </div>
+    </div>
+  `;
+  
+  if (typeof openModal === 'function') {
+    openModal(html);
+    setupStudyTasks();
+  }
+}
+
+function setupStudyTasks() {
+  let tasks = JSON.parse(localStorage.getItem('study_tasks') || '[]');
+  
+  const input = document.getElementById('task-input');
+  const priority = document.getElementById('task-priority');
+  const btnAdd = document.getElementById('btn-add-task');
+  const pendingContainer = document.getElementById('pending-tasks');
+  const completedContainer = document.getElementById('completed-tasks');
+  const btnClearCompleted = document.getElementById('btn-clear-completed');
+  
+  function saveTasks() {
+    localStorage.setItem('study_tasks', JSON.stringify(tasks));
+  }
+  
+  function renderTasks() {
+    const pending = tasks.filter(t => !t.completed);
+    const completed = tasks.filter(t => t.completed);
+    
+    pendingContainer.innerHTML = pending.length ? pending.map((task, idx) => {
+      const priorityColors = {
+        high: 'border-red-300 bg-red-50',
+        medium: 'border-yellow-300 bg-yellow-50',
+        low: 'border-green-300 bg-green-50'
+      };
+      
+      return `
+        <div class="flex items-center gap-2 p-3 border rounded-lg ${priorityColors[task.priority]}">
+          <button onclick="toggleTask(${tasks.indexOf(task)})" 
+                  class="w-6 h-6 border-2 border-gray-400 rounded hover:bg-teal-500 hover:border-teal-500 transition"></button>
+          <span class="flex-1">${task.text}</span>
+          <button onclick="deleteTask(${tasks.indexOf(task)})" 
+                  class="text-red-500 hover:text-red-700">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+      `;
+    }).join('') : '<p class="text-gray-400 text-center py-4">Nenhuma tarefa pendente</p>';
+    
+    completedContainer.innerHTML = completed.length ? completed.map((task, idx) => `
+      <div class="flex items-center gap-2 p-3 border border-gray-200 bg-gray-50 rounded-lg opacity-60">
+        <button onclick="toggleTask(${tasks.indexOf(task)})" 
+                class="w-6 h-6 bg-teal-500 border-2 border-teal-500 rounded flex items-center justify-center">
+          <i class="fas fa-check text-white text-xs"></i>
+        </button>
+        <span class="flex-1 line-through">${task.text}</span>
+        <button onclick="deleteTask(${tasks.indexOf(task)})" 
+                class="text-red-500 hover:text-red-700">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+    `).join('') : '<p class="text-gray-400 text-center py-4">Nenhuma tarefa concluída</p>';
+  }
+  
+  window.toggleTask = function(index) {
+    tasks[index].completed = !tasks[index].completed;
+    saveTasks();
+    renderTasks();
+  };
+  
+  window.deleteTask = function(index) {
+    tasks.splice(index, 1);
+    saveTasks();
+    renderTasks();
+  };
+  
+  btnAdd.addEventListener('click', () => {
+    const text = input.value.trim();
+    if (!text) return;
+    
+    tasks.push({
+      text: text,
+      priority: priority.value,
+      completed: false,
+      createdAt: Date.now()
+    });
+    
+    input.value = '';
+    saveTasks();
+    renderTasks();
+  });
+  
+  input.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') btnAdd.click();
+  });
+  
+  btnClearCompleted.addEventListener('click', () => {
+    tasks = tasks.filter(t => !t.completed);
+    saveTasks();
+    renderTasks();
+  });
+  
+  renderTasks();
+}
+
+// 5. DICIONÁRIO RÁPIDO (OFFLINE)
+function openDictionaryModal() {
+  const html = `
+    <div class="max-w-3xl mx-auto">
+      <h2 class="text-3xl font-bold text-gray-800 mb-6 text-center">
+        <i class="fas fa-book-open mr-3 text-amber-500"></i>Dicionário Rápido
+      </h2>
+      
+      <div class="mb-6">
+        <div class="flex gap-2">
+          <input type="text" id="word-search" placeholder="Digite uma palavra..." 
+                 class="flex-1 border border-gray-300 rounded-lg px-4 py-3"/>
+          <button id="btn-search-word" class="bg-amber-500 text-white px-6 py-3 rounded-lg hover:bg-amber-600">
+            <i class="fas fa-search"></i>
+          </button>
+        </div>
+      </div>
+      
+      <div id="word-result" class="bg-amber-50 border border-amber-200 rounded-xl p-6 min-h-[300px]">
+        <p class="text-center text-gray-500 py-12">Digite uma palavra e pressione buscar</p>
+      </div>
+    </div>
+  `;
+  
+  if (typeof openModal === 'function') {
+    openModal(html);
+    setupDictionary();
+  }
+}
+
+function setupDictionary() {
+  const input = document.getElementById('word-search');
+  const btnSearch = document.getElementById('btn-search-word');
+  const result = document.getElementById('word-result');
+  
+  const dictionary = {
+    'estudar': {
+      def: 'Dedicar-se ao aprendizado; aplicar a inteligência para aprender.',
+      ex: 'Preciso estudar para a prova de matemática.',
+      sin: ['aprender', 'pesquisar', 'investigar']
+    },
+    'conhecimento': {
+      def: 'Ato ou efeito de conhecer; saber, instrução, ciência.',
+      ex: 'O conhecimento é a chave para o sucesso.',
+      sin: ['saber', 'ciência', 'erudição']
+    },
+    'aprender': {
+      def: 'Tomar conhecimento de; ficar sabendo; instruir-se.',
+      ex: 'É importante aprender com os erros.',
+      sin: ['estudar', 'assimilar', 'compreender']
+    },
+    'dedicação': {
+      def: 'Ato de dedicar-se; empenho, aplicação.',
+      ex: 'A dedicação aos estudos traz resultados positivos.',
+      sin: ['empenho', 'aplicação', 'comprometimento']
+    },
+    'perseverança': {
+      def: 'Qualidade de quem persevera; persistência, constância.',
+      ex: 'A perseverança é fundamental para alcançar objetivos.',
+      sin: ['persistência', 'tenacidade', 'firmeza']
+    }
+  };
+  
+  function searchWord() {
+    const word = input.value.trim().toLowerCase();
+    
+    if (!word) {
+      result.innerHTML = '<p class="text-center text-gray-500 py-12">Digite uma palavra e pressione buscar</p>';
+      return;
+    }
+    
+    const wordData = dictionary[word];
+    
+    if (wordData) {
+      result.innerHTML = `
+        <div class="space-y-4">
+          <div>
+            <h3 class="text-2xl font-bold text-amber-700 mb-2 capitalize">${word}</h3>
+          </div>
+          
+          <div>
+            <h4 class="font-semibold text-gray-700 mb-2">📖 Definição:</h4>
+            <p class="text-gray-600">${wordData.def}</p>
+          </div>
+          
+          <div>
+            <h4 class="font-semibold text-gray-700 mb-2">💬 Exemplo:</h4>
+            <p class="text-gray-600 italic">"${wordData.ex}"</p>
+          </div>
+          
+          <div>
+            <h4 class="font-semibold text-gray-700 mb-2">🔄 Sinônimos:</h4>
+            <div class="flex flex-wrap gap-2">
+              ${wordData.sin.map(s => `<span class="bg-amber-200 px-3 py-1 rounded-full text-sm">${s}</span>`).join('')}
+            </div>
+          </div>
+        </div>
+      `;
+    } else {
+      result.innerHTML = `
+        <div class="text-center py-12">
+          <i class="fas fa-exclamation-circle text-4xl text-amber-500 mb-4"></i>
+          <p class="text-gray-600">Palavra não encontrada no dicionário offline.</p>
+          <p class="text-sm text-gray-500 mt-2">Tente: estudar, conhecimento, aprender, dedicação, perseverança</p>
+        </div>
+      `;
+    }
+  }
+  
+  btnSearch.addEventListener('click', searchWord);
+  input.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') searchWord();
+  });
+}
