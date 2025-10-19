@@ -9,7 +9,7 @@ function createWindow() {
     minHeight: 600,
     frame: true,
     autoHideMenuBar: true,
-    icon: path.join(__dirname, 'Assets/flow.ico'),
+    icon: path.join(__dirname, 'Assets/faviconn.ico'), // <-- ícone atualizado
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       nodeIntegration: false,
