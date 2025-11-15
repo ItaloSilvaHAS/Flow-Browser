@@ -3,20 +3,26 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title> </title> 
+  <title>Flow Browser</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   <link rel="stylesheet" href="style.css" />
-  
-  <!-- Supabase CDN -->
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 </head>
 
-<body class="bg-gradient-to-br from-blue-100 to-purple-100 min-h-screen flex flex-col font-sans select-none overflow-hidden">
+<body class="min-h-screen flex flex-col font-sans select-none overflow-hidden relative">
+
+  <!-- Wallpaper de fundo -->
+  <div id="wallpaper-container" class="fixed inset-0 -z-10">
+    <img id="wallpaper-img" class="w-full h-full object-cover transition-all duration-500" 
+      src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=2070&q=80">
+  </div>
+
 
 <!-- Barra superior com abas e controles -->
 <header class="flex items-center bg-blue-50/95 backdrop-blur-md border-b border-gray-200 px-3 py-2 shadow-sm relative z-10">
@@ -44,7 +50,7 @@
 </header>
 
 <!-- Barra de endereços com botões de navegação -->
-<div class="address-bar-container flex items-center space-x-3 px-4 py-3 bg-white/98 backdrop-blur-md border-b border-gray-100 relative z-10">
+<div class="address-bar-container flex items-center space-x-3 px-4 py-3 bg-white/98 backdrop-blur-md border-b border-gray-40 relative z-10">
   
   <div class="flex items-center space-x-1">
     <button id="btn-back" class="rounded-full p-2 text-gray-600 hover:bg-gray-100 transition-all" title="Voltar" disabled>
@@ -88,8 +94,8 @@
   />
   
   <div class="flex items-center space-x-1">
-    <button id="btn-search" class="rounded-full p-2 text-gray-600 hover:bg-gray-100 transition-all" title="Pesquisar">
-      <i class="fas fa-search"></i>
+    <button id="btn-favoritos" class="rounded-full p-2 text-gray-700 hover:bg-gray-100 transition-all" title="Favoritos">
+      <i class="fas fa-star"></i>
     </button>
     <button id="btn-profile" class="rounded-full p-2 text-gray-600 hover:bg-gray-100 transition-all" title="Perfil">
       <i class="fas fa-user-circle"></i>
@@ -231,21 +237,6 @@
     </div>
   </div>
 
-
-  <!-- Favorites barra -->
-  <div class="favorites-bar flex items-center justify-between px-0.5 py-0.5 bg-gray-50/95 backdrop-blur-md border-b border-gray-100 text-gray-600 text-xs relative z-10">
-    <div class="flex items-center space-x-1">
-      <i class="fas fa-folder text-white-500 text-sm"></i>
-      <span>Outros favoritos</span>
-    </div>
-    <div class="flex items-center space-x-1 cursor-pointer hover:text-blue-500 transition-colors relative">
-      <i class="fas fa-folder text-white-500 text-sm relative">
-        <i class="fas fa-plus absolute -bottom-1 -right-1 text-white text-[0.5rem] bg-blue-500 rounded-full p-[2px]"></i>
-      </i>
-      <span>Importar favoritos</span>
-    </div>
-  </div>
-
   <div class="flex flex-1 min-h-0 overflow-hidden">
     <!-- Barra vertical-->
     <nav id="sidebar" class="flex flex-col items-center bg-white/95 backdrop-blur-md border-r border-gray-200 w-[3.5rem] py-0 px-0 shadow-sm mt-0 mr-0 rounded-none"
@@ -257,11 +248,11 @@
           class="flex flex-col items-center space-y-1 rounded-xl p-3 hover:bg-gradient-to-br hover:from-blue-500 hover:to-purple-600 hover:text-white transition-all w-12 h-12 group"
           title="IA - Chat GPT"
         >
-          <i class="fas fa-robot text-2xl text-white-500 group-hover:text-white transition-all duration-300"></i>
+          <i class="fas fa-robot text-xl text-white-500 group-hover:text-white transition-all duration-300"></i>
           <span class="text-xs font-medium">IA</span>
         </button>
 
-        <div class="mt-2 w-full border-b border-gray-300"></div>
+        <div class="mt-2 w-full border-b border-gray-100"></div>
       </div>
 
       <!-- Ícones principais no centro -->
@@ -396,16 +387,6 @@
         ></webview>
       </div>
     </main>
-
-    <!-- mudança de Wallpaper button -->
-    <button
-      id="btn-change-wallpaper"
-      title="Personalizar papel de parede"
-      class="fixed bottom-6 right-6 bg-white/90 backdrop-blur-md rounded-full p-4 shadow-xl hover:shadow-2xl transition-all z-50 group"
-    >
-      <i class="fas fa-image text-gray-700 text-xl group-hover:rotate-12 transition-transform"></i>
-    </button>
-  </div>
 
   <!-- Sobreposição de modal -->
   <div id="modal-overlay" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden items-center justify-center z-50 p-4">

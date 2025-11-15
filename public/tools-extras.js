@@ -166,41 +166,56 @@ function setupUnitConverter() {
 
 // ========== EDITOR MARKDOWN ==========
 function openMarkdownEditorModal() {
-  const html = `
-    <div class="max-w-6xl mx-auto">
-      <h2 class="text-2xl font-bold text-gray-800 mb-6 text-center">
-        <i class="fab fa-markdown mr-2 text-gray-700"></i>Editor Markdown
-      </h2>
-      
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2">Markdown</label>
-          <textarea id="markdown-input" class="w-full h-96 border border-gray-300 rounded-lg p-3 font-mono text-sm" placeholder="# Título\n\n## Subtítulo\n\n**Negrito** e *itálico*\n\n- Item 1\n- Item 2\n\n[Link](https://exemplo.com)"></textarea>
-        </div>
-        
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2">Visualização</label>
-          <div id="markdown-preview" class="w-full h-96 border border-gray-300 rounded-lg p-3 overflow-y-auto bg-white prose prose-sm max-w-none">
-            <p class="text-gray-400">A visualização aparecerá aqui...</p>
-          </div>
-        </div>
+const html = `
+  <div class="max-w-6xl mx-auto px-4 py-6">
+    <h2 class="text-3xl font-bold var-text-primary mb-8 text-center">
+      <i class="fab fa-markdown mr-2" style="color: var(--accent-color)"></i>Editor Markdown
+    </h2>
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <!-- Editor Markdown -->
+      <div class="flex flex-col">
+        <label class="block text-sm font-medium var-text-secondary mb-2">Markdown</label>
+        <textarea 
+          id="markdown-input" 
+          class="w-full h-96 border var-border rounded-xl p-4 font-mono text-sm var-bg-input var-text-primary focus:ring-2 focus:ring-[var(--accent-color)] focus:outline-none resize-none transition-all"
+          placeholder="# Título\\n\\n## Subtítulo\\n\\n**Negrito** e *itálico*\\n\\n- Item 1\\n- Item 2\\n\\n[Link](https://exemplo.com)"
+        ></textarea>
       </div>
       
-      <div class="mt-4 flex gap-2">
-        <button id="btn-copy-markdown" class="flex-1 bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600">
-          <i class="fas fa-copy mr-2"></i>Copiar Markdown
-        </button>
-        <button id="btn-copy-html" class="flex-1 bg-green-500 text-white py-2 rounded-lg hover:bg-green-600">
-          <i class="fas fa-code mr-2"></i>Copiar HTML
-        </button>
+      <!-- Visualização Markdown -->
+      <div class="flex flex-col">
+        <label class="block text-sm font-medium var-text-secondary mb-2">Visualização</label>
+        <div 
+          id="markdown-preview" 
+          class="w-full h-96 border var-border rounded-xl p-4 overflow-y-auto var-bg-surface var-text-primary prose prose-sm max-w-none dark:prose-invert transition-colors duration-300 shadow-inner"
+        >
+          <p class="var-text-muted italic text-center">A visualização aparecerá aqui...</p>
+        </div>
       </div>
     </div>
-  `;
-  
-  if (typeof openModal === 'function') {
-    openModal(html);
-    setupMarkdownEditor();
-  }
+    
+    <div class="mt-6 flex flex-col md:flex-row gap-3">
+      <button 
+        id="btn-copy-markdown" 
+        class="flex-1 var-btn bg-[var(--blue-color)] hover:bg-[var(--blue-color-hover)]"
+      >
+        <i class="fas fa-copy mr-2"></i>Copiar Markdown
+      </button>
+      <button 
+        id="btn-copy-html" 
+        class="flex-1 var-btn bg-[var(--green-color)] hover:bg-[var(--green-color-hover)]"
+      >
+        <i class="fas fa-code mr-2"></i>Copiar HTML
+      </button>
+    </div>
+  </div>
+`;
+
+if (typeof openModal === 'function') {
+  openModal(html);
+  setupMarkdownEditor();
+}
 }
 
 function setupMarkdownEditor() {
@@ -503,81 +518,127 @@ function conjugateEN(verb) {
 
 // ========== 2. CALCULADORA CIENTÍFICA ==========
 function openScientificCalculatorModal() {
-  const html = `
-    <div class="max-w-2xl mx-auto">
-      <h2 class="text-3xl font-bold text-gray-800 mb-6 text-center">
-        <i class="fas fa-calculator mr-3 text-blue-500"></i>Calculadora Científica
-      </h2>
-      
-      <div class="bg-gray-900 rounded-xl p-6 shadow-2xl">
-        <input type="text" id="calc-display" readonly 
-               class="w-full bg-gray-800 text-white text-right text-3xl p-4 rounded-lg mb-4 font-mono" 
-               value="0" />
-        
-        <div class="grid grid-cols-4 gap-2">
-          ${[
-            ['C', '←', '%', '/'],
-            ['7', '8', '9', '*'],
-            ['4', '5', '6', '-'],
-            ['1', '2', '3', '+'],
-            ['0', '.', '=', 'π'],
-            ['sin', 'cos', 'tan', '√'],
-            ['(', ')', '^', 'log']
-          ].map(row => 
-            row.map(btn => `
-              <button class="calc-btn bg-gray-700 hover:bg-gray-600 text-white py-4 rounded-lg font-bold text-lg transition-colors"
-                      data-value="${btn}">${btn}</button>
-            `).join('')
-          ).join('')}
-        </div>
-      </div>
-    </div>
-  `;
+const existing = document.getElementById("scientific-calc-modal");
+if (existing) return;
+
+const dark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+const colors = {
+  modalBg: dark ? "#1f2937" : "#fff",
+  modalText: dark ? "#f9fafb" : "#1f2937",
+  border: dark ? "#4b5563" : "#d1d5db",
+  displayBg: dark ? "#374151" : "#f9fafb",
+};
+
+const html = `
+<div id="scientific-calc-modal" style="
+  position: fixed; left: 80px; top: 120px; width: 440px; height: 420px;
+  background: ${colors.modalBg}; color: ${colors.modalText};
+  border: 1px solid ${colors.border}; border-radius: 0.75rem;
+  padding: 0.7rem; z-index: 9999;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.3); display: flex; flex-direction: column;">
   
-  if (typeof openModal === 'function') {
-    openModal(html);
-    setupScientificCalculator();
-  }
+  <div id="sci-drag-handle" style="display:flex; justify-content:space-between; align-items:center; cursor: move; margin-bottom: 0.5rem;">
+    <h2 style="display:flex; align-items:center; gap:0.25rem; font-size:1.3rem;">
+      <i class="fas fa-calculator text-blue-500"></i>Calculadora Científica
+    </h2>
+    <button id="close-sci" style="background:none; border:none; font-size:1.4rem;">×</button>
+  </div>
+
+  <input type="text" id="sci-display" readonly
+    style="width:100%; background:${colors.displayBg}; border:1px solid ${colors.border};
+    border-radius:0.5rem; padding:0.6rem; text-align:right; font-family:monospace;
+    font-size:1.4rem; margin-bottom:0.6rem;" value="0" />
+
+  <div id="sci-buttons" style="display:grid; grid-template-columns: repeat(4, 1fr); gap:8px; flex-grow:1;">
+    ${[
+      ['C', '⌫', '%', '/'],
+      ['7', '8', '9', '*'],
+      ['4', '5', '6', '-'],
+      ['1', '2', '3', '+'],
+      ['0', '.', '=', 'π'],
+      ['sin', 'cos', 'tan', '√'],
+      ['(', ')', '^', 'log']
+    ].map(row =>
+      row.map(v => `<button class="sci-btn" data-val="${v}">${v}</button>`).join('')
+    ).join('')}
+  </div>
+</div>
+`;
+
+document.body.insertAdjacentHTML("beforeend", html);
+document.getElementById("close-sci").onclick = () =>
+  document.getElementById("scientific-calc-modal")?.remove();
+
+setupScientificCalculator();
+makeScientificCalcDraggable();
+
+// Dark/light theme listener
+window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", e => {
+  const dark = e.matches;
+  const modal = document.getElementById("scientific-calc-modal");
+  if (!modal) return;
+  modal.style.background = dark ? "#1f2937" : "#fff";
+  modal.style.color = dark ? "#f9fafb" : "#1f2937";
+  document.getElementById("sci-display").style.background = dark ? "#374151" : "#f9fafb";
+});
+}
+
+function makeScientificCalcDraggable() {
+const modal = document.getElementById("scientific-calc-modal");
+const handle = document.getElementById("sci-drag-handle");
+let dragging = false, offsetX = 0, offsetY = 0;
+
+handle.addEventListener("mousedown", e => {
+  dragging = true;
+  offsetX = e.clientX - modal.offsetLeft;
+  offsetY = e.clientY - modal.offsetTop;
+  document.addEventListener("mousemove", move);
+  document.addEventListener("mouseup", stop);
+});
+
+function move(e) {
+  if (!dragging) return;
+  modal.style.left = `${e.clientX - offsetX}px`;
+  modal.style.top = `${e.clientY - offsetY}px`;
+}
+function stop() {
+  dragging = false;
+  document.removeEventListener("mousemove", move);
+  document.removeEventListener("mouseup", stop);
+}
 }
 
 function setupScientificCalculator() {
-  const display = document.getElementById('calc-display');
-  let currentValue = '0';
-  let lastResult = null;
-  
-  document.querySelectorAll('.calc-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const value = btn.dataset.value;
-      
-      if (value === 'C') {
-        currentValue = '0';
-      } else if (value === '←') {
-        currentValue = currentValue.slice(0, -1) || '0';
-      } else if (value === '=') {
-        try {
-          let expr = currentValue
-            .replace(/π/g, Math.PI)
-            .replace(/sin\(/g, 'Math.sin(')
-            .replace(/cos\(/g, 'Math.cos(')
-            .replace(/tan\(/g, 'Math.tan(')
-            .replace(/√\(/g, 'Math.sqrt(')
-            .replace(/log\(/g, 'Math.log10(')
-            .replace(/\^/g, '**');
-          currentValue = eval(expr).toString();
-        } catch (e) {
-          currentValue = 'Erro';
-        }
-      } else {
-        if (currentValue === '0' && value !== '.') {
-          currentValue = value;
-        } else {
-          currentValue += value;
-        }
+const display = document.getElementById("sci-display");
+let current = "0";
+
+document.querySelectorAll(".sci-btn").forEach(btn => {
+  btn.onclick = () => {
+    const val = btn.dataset.val;
+    if (val === "C") current = "0";
+    else if (val === "⌫") current = current.slice(0, -1) || "0";
+    else if (val === "=") {
+      try {
+        let expr = current
+          .replace(/π/g, Math.PI)
+          .replace(/sin\(/g, "Math.sin(")
+          .replace(/cos\(/g, "Math.cos(")
+          .replace(/tan\(/g, "Math.tan(")
+          .replace(/√/g, "Math.sqrt")
+          .replace(/log\(/g, "Math.log10(")
+          .replace(/\^/g, "**");
+        current = eval(expr).toString();
+      } catch {
+        current = "Erro";
       }
-      
-      display.value = currentValue;
-    });
-  });
+    } else {
+      if (current === "0" && ![".", "sin(", "cos(", "tan(", "log(", "√("].includes(val))
+        current = val;
+      else current += val;
+    }
+    display.value = current;
+  };
+});
 }
 
 // ========== 3. FLASHCARDS INTELIGENTES ==========
@@ -715,93 +776,100 @@ function setupFlashcards() {
 
 // ========== 4. TABELA PERIÓDICA INTERATIVA ==========
 function openPeriodicTableModal() {
-  const html = `
-    <div class="max-w-6xl mx-auto">
-      <h2 class="text-3xl font-bold text-gray-800 mb-6 text-center">
-        <i class="fas fa-atom mr-3 text-green-500"></i>Tabela Periódica Interativa
-      </h2>
-      
-      <div class="bg-gray-50 rounded-xl p-6">
-        <div class="mb-4">
-          <input type="text" id="element-search" placeholder="Buscar elemento (ex: Oxigênio, O, 8)" 
-                 class="w-full border border-gray-300 rounded-lg px-4 py-3" />
-        </div>
-        
-        <div id="periodic-grid" class="grid grid-cols-9 gap-1 mb-6">
-          ${getPeriodicElements().map(el => `
-            <div class="element-cell bg-white hover:bg-blue-50 p-2 rounded cursor-pointer border-2 border-gray-200 transition-all"
-                 onclick="showElementInfo('${el.symbol}')"
-                 style="background: ${el.color}20;">
-              <div class="text-xs text-gray-600">${el.number}</div>
-              <div class="text-2xl font-bold text-gray-800">${el.symbol}</div>
-              <div class="text-xs text-gray-600 truncate">${el.name}</div>
-            </div>
-          `).join('')}
-        </div>
-        
-        <div id="element-info" class="hidden bg-white rounded-lg p-6 shadow-lg"></div>
+const html = `
+  <div class="max-w-6xl mx-auto px-4 py-6">
+    <h2 class="text-3xl font-bold var-text-primary mb-8 text-center">
+      <i class="fas fa-atom mr-3 text-green-500"></i>Tabela Periódica Interativa
+    </h2>
+    
+    <div class="var-bg-panel rounded-2xl p-6 shadow-inner transition-colors duration-300">
+      <div class="mb-4">
+        <input 
+          type="text" 
+          id="element-search" 
+          placeholder="Buscar elemento (ex: Oxigênio, O, 8)" 
+          class="w-full border var-border rounded-xl px-4 py-3 var-text-primary var-bg-surface focus:ring-2 focus:ring-[var(--accent-green)] focus:outline-none placeholder-[var(--text-muted)] transition-all"
+        />
       </div>
+      
+      <div id="periodic-grid" class="grid grid-cols-9 gap-2 mb-6">
+        ${getPeriodicElements().map(el => `
+          <div 
+            class="element-cell p-3 rounded-lg cursor-pointer var-border var-bg-surface hover:shadow-md hover:scale-[1.03] transition-all" 
+            onclick="showElementInfo('${el.symbol}')"
+            style="background: ${el.color}20;"
+          >
+            <div class="text-xs var-text-secondary">${el.number}</div>
+            <div class="text-2xl font-bold var-text-primary">${el.symbol}</div>
+            <div class="text-xs var-text-secondary truncate">${el.name}</div>
+          </div>
+        `).join('')}
+      </div>
+      
+      <div id="element-info" class="hidden var-bg-surface rounded-xl p-6 shadow-lg var-border transition-all duration-300"></div>
     </div>
-  `;
-  
-  if (typeof openModal === 'function') {
-    openModal(html);
-    setupPeriodicTable();
-  }
+  </div>
+`;
+
+if (typeof openModal === 'function') {
+  openModal(html);
+  setupPeriodicTable();
+}
 }
 
 function getPeriodicElements() {
-  return [
-    { number: 1, symbol: 'H', name: 'Hidrogênio', color: '#FF6B6B', mass: '1.008', group: 'Não-metal' },
-    { number: 2, symbol: 'He', name: 'Hélio', color: '#4ECDC4', mass: '4.003', group: 'Gás nobre' },
-    { number: 3, symbol: 'Li', name: 'Lítio', color: '#FFE66D', mass: '6.941', group: 'Metal alcalino' },
-    { number: 4, symbol: 'Be', name: 'Berílio', color: '#95E1D3', mass: '9.012', group: 'Metal alcalino-terroso' },
-    { number: 5, symbol: 'B', name: 'Boro', color: '#F38181', mass: '10.81', group: 'Semimetal' },
-    { number: 6, symbol: 'C', name: 'Carbono', color: '#AA96DA', mass: '12.01', group: 'Não-metal' },
-    { number: 7, symbol: 'N', name: 'Nitrogênio', color: '#FCBAD3', mass: '14.01', group: 'Não-metal' },
-    { number: 8, symbol: 'O', name: 'Oxigênio', color: '#A8D8EA', mass: '16.00', group: 'Não-metal' },
-    { number: 9, symbol: 'F', name: 'Flúor', color: '#FFD3B6', mass: '19.00', group: 'Halogênio' }
-  ];
+return [
+  { number: 1, symbol: 'H', name: 'Hidrogênio', color: '#FF6B6B', mass: '1.008', group: 'Não-metal' },
+  { number: 2, symbol: 'He', name: 'Hélio', color: '#4ECDC4', mass: '4.003', group: 'Gás nobre' },
+  { number: 3, symbol: 'Li', name: 'Lítio', color: '#FFE66D', mass: '6.941', group: 'Metal alcalino' },
+  { number: 4, symbol: 'Be', name: 'Berílio', color: '#95E1D3', mass: '9.012', group: 'Metal alcalino-terroso' },
+  { number: 5, symbol: 'B', name: 'Boro', color: '#F38181', mass: '10.81', group: 'Semimetal' },
+  { number: 6, symbol: 'C', name: 'Carbono', color: '#AA96DA', mass: '12.01', group: 'Não-metal' },
+  { number: 7, symbol: 'N', name: 'Nitrogênio', color: '#FCBAD3', mass: '14.01', group: 'Não-metal' },
+  { number: 8, symbol: 'O', name: 'Oxigênio', color: '#A8D8EA', mass: '16.00', group: 'Não-metal' },
+  { number: 9, symbol: 'F', name: 'Flúor', color: '#FFD3B6', mass: '19.00', group: 'Halogênio' }
+];
 }
 
 window.showElementInfo = function(symbol) {
-  const elements = getPeriodicElements();
-  const element = elements.find(el => el.symbol === symbol);
-  
-  if (!element) return;
-  
-  const infoDiv = document.getElementById('element-info');
-  infoDiv.innerHTML = `
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-      <div>
-        <h3 class="text-3xl font-bold text-gray-800 mb-2">${element.name}</h3>
-        <div class="text-6xl font-bold text-gray-300 mb-4">${element.symbol}</div>
-        <div class="space-y-2">
-          <p><strong>Número Atômico:</strong> ${element.number}</p>
-          <p><strong>Massa Atômica:</strong> ${element.mass} u</p>
-          <p><strong>Grupo:</strong> ${element.group}</p>
-        </div>
-      </div>
-      <div class="flex items-center justify-center">
-        <div class="w-48 h-48 rounded-full flex items-center justify-center text-8xl font-bold" 
-             style="background: ${element.color}40; color: ${element.color};">
-          ${element.symbol}
-        </div>
+const elements = getPeriodicElements();
+const element = elements.find(el => el.symbol === symbol);
+if (!element) return;
+
+const infoDiv = document.getElementById('element-info');
+infoDiv.innerHTML = `
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+    <div>
+      <h3 class="text-3xl font-bold var-text-primary mb-2">${element.name}</h3>
+      <div class="text-7xl font-extrabold text-gray-300 dark:text-gray-600 mb-4">${element.symbol}</div>
+      <div class="space-y-2 var-text-secondary">
+        <p><strong>Número Atômico:</strong> ${element.number}</p>
+        <p><strong>Massa Atômica:</strong> ${element.mass} u</p>
+        <p><strong>Grupo:</strong> ${element.group}</p>
       </div>
     </div>
-  `;
-  infoDiv.classList.remove('hidden');
+    <div class="flex items-center justify-center">
+      <div 
+        class="w-48 h-48 rounded-full flex items-center justify-center text-8xl font-bold shadow-lg var-border" 
+        style="background: ${element.color}30; color: ${element.color};"
+      >
+        ${element.symbol}
+      </div>
+    </div>
+  </div>
+`;
+infoDiv.classList.remove('hidden');
 };
 
 function setupPeriodicTable() {
-  const search = document.getElementById('element-search');
-  search.addEventListener('input', (e) => {
-    const query = e.target.value.toLowerCase();
-    document.querySelectorAll('.element-cell').forEach(cell => {
-      const text = cell.textContent.toLowerCase();
-      cell.style.opacity = text.includes(query) ? '1' : '0.3';
-    });
+const search = document.getElementById('element-search');
+search.addEventListener('input', (e) => {
+  const query = e.target.value.toLowerCase();
+  document.querySelectorAll('.element-cell').forEach(cell => {
+    const text = cell.textContent.toLowerCase();
+    cell.style.opacity = text.includes(query) ? '1' : '0.3';
   });
+});
 }
 
 // ========== 5. MAPA MENTAL ==========
@@ -1117,84 +1185,92 @@ function setupFocusTimer() {
 
 // 3. GERADOR DE FÓRMULAS MATEMÁTICAS
 function openFormulaGeneratorModal() {
-  const html = `
-    <div class="max-w-4xl mx-auto">
-      <h2 class="text-3xl font-bold text-gray-800 mb-6 text-center">
-        <i class="fas fa-square-root-alt mr-3 text-red-500"></i>Biblioteca de Fórmulas
-      </h2>
-      
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-        <button onclick="showFormulas('matematica')" class="bg-red-500 text-white py-3 rounded-lg hover:bg-red-600">
-          <i class="fas fa-calculator mr-2"></i>Matemática
-        </button>
-        <button onclick="showFormulas('fisica')" class="bg-blue-500 text-white py-3 rounded-lg hover:bg-blue-600">
-          <i class="fas fa-atom mr-2"></i>Física
-        </button>
-        <button onclick="showFormulas('quimica')" class="bg-green-500 text-white py-3 rounded-lg hover:bg-green-600">
-          <i class="fas fa-flask mr-2"></i>Química
-        </button>
-      </div>
-      
-      <div id="formulas-container" class="bg-gray-50 rounded-xl p-6 min-h-[400px]">
-        <p class="text-center text-gray-500">Selecione uma matéria acima para ver as fórmulas</p>
-      </div>
+const html = `
+  <div class="max-w-4xl mx-auto">
+    <h2 class="text-3xl font-bold var-text-primary mb-6 text-center">
+      <i class="fas fa-square-root-alt mr-3 text-[var(--accent-red)]"></i>Biblioteca de Fórmulas
+    </h2>
+    
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+      <button onclick="showFormulas('matematica')" 
+        class="py-3 rounded-lg font-medium transition var-btn var-btn-red">
+        <i class="fas fa-calculator mr-2"></i>Matemática
+      </button>
+      <button onclick="showFormulas('fisica')" 
+        class="py-3 rounded-lg font-medium transition var-btn var-btn-blue">
+        <i class="fas fa-atom mr-2"></i>Física
+      </button>
+      <button onclick="showFormulas('quimica')" 
+        class="py-3 rounded-lg font-medium transition var-btn var-btn-green">
+        <i class="fas fa-flask mr-2"></i>Química
+      </button>
     </div>
-  `;
-  
-  if (typeof openModal === 'function') {
-    openModal(html);
-    setupFormulaGenerator();
-  }
+    
+    <div id="formulas-container" 
+         class="rounded-xl p-6 min-h-[400px] var-bg-panel var-border transition-all">
+      <p class="text-center var-text-secondary">
+        Selecione uma matéria acima para ver as fórmulas
+      </p>
+    </div>
+  </div>
+`;
+
+if (typeof openModal === 'function') {
+  openModal(html);
+  setupFormulaGenerator();
+}
 }
 
 function setupFormulaGenerator() {
-  window.showFormulas = function(subject) {
-    const container = document.getElementById('formulas-container');
-    
-    const formulas = {
-      matematica: [
-        { name: 'Bhaskara', formula: 'x = (-b ± √(b² - 4ac)) / 2a', desc: 'Resolução de equações do 2º grau' },
-        { name: 'Área do Círculo', formula: 'A = πr²', desc: 'Área de um círculo com raio r' },
-        { name: 'Teorema de Pitágoras', formula: 'a² + b² = c²', desc: 'Relação nos triângulos retângulos' },
-        { name: 'Distância entre pontos', formula: 'd = √((x₂-x₁)² + (y₂-y₁)²)', desc: 'Distância no plano cartesiano' },
-        { name: 'Progressão Aritmética', formula: 'aₙ = a₁ + (n-1)·r', desc: 'Termo geral da PA' },
-        { name: 'Progressão Geométrica', formula: 'aₙ = a₁ · qⁿ⁻¹', desc: 'Termo geral da PG' }
-      ],
-      fisica: [
-        { name: 'Velocidade Média', formula: 'v = Δs / Δt', desc: 'Variação de espaço sobre tempo' },
-        { name: 'Energia Cinética', formula: 'Ec = mv² / 2', desc: 'Energia de movimento' },
-        { name: 'Lei de Newton', formula: 'F = m · a', desc: 'Força igual a massa vezes aceleração' },
-        { name: 'Energia Potencial', formula: 'Ep = m · g · h', desc: 'Energia gravitacional' },
-        { name: 'Trabalho', formula: 'τ = F · d · cos(θ)', desc: 'Trabalho de uma força' },
-        { name: 'Lei de Ohm', formula: 'V = R · I', desc: 'Tensão, resistência e corrente' }
-      ],
-      quimica: [
-        { name: 'Mol', formula: 'n = m / MM', desc: 'Quantidade de matéria' },
-        { name: 'Concentração Molar', formula: 'M = n / V', desc: 'Mols por litro' },
-        { name: 'pH', formula: 'pH = -log[H⁺]', desc: 'Potencial hidrogeniônico' },
-        { name: 'Gases Ideais', formula: 'PV = nRT', desc: 'Equação de Clapeyron' },
-        { name: 'Diluição', formula: 'C₁V₁ = C₂V₂', desc: 'Diluição de soluções' },
-        { name: 'Lei de Hess', formula: 'ΔH = ΣH(produtos) - ΣH(reagentes)', desc: 'Entalpia de reação' }
-      ]
-    };
-    
-    const selectedFormulas = formulas[subject] || [];
-    
-    container.innerHTML = `
-      <h3 class="text-xl font-bold text-gray-800 mb-4 capitalize">
-        <i class="fas fa-book mr-2"></i>${subject}
-      </h3>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        ${selectedFormulas.map(f => `
-          <div class="bg-white rounded-lg p-4 border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
-            <h4 class="font-semibold text-gray-800 mb-2">${f.name}</h4>
-            <div class="bg-gray-100 rounded p-3 mb-2 font-mono text-lg text-center">${f.formula}</div>
-            <p class="text-sm text-gray-600">${f.desc}</p>
-          </div>
-        `).join('')}
-      </div>
-    `;
+window.showFormulas = function (subject) {
+  const container = document.getElementById('formulas-container');
+
+  const formulas = {
+    matematica: [
+      { name: 'Bhaskara', formula: 'x = (-b ± √(b² - 4ac)) / 2a', desc: 'Resolução de equações do 2º grau' },
+      { name: 'Área do Círculo', formula: 'A = πr²', desc: 'Área de um círculo com raio r' },
+      { name: 'Teorema de Pitágoras', formula: 'a² + b² = c²', desc: 'Relação nos triângulos retângulos' },
+      { name: 'Distância entre pontos', formula: 'd = √((x₂-x₁)² + (y₂-y₁)²)', desc: 'Distância no plano cartesiano' },
+      { name: 'Progressão Aritmética', formula: 'aₙ = a₁ + (n-1)·r', desc: 'Termo geral da PA' },
+      { name: 'Progressão Geométrica', formula: 'aₙ = a₁ · qⁿ⁻¹', desc: 'Termo geral da PG' }
+    ],
+    fisica: [
+      { name: 'Velocidade Média', formula: 'v = Δs / Δt', desc: 'Variação de espaço sobre tempo' },
+      { name: 'Energia Cinética', formula: 'Ec = mv² / 2', desc: 'Energia de movimento' },
+      { name: 'Lei de Newton', formula: 'F = m · a', desc: 'Força igual a massa vezes aceleração' },
+      { name: 'Energia Potencial', formula: 'Ep = m · g · h', desc: 'Energia gravitacional' },
+      { name: 'Trabalho', formula: 'τ = F · d · cos(θ)', desc: 'Trabalho de uma força' },
+      { name: 'Lei de Ohm', formula: 'V = R · I', desc: 'Tensão, resistência e corrente' }
+    ],
+    quimica: [
+      { name: 'Mol', formula: 'n = m / MM', desc: 'Quantidade de matéria' },
+      { name: 'Concentração Molar', formula: 'M = n / V', desc: 'Mols por litro' },
+      { name: 'pH', formula: 'pH = -log[H⁺]', desc: 'Potencial hidrogeniônico' },
+      { name: 'Gases Ideais', formula: 'PV = nRT', desc: 'Equação de Clapeyron' },
+      { name: 'Diluição', formula: 'C₁V₁ = C₂V₂', desc: 'Diluição de soluções' },
+      { name: 'Lei de Hess', formula: 'ΔH = ΣH(produtos) - ΣH(reagentes)', desc: 'Entalpia de reação' }
+    ]
   };
+
+  const selectedFormulas = formulas[subject] || [];
+
+  container.innerHTML = `
+    <h3 class="text-xl font-bold var-text-primary mb-4 capitalize">
+      <i class="fas fa-book mr-2"></i>${subject}
+    </h3>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      ${selectedFormulas.map(f => `
+        <div class="var-bg-surface var-border rounded-lg p-4 shadow-sm hover:shadow-md transition-all">
+          <h4 class="font-semibold var-text-primary mb-2">${f.name}</h4>
+          <div class="rounded p-3 mb-2 font-mono text-lg text-center var-bg-panel var-text-primary select-text">
+            ${f.formula}
+          </div>
+          <p class="text-sm var-text-secondary">${f.desc}</p>
+        </div>
+      `).join('')}
+    </div>
+  `;
+};
 }
 
 // 4. ORGANIZADOR DE TAREFAS DE ESTUDO
@@ -1342,115 +1418,215 @@ function setupStudyTasks() {
 
 // 5. DICIONÁRIO RÁPIDO (OFFLINE)
 function openDictionaryModal() {
-  const html = `
-    <div class="max-w-3xl mx-auto">
-      <h2 class="text-3xl font-bold text-gray-800 mb-6 text-center">
-        <i class="fas fa-book-open mr-3 text-amber-500"></i>Dicionário Rápido
-      </h2>
-      
-      <div class="mb-6">
-        <div class="flex gap-2">
-          <input type="text" id="word-search" placeholder="Digite uma palavra..." 
-                 class="flex-1 border border-gray-300 rounded-lg px-4 py-3"/>
-          <button id="btn-search-word" class="bg-amber-500 text-white px-6 py-3 rounded-lg hover:bg-amber-600">
-            <i class="fas fa-search"></i>
-          </button>
-        </div>
-      </div>
-      
-      <div id="word-result" class="bg-amber-50 border border-amber-200 rounded-xl p-6 min-h-[300px]">
-        <p class="text-center text-gray-500 py-12">Digite uma palavra e pressione buscar</p>
+const html = `
+  <div class="max-w-3xl mx-auto">
+    <h2 class="text-3xl font-bold text-[var(--textPrimary)] mb-6 text-center">
+      <i class="fas fa-book-open mr-3 text-[var(--accent)]"></i>Dicionário Rápido
+    </h2>
+    
+    <div class="mb-6">
+      <div class="flex gap-2">
+        <input 
+          type="text" 
+          id="word-search" 
+          placeholder="Digite uma palavra..." 
+          class="flex-1 border border-[var(--borderColor)] bg-[var(--surface)] text-[var(--textPrimary)] rounded-lg px-4 py-3 placeholder-[var(--textSecondary)] focus:ring-2 focus:ring-[var(--accent)] focus:outline-none transition-colors"
+        />
+        <button 
+          id="btn-search-word" 
+          class="bg-[var(--accent)] text-[var(--onAccent)] px-6 py-3 rounded-lg hover:bg-[var(--accentHover)] transition-all shadow-sm"
+        >
+          <i class="fas fa-search"></i>
+        </button>
       </div>
     </div>
-  `;
-  
-  if (typeof openModal === 'function') {
-    openModal(html);
-    setupDictionary();
-  }
+    
+    <div 
+      id="word-result" 
+      class="bg-[var(--surfaceAlt)] border border-[var(--borderColor)] rounded-xl p-6 min-h-[300px] transition-colors"
+    >
+      <p class="text-center text-[var(--textSecondary)] py-12">Digite uma palavra e pressione buscar</p>
+    </div>
+  </div>
+`;
+
+if (typeof openModal === 'function') {
+  openModal(html);
+  setupDictionary();
+}
 }
 
 function setupDictionary() {
-  const input = document.getElementById('word-search');
-  const btnSearch = document.getElementById('btn-search-word');
-  const result = document.getElementById('word-result');
+const input = document.getElementById('word-search');
+const btnSearch = document.getElementById('btn-search-word');
+const result = document.getElementById('word-result');
+
+const dictionary = {
+  'estudar': {
+    def: 'Dedicar-se ao aprendizado; aplicar a inteligência para aprender.',
+    ex: 'Preciso estudar para a prova de matemática.',
+    sin: ['aprender', 'pesquisar', 'investigar']
+  },
+  'conhecimento': {
+    def: 'Ato ou efeito de conhecer; saber, instrução, ciência.',
+    ex: 'O conhecimento é a chave para o sucesso.',
+    sin: ['saber', 'ciência', 'erudição']
+  },
+  'aprender': {
+    def: 'Tomar conhecimento de; instruir-se ou compreender algo novo.',
+    ex: 'É importante aprender com os erros.',
+    sin: ['assimilar', 'estudar', 'compreender']
+  },
+  'dedicação': {
+    def: 'Ato de dedicar-se; empenho e aplicação constante em algo.',
+    ex: 'A dedicação aos estudos traz resultados positivos.',
+    sin: ['empenho', 'aplicação', 'comprometimento']
+  },
+  'perseverança': {
+    def: 'Qualidade de quem persiste mesmo diante de dificuldades.',
+    ex: 'A perseverança é essencial para alcançar objetivos.',
+    sin: ['persistência', 'tenacidade', 'firmeza']
+  },
+  'disciplina': {
+    def: 'Capacidade de manter foco e cumprir regras ou metas estabelecidas.',
+    ex: 'Sem disciplina, é difícil manter uma rotina de estudos.',
+    sin: ['autocontrole', 'organização', 'constância']
+  },
+  'foco': {
+    def: 'Concentração de atenção ou esforço em uma tarefa específica.',
+    ex: 'Estudar com foco aumenta a produtividade.',
+    sin: ['atenção', 'concentração', 'propósito']
+  },
+  'resumo': {
+    def: 'Síntese das principais ideias de um texto.',
+    ex: 'Fiz um resumo do capítulo para revisar antes da prova.',
+    sin: ['síntese', 'compilação', 'sumário']
+  },
+  'memória': {
+    def: 'Faculdade de conservar e recordar informações ou experiências.',
+    ex: 'A memória melhora quando se revisa o conteúdo com frequência.',
+    sin: ['recordação', 'lembrança', 'retenção']
+  },
+  'concentração': {
+    def: 'Ato de dirigir totalmente a atenção a uma atividade.',
+    ex: 'Estudar em um ambiente silencioso ajuda na concentração.',
+    sin: ['atenção', 'foco', 'absorção']
+  },
+  'objetivo': {
+    def: 'Meta ou propósito que se deseja alcançar.',
+    ex: 'Meu objetivo é passar no vestibular este ano.',
+    sin: ['meta', 'intenção', 'propósito']
+  },
+  'leitura': {
+    def: 'Ato de interpretar e compreender um texto escrito.',
+    ex: 'A leitura diária amplia o vocabulário e o raciocínio.',
+    sin: ['interpretação', 'análise', 'decodificação']
+  },
+  'curiosidade': {
+    def: 'Desejo de saber ou aprender algo novo.',
+    ex: 'A curiosidade é a base do aprendizado verdadeiro.',
+    sin: ['interesse', 'inquietação', 'investigação']
+  },
+  'motivação': {
+    def: 'Força interna que leva alguém a agir ou persistir em um objetivo.',
+    ex: 'A motivação ajuda a manter o ritmo de estudos.',
+    sin: ['estímulo', 'inspiração', 'vontade']
+  },
+  'raciocínio': {
+    def: 'Capacidade de pensar e tirar conclusões de forma lógica.',
+    ex: 'Resolver problemas estimula o raciocínio.',
+    sin: ['lógica', 'análise', 'pensamento']
+  },
+  'organização': {
+    def: 'Ato de planejar e estruturar tarefas de forma eficiente.',
+    ex: 'Com organização, sobra tempo para revisar com calma.',
+    sin: ['planejamento', 'método', 'ordem']
+  },
+  'esforço': {
+    def: 'Ação de empregar energia ou dedicação para alcançar algo.',
+    ex: 'O esforço constante é mais importante que o talento natural.',
+    sin: ['trabalho', 'dedicação', 'persistência']
+  },
+  'aprendizado': {
+    def: 'Processo de adquirir conhecimento ou habilidade.',
+    ex: 'O aprendizado vem com a prática e a experiência.',
+    sin: ['estudo', 'formação', 'educação']
+  },
+  'revisão': {
+    def: 'Ato de reler ou estudar novamente para fixar o conteúdo.',
+    ex: 'Faço revisão de todo o material antes da prova.',
+    sin: ['recapitulação', 'releitura', 'análise']
+  },
+  'criatividade': {
+    def: 'Capacidade de criar ou inventar algo novo.',
+    ex: 'A criatividade ajuda a encontrar soluções originais.',
+    sin: ['inovação', 'imaginação', 'originalidade']
+  },
+  'inteligência': {
+    def: 'Faculdade de compreender, raciocinar e resolver problemas.',
+    ex: 'A inteligência é desenvolvida com estímulo e prática.',
+    sin: ['sagacidade', 'capacidade', 'engenho']
+  },
+  'paciência': {
+    def: 'Capacidade de suportar dificuldades com calma e persistência.',
+    ex: 'A paciência é essencial para lidar com o tempo de aprendizado.',
+    sin: ['calma', 'tolerância', 'tranquilidade']
+  },
+  'prática': {
+    def: 'Ato de aplicar conhecimentos ou habilidades na ação.',
+    ex: 'A prática constante leva à perfeição.',
+    sin: ['exercício', 'execução', 'treinamento']
+  }
+};
+
+function searchWord() {
+  const word = input.value.trim().toLowerCase();
   
-  const dictionary = {
-    'estudar': {
-      def: 'Dedicar-se ao aprendizado; aplicar a inteligência para aprender.',
-      ex: 'Preciso estudar para a prova de matemática.',
-      sin: ['aprender', 'pesquisar', 'investigar']
-    },
-    'conhecimento': {
-      def: 'Ato ou efeito de conhecer; saber, instrução, ciência.',
-      ex: 'O conhecimento é a chave para o sucesso.',
-      sin: ['saber', 'ciência', 'erudição']
-    },
-    'aprender': {
-      def: 'Tomar conhecimento de; ficar sabendo; instruir-se.',
-      ex: 'É importante aprender com os erros.',
-      sin: ['estudar', 'assimilar', 'compreender']
-    },
-    'dedicação': {
-      def: 'Ato de dedicar-se; empenho, aplicação.',
-      ex: 'A dedicação aos estudos traz resultados positivos.',
-      sin: ['empenho', 'aplicação', 'comprometimento']
-    },
-    'perseverança': {
-      def: 'Qualidade de quem persevera; persistência, constância.',
-      ex: 'A perseverança é fundamental para alcançar objetivos.',
-      sin: ['persistência', 'tenacidade', 'firmeza']
-    }
-  };
-  
-  function searchWord() {
-    const word = input.value.trim().toLowerCase();
-    
-    if (!word) {
-      result.innerHTML = '<p class="text-center text-gray-500 py-12">Digite uma palavra e pressione buscar</p>';
-      return;
-    }
-    
-    const wordData = dictionary[word];
-    
-    if (wordData) {
-      result.innerHTML = `
-        <div class="space-y-4">
-          <div>
-            <h3 class="text-2xl font-bold text-amber-700 mb-2 capitalize">${word}</h3>
-          </div>
-          
-          <div>
-            <h4 class="font-semibold text-gray-700 mb-2">📖 Definição:</h4>
-            <p class="text-gray-600">${wordData.def}</p>
-          </div>
-          
-          <div>
-            <h4 class="font-semibold text-gray-700 mb-2">💬 Exemplo:</h4>
-            <p class="text-gray-600 italic">"${wordData.ex}"</p>
-          </div>
-          
-          <div>
-            <h4 class="font-semibold text-gray-700 mb-2">🔄 Sinônimos:</h4>
-            <div class="flex flex-wrap gap-2">
-              ${wordData.sin.map(s => `<span class="bg-amber-200 px-3 py-1 rounded-full text-sm">${s}</span>`).join('')}
-            </div>
-          </div>
-        </div>
-      `;
-    } else {
-      result.innerHTML = `
-        <div class="text-center py-12">
-          <i class="fas fa-exclamation-circle text-4xl text-amber-500 mb-4"></i>
-          <p class="text-gray-600">Palavra não encontrada no dicionário offline.</p>
-          <p class="text-sm text-gray-500 mt-2">Tente: estudar, conhecimento, aprender, dedicação, perseverança</p>
-        </div>
-      `;
-    }
+  if (!word) {
+    result.innerHTML = '<p class="text-center text-[var(--textSecondary)] py-12">Digite uma palavra e pressione buscar</p>';
+    return;
   }
   
-  btnSearch.addEventListener('click', searchWord);
-  input.addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') searchWord();
-  });
+  const wordData = dictionary[word];
+  
+  if (wordData) {
+    result.innerHTML = `
+      <div class="space-y-4">
+        <div>
+          <h3 class="text-2xl font-bold text-[var(--accent)] mb-2 capitalize">${word}</h3>
+        </div>
+        
+        <div>
+          <h4 class="font-semibold text-[var(--textPrimary)] mb-2">📖 Definição:</h4>
+          <p class="text-[var(--textSecondary)]">${wordData.def}</p>
+        </div>
+        
+        <div>
+          <h4 class="font-semibold text-[var(--textPrimary)] mb-2">💬 Exemplo:</h4>
+          <p class="text-[var(--textSecondary)] italic">"${wordData.ex}"</p>
+        </div>
+        
+        <div>
+          <h4 class="font-semibold text-[var(--textPrimary)] mb-2">🔄 Sinônimos:</h4>
+          <div class="flex flex-wrap gap-2">
+            ${wordData.sin.map(s => `<span class="bg-[var(--accentSoft)] text-[var(--textPrimary)] px-3 py-1 rounded-full text-sm">${s}</span>`).join('')}
+          </div>
+        </div>
+      </div>
+    `;
+  } else {
+    result.innerHTML = `
+      <div class="text-center py-12">
+        <i class="fas fa-exclamation-circle text-4xl text-[var(--accent)] mb-4"></i>
+        <p class="text-[var(--textPrimary)]">Palavra não encontrada no dicionário offline.</p>
+        <p class="text-sm text-[var(--textSecondary)] mt-2">Tente: estudar, conhecimento, foco, disciplina, leitura, revisão...</p>
+      </div>
+    `;
+  }
+}
+
+btnSearch.addEventListener('click', searchWord);
+input.addEventListener('keypress', (e) => {
+  if (e.key === 'Enter') searchWord();
+});
 }

@@ -218,22 +218,21 @@ function renderTabs() {
   if (!tabsContainer) return;
 
   tabsContainer.innerHTML = "";
-  tabs.forEach((tab) => {
+  tabs.forEach((tab, index) => {
     const btn = document.createElement("button");
     btn.className = `
       tab flex items-center justify-between px-3 py-1 text-sm rounded-[10px] border shadow-sm truncate
-      w-[160px] h-8 transition-all duration-200
-      ${
-        tab.id === activeTabId
-          ? "bg-white text-gray-900 border-gray-400 opacity-100"
-          : "bg-white text-gray-600 border-gray-200 opacity-30 hover:opacity-100"
+      w-[160px] h-8 transition-all duration-200 cursor-default select-none
+      ${tab.id === activeTabId
+        ? "bg-white text-gray-900 border-gray-400 opacity-100"
+        : "bg-white text-gray-600 border-gray-200 opacity-40 hover:opacity-100"
       }
-    }`;
+    `;
 
     btn.title = tab.title;
     btn.innerHTML = `
       <span class="truncate">${tab.title}</span> 
-       <i class="fas fa-times text-xs opacity-60 hover:opacity-100"></i>
+      <i class="fas fa-times text-xs opacity-60 hover:opacity-100"></i>
     `;
 
     btn.addEventListener("click", () => setActiveTab(tab.id));
@@ -242,8 +241,113 @@ function renderTabs() {
       closeTab(tab.id);
     });
 
+    btn.addEventListener("pointerdown", (e) => startReorder(e, btn));
+
     tabsContainer.appendChild(btn);
   });
+}
+
+// === ARRASTE SUAVE COM GPU ===
+let dragBtn = null, placeholder = null, dragIndex = 0;
+let offsetX = 0, startLeft = 0, startX = 0;
+let isDragging = false;
+
+function startReorder(e, btn) {
+  if (e.target.tagName === "I") return;
+
+  dragBtn = btn;
+  dragIndex = [...tabsContainer.children].indexOf(btn);
+
+  const rect = btn.getBoundingClientRect();
+  offsetX = e.clientX - rect.left;
+  startLeft = rect.left;
+  startX = e.clientX;
+  isDragging = false;
+
+  document.addEventListener("pointermove", checkDragStart);
+  document.addEventListener("pointerup", cancelPotentialDrag);
+}
+
+function checkDragStart(e) {
+  if (Math.abs(e.clientX - startX) < 6) return;
+
+  isDragging = true;
+
+  document.removeEventListener("pointermove", checkDragStart);
+  document.removeEventListener("pointerup", cancelPotentialDrag);
+
+  const rect = dragBtn.getBoundingClientRect();
+
+  placeholder = document.createElement("div");
+  placeholder.style.width = rect.width + "px";
+  placeholder.style.height = rect.height + "px";
+  placeholder.style.flexShrink = "0";
+  tabsContainer.insertBefore(placeholder, dragBtn);
+
+  dragBtn.style.position = "fixed";
+  dragBtn.style.zIndex = "999";
+  dragBtn.style.left = rect.left + "px";
+  dragBtn.style.top = rect.top + "px";
+  dragBtn.style.width = rect.width + "px";
+  dragBtn.style.pointerEvents = "none";
+  dragBtn.style.transition = "none";
+
+  document.addEventListener("pointermove", reorderMove);
+  document.addEventListener("pointerup", reorderEnd);
+}
+
+function cancelPotentialDrag() {
+  document.removeEventListener("pointermove", checkDragStart);
+  document.removeEventListener("pointerup", cancelPotentialDrag);
+  dragBtn = null;
+}
+
+function reorderMove(e) {
+  if (!isDragging || !dragBtn) return;
+
+  dragBtn.style.left = (e.clientX - offsetX) + "px";
+
+  const children = [...tabsContainer.children].filter(el => el !== dragBtn && el !== placeholder);
+
+  for (let i = 0; i < children.length; i++) {
+    const rect = children[i].getBoundingClientRect();
+    const center = rect.left + rect.width / 2;
+
+    if (e.clientX < center) {
+      tabsContainer.insertBefore(placeholder, children[i]);
+      return;
+    }
+  }
+
+  tabsContainer.appendChild(placeholder);
+}
+
+function reorderEnd() {
+  if (!isDragging || !dragBtn) return;
+
+  document.removeEventListener("pointermove", reorderMove);
+  document.removeEventListener("pointerup", reorderEnd);
+
+  dragBtn.style.position = "";
+  dragBtn.style.zIndex = "";
+  dragBtn.style.left = "";
+  dragBtn.style.top = "";
+  dragBtn.style.width = "";
+  dragBtn.style.pointerEvents = "";
+  dragBtn.style.transition = "";
+
+  tabsContainer.insertBefore(dragBtn, placeholder);
+
+  const newIndex = [...tabsContainer.children].indexOf(dragBtn);
+  const moved = tabs.splice(dragIndex, 1)[0];
+  tabs.splice(newIndex, 0, moved);
+
+  placeholder.remove();
+  placeholder = null;
+  dragBtn = null;
+  isDragging = false;
+
+  renderTabs();
 }
 
 function setActiveTab(id) {
@@ -940,9 +1044,10 @@ function openNotesModal() {
   <div id="notes-modal" style="
       position:fixed; left:4.2rem; top:150px; width:350px; height:50vh;
       background:${colors.modalBg}; color:${colors.modalText}; border:1px solid ${colors.border};
-      border-radius:.75rem; display:flex; flex-direction:column; z-index:9999; padding:.5rem;">
+      border-radius:.75rem; display:flex; flex-direction:column; z-index:9999; padding:.5rem;
+      resize: both; overflow: auto;">
     
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:.25rem;">
+    <div id="notes-header" style=" display:flex; justify-content:space-between; align-items:center; margin-bottom:.25rem; cursor: move; user-select:none;">
       <h2 style="font-size:.875rem; display:flex; align-items:center;">
         <i class="fas fa-sticky-note mr-1"></i>Notas
       </h2>
@@ -1050,6 +1155,24 @@ function openNotesModal() {
   // Carrega primeira nota
   if (currentNoteId) loadNote(currentNoteId);
 
+  // --- DRAG PARA MOVER O MODAL ---
+  const header = document.getElementById("notes-header");
+  let isDragging = false, offsetX, offsetY;
+
+  header.addEventListener("mousedown", (e) => {
+    isDragging = true;
+    offsetX = e.clientX - modal.offsetLeft;
+    offsetY = e.clientY - modal.offsetTop;
+  });
+
+  document.addEventListener("mousemove", (e) => {
+    if (!isDragging) return;
+    modal.style.left = `${e.clientX - offsetX}px`;
+    modal.style.top = `${e.clientY - offsetY}px`;
+  });
+
+  document.addEventListener("mouseup", () => isDragging = false);
+
   // Atualiza cores se o usuário trocar tema
   window
     .matchMedia("(prefers-color-scheme: dark)")
@@ -1086,6 +1209,8 @@ function openNotesModal() {
         b.style.color = c.btnText;
       });
     });
+
+
 }
 
 // Timer Management
@@ -1103,12 +1228,12 @@ function openTimerModal() {
   };
   const html = `
 <div id="timer-modal" style="
-  position:fixed; left:4.2rem; top:220px; width:300px; height:50vh;
+  position:fixed; left:4.2rem; top:220px; width:250px; height:320px;
   background:${colors.modalBg}; color:${colors.modalText};
   border:1px solid ${colors.border}; border-radius:.75rem; padding:.5rem;
   display:flex; flex-direction:column; z-index:9999;">
 
-  <div style="display:flex; justify-content:space-between; align-items:center; font-size:.9rem;">
+  <div id="timer-drag-handle" style="display:flex; justify-content:space-between; align-items:center; font-size:.9rem; cursor:move;">
     <h2 style="display:flex; align-items:center; gap:.25rem;"><i class='fas fa-hourglass-half text-blue-500'></i>Temporizador</h2>
     <button id="close-timer" style="background:none;border:none;color:${colors.modalText}"><i class='fas fa-times'></i></button>
   </div>
@@ -1139,6 +1264,7 @@ function openTimerModal() {
     document.getElementById("timer-modal")?.remove();
 
   setupTimerModal();
+  makeTimerModalDraggable();  // ✅ TORNA O POP-UP ARRASTÁVEL
 
   // Atualiza cores caso o usuário mude o tema
   window
@@ -1237,6 +1363,33 @@ function setupTimerModal() {
   timerRemaining = parseInt(inputMinutes?.value, 10) * 60 || 1500;
   updateDisplay();
   if (btnPause) btnPause.disabled = true;
+}
+
+function makeTimerModalDraggable() {
+  const modal = document.getElementById("timer-modal");
+  const handle = document.getElementById("timer-drag-handle");
+
+  let offsetX = 0, offsetY = 0, dragging = false;
+
+  handle.addEventListener("mousedown", (e) => {
+    dragging = true;
+    offsetX = e.clientX - modal.offsetLeft;
+    offsetY = e.clientY - modal.offsetTop;
+    document.addEventListener("mousemove", move);
+    document.addEventListener("mouseup", stop);
+  });
+
+  function move(e) {
+    if (!dragging) return;
+    modal.style.left = `${e.clientX - offsetX}px`;
+    modal.style.top = `${e.clientY - offsetY}px`;
+  }
+
+  function stop() {
+    dragging = false;
+    document.removeEventListener("mousemove", move);
+    document.removeEventListener("mouseup", stop);
+  }
 }
 
 // Chat GPT Integration - Funcional com API real
@@ -1641,32 +1794,33 @@ function openMoreToolsModal() {
     },
   ];
 
-  const buttonsHtml = tools
-    .map(
-      (t) => `
-    <button id="${t.id}" style="
-      background:linear-gradient(90deg, ${t.from}, ${t.to}); color:${colors.buttonText}; padding:.5rem; border-radius:.5rem; border:none;
-      display:flex; flex-direction:column; align-items:flex-start; margin-bottom:.25rem;"
-    >
+  const buttonsHtml = tools.map(t => `
+    <button class="tool-btn" data-title="${t.title.toLowerCase()}" id="${t.id}" style="
+      background:linear-gradient(90deg, ${t.from}, ${t.to});
+      color:${colors.buttonText}; padding:.5rem; border-radius:.5rem; border:none;
+      display:flex; flex-direction:column; align-items:flex-start; margin-bottom:.25rem;
+    ">
       <i class="fas ${t.icon}" style="font-size:1.25rem; margin-bottom:.25rem;"></i>
       <span style="font-weight:600;">${t.title}</span>
       <p style="font-size:.75rem; opacity:.9;">${t.desc}</p>
     </button>
-  `,
-    )
-    .join("");
+  `).join("");
 
   const html = `
     <div id="more-tools-modal" style="
       position:fixed; left:4.2rem; top:220px; width:420px; height:65vh; overflow:auto;
       background:${colors.modalBg}; color:${colors.modalText}; border:1px solid ${colors.border};
-      border-radius:1rem; padding:1rem; display:flex; flex-direction:column; z-index:9999;"
-    >
+      border-radius:1rem; padding:1rem; display:flex; flex-direction:column; z-index:9999;
+    ">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:.5rem;">
-        <h2 style="display:flex; align-items:center;"><i class="fas fa-tools mr-2 text-purple-500"></i>Ferramentas Extras</h2>
-        <button id="close-more-tools" style="color:${colors.modalText};"><i class="fas fa-times"></i></button>
+        <h2>Ferramentas Extras</h2>
+        <button id="close-more-tools" style="color:${colors.modalText};">X</button>
       </div>
-      <div style="display:flex; flex-direction:column; gap:.25rem;">
+
+      <input id="tools-search" type="text" placeholder="Pesquisar ferramenta..." 
+        style="padding:.5rem; border-radius:.5rem; border:1px solid ${colors.border}; margin-bottom:.75rem; width:100%;">
+
+      <div id="tools-list" style="display:flex; flex-direction:column; gap:.25rem;">
         ${buttonsHtml}
       </div>
     </div>
@@ -1674,8 +1828,50 @@ function openMoreToolsModal() {
 
   document.body.insertAdjacentHTML("beforeend", html);
 
+  const searchInput = document.getElementById("tools-search");
+  const toolsList = document.getElementById("tools-list");
+
   document.getElementById("close-more-tools").onclick = () =>
     document.getElementById("more-tools-modal")?.remove();
+
+  function scrollToTool(btn) {
+    btn.scrollIntoView({ behavior: "smooth", block: "center" });
+    btn.style.outline = "2px solid #8b5cf6";
+    setTimeout(() => (btn.style.outline = "none"), 1000);
+  }
+
+  searchInput.addEventListener("input", () => {
+    const query = searchInput.value.toLowerCase();
+    if (!query) return;
+    const target = Array.from(toolsList.querySelectorAll(".tool-btn"))
+      .find(btn => btn.dataset.title.includes(query));
+    if (target) scrollToTool(target);
+  });
+
+  function scrollToTool(btn) {
+  btn.scrollIntoView({ behavior: "smooth", block: "center" });
+  btn.style.outline = "2px solid #8b5cf6";
+  setTimeout(() => (btn.style.outline = "none"), 1000);
+}
+
+// Evento input: rola automaticamente enquanto digita
+searchInput.addEventListener("input", () => {
+  const query = searchInput.value.toLowerCase();
+  if (!query) return;
+  const target = Array.from(toolsList.querySelectorAll(".tool-btn"))
+    .find(btn => btn.dataset.title.includes(query));
+  if (target) scrollToTool(target);
+});
+
+// Evento Enter: vai direto para a primeira ferramenta que bate
+searchInput.addEventListener("keydown", (e) => {
+  if (e.key === "Enter") {
+    const query = searchInput.value.toLowerCase();
+    const target = Array.from(toolsList.querySelectorAll(".tool-btn"))
+      .find(btn => btn.dataset.title.includes(query));
+    if (target) scrollToTool(target);
+  }
+});
 
   setupMoreToolsModal();
 
@@ -1883,19 +2079,43 @@ function setupMoreToolsModal() {
 // QR Code Generator
 function openQRGeneratorModal() {
   const html = `
-    <div class="max-w-2xl mx-auto">
-      <h2 class="text-2xl font-bold text-gray-800 mb-6 text-center">
-        <i class="fas fa-qrcode mr-2 text-indigo-500"></i>Gerador de QR Code
+    <div class="max-w-3xl mx-auto px-4 py-6" style="color: var(--theme-text)">
+      <h2 class="text-3xl font-bold mb-8 text-center">
+        <i class="fas fa-qrcode mr-2" style="color: var(--theme-accent)"></i>
+        Gerador de QR Code
       </h2>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <!-- Lado esquerdo -->
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2">Texto ou Link</label>
-          <textarea id="qr-input" placeholder="Digite o texto, link ou qualquer conteúdo..." class="w-full h-32 border border-gray-300 rounded-lg p-3"></textarea>
+          <label class="block text-sm font-medium mb-2" style="color: var(--theme-textSecondary)">Texto ou Link</label>
+          <textarea 
+            id="qr-input"
+            placeholder="Digite o texto, link ou qualquer conteúdo..."
+            class="w-full h-36 rounded-xl p-3 resize-none focus:outline-none focus:ring-2 transition-all"
+            style="
+              background: var(--theme-surface);
+              color: var(--theme-text);
+              border: 1px solid var(--theme-border);
+              box-shadow: 0 1px 2px var(--theme-border);
+              caret-color: var(--theme-accent);
+              focus:ring-color: var(--theme-accent);
+            "
+          ></textarea>
           
-          <div class="mt-4 space-y-3">
+          <div class="mt-5 space-y-4">
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Tamanho</label>
-              <select id="qr-size" class="w-full border border-gray-300 rounded-lg px-3 py-2">
+              <label class="block text-sm font-medium mb-1" style="color: var(--theme-textSecondary)">Tamanho</label>
+              <select 
+                id="qr-size"
+                class="w-full rounded-xl px-3 py-2 focus:outline-none focus:ring-2 transition-all"
+                style="
+                  background: var(--theme-surface);
+                  color: var(--theme-text);
+                  border: 1px solid var(--theme-border);
+                  focus:ring-color: var(--theme-accent);
+                "
+              >
                 <option value="200">Pequeno (200x200)</option>
                 <option value="300" selected>Médio (300x300)</option>
                 <option value="400">Grande (400x400)</option>
@@ -1904,22 +2124,48 @@ function openQRGeneratorModal() {
             </div>
             
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Cor</label>
-              <input type="color" id="qr-color" value="#000000" class="w-full h-10 border border-gray-300 rounded-lg">
+              <label class="block text-sm font-medium mb-1" style="color: var(--theme-textSecondary)">Cor</label>
+              <input 
+                type="color"
+                id="qr-color"
+                value="#000000"
+                class="w-full h-10 rounded-xl cursor-pointer"
+                style="
+                  background: var(--theme-surface);
+                  border: 1px solid var(--theme-border);
+                "
+              >
             </div>
           </div>
           
-          <button id="btn-generate-qr" class="w-full mt-4 bg-indigo-500 text-white py-3 rounded-lg hover:bg-indigo-600 transition-colors">
+          <button 
+            id="btn-generate-qr"
+            class="w-full mt-6 py-3 rounded-xl font-medium transition-all shadow-sm"
+            style="background: var(--theme-primary); color: #fff; border: none;"
+          >
             <i class="fas fa-magic mr-2"></i>Gerar QR Code
           </button>
         </div>
-        
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2">Resultado</label>
-          <div id="qr-result" class="border-2 border-dashed border-gray-300 rounded-lg h-64 flex items-center justify-center bg-gray-50">
-            <p class="text-gray-500">QR Code aparecerá aqui</p>
+
+        <!-- Lado direito -->
+        <div class="flex flex-col items-center justify-center">
+          <label class="block text-sm font-medium mb-2" style="color: var(--theme-textSecondary)">Resultado</label>
+          <div 
+            id="qr-result"
+            class="border-2 border-dashed rounded-xl h-72 w-full flex items-center justify-center shadow-inner"
+            style="
+              background: var(--theme-surface);
+              border-color: var(--theme-border);
+            "
+          >
+            <p class="text-center" style="color: var(--theme-textSecondary)">O QR Code aparecerá aqui</p>
           </div>
-          <button id="btn-download-qr" class="w-full mt-3 bg-green-500 text-white py-2 rounded-lg hover:bg-green-600 transition-colors hidden">
+
+          <button 
+            id="btn-download-qr"
+            class="w-full mt-4 py-3 rounded-xl transition-all shadow-sm hidden"
+            style="background: var(--theme-secondary); color: #fff; border: none;"
+          >
             <i class="fas fa-download mr-2"></i>Baixar QR Code
           </button>
         </div>
@@ -2298,109 +2544,117 @@ window.deletePasswordFromBank = function(index) {
 // Image Converter Modal - Conversor Real
 function openImageConverterModal() {
   const html = `
-    <div class="max-w-6xl">
-      <h2 class="text-3xl font-bold text-gray-800 mb-6 text-center">
+    <div class="max-w-6xl text-gray-800 dark:text-gray-100 transition-colors duration-300">
+      <h2 class="text-3xl font-bold mb-6 text-center">
         <i class="fas fa-magic mr-3 text-purple-500"></i>Conversor de Imagem Profissional
       </h2>
-      
-      <div class="bg-gradient-to-r from-purple-50 to-pink-50 p-6 rounded-xl mb-6 border border-purple-200">
+
+      <div class="modal-surface backdrop-blur-sm p-6 rounded-xl mb-6 border shadow-lg transition-all">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <!-- Upload Section -->
+
+          <!-- Upload -->
           <div class="md:col-span-1">
-            <label class="block text-sm font-bold text-gray-700 mb-3">📁 Selecionar Imagem</label>
-            <div class="border-2 border-dashed border-purple-300 rounded-lg p-4 text-center hover:border-purple-400 transition-colors">
+            <label class="block text-sm font-bold mb-3">📁 Selecionar Imagem</label>
+            <div class="upload-zone border-2 border-dashed rounded-lg p-4 text-center transition-all">
               <input type="file" id="image-input" accept="image/*" class="hidden" />
               <button id="upload-btn" class="w-full">
                 <i class="fas fa-cloud-upload-alt text-3xl text-purple-500 mb-2"></i>
-                <p class="text-purple-600 font-medium">Clique para escolher</p>
-                <p class="text-xs text-gray-500">PNG, JPG, GIF, WebP</p>
+                <p class="text-purple-600 dark:text-purple-400 font-medium">Clique para escolher</p>
+                <p class="text-xs text-gray-500 dark:text-gray-400">PNG, JPG, GIF, WebP</p>
               </button>
             </div>
           </div>
-          
-          <!-- Format Settings -->
+
+          <!-- Configurações -->
           <div class="md:col-span-1">
-            <label class="block text-sm font-bold text-gray-700 mb-3">⚙️ Configurações</label>
+            <label class="block text-sm font-bold mb-3">⚙️ Configurações</label>
             <div class="space-y-3">
               <div>
-                <label class="block text-xs font-medium text-gray-600 mb-1">Formato de Saída</label>
-                <select id="output-format" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-400">
+                <label class="block text-xs font-medium mb-1">Formato de Saída</label>
+                <select id="output-format"
+                  class="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-sm 
+                         bg-white/80 dark:bg-gray-800/80 dark:text-gray-100 focus:outline-none 
+                         focus:ring-2 focus:ring-purple-400 transition-colors">
                   <option value="png">PNG (transparência)</option>
                   <option value="jpg">JPG (menor tamanho)</option>
                   <option value="webp">WebP (moderna)</option>
                   <option value="gif">GIF (animação)</option>
                 </select>
               </div>
-              
+
               <div>
-                <label class="block text-xs font-medium text-gray-600 mb-1">Qualidade</label>
-                <input type="range" id="quality-slider" min="10" max="100" value="90" class="w-full" />
-                <div class="flex justify-between text-xs text-gray-500">
+                <label class="block text-xs font-medium mb-1">Qualidade</label>
+                <input type="range" id="quality-slider" min="10" max="100" value="90" class="w-full accent-purple-500" />
+                <div class="flex justify-between text-xs text-gray-500 dark:text-gray-400">
                   <span>Menor</span>
                   <span id="quality-value" class="font-bold">90%</span>
                   <span>Maior</span>
                 </div>
               </div>
-              
+
               <div>
-                <label class="block text-xs font-medium text-gray-600 mb-1">Redimensionar</label>
+                <label class="block text-xs font-medium mb-1">Redimensionar</label>
                 <div class="grid grid-cols-2 gap-2">
-                  <input type="number" id="width-input" placeholder="Largura" class="border border-gray-300 rounded px-2 py-1 text-sm" />
-                  <input type="number" id="height-input" placeholder="Altura" class="border border-gray-300 rounded px-2 py-1 text-sm" />
+                  <input type="number" id="width-input" placeholder="Largura" 
+                    class="border border-gray-300 dark:border-gray-600 rounded px-2 py-1 text-sm 
+                           bg-white/80 dark:bg-gray-800/80 dark:text-gray-100" />
+                  <input type="number" id="height-input" placeholder="Altura" 
+                    class="border border-gray-300 dark:border-gray-600 rounded px-2 py-1 text-sm 
+                           bg-white/80 dark:bg-gray-800/80 dark:text-gray-100" />
                 </div>
                 <label class="flex items-center mt-1 text-xs">
-                  <input type="checkbox" id="keep-ratio" checked class="mr-1" />
+                  <input type="checkbox" id="keep-ratio" checked class="mr-1 accent-purple-500" />
                   Manter proporção
                 </label>
               </div>
             </div>
           </div>
-          
-          <!-- Actions -->
+
+          <!-- Ferramentas -->
           <div class="md:col-span-1">
-            <label class="block text-sm font-bold text-gray-700 mb-3">🛠️ Ferramentas</label>
+            <label class="block text-sm font-bold mb-3">🛠️ Ferramentas</label>
             <div class="space-y-2">
-              <button id="btn-remove-bg" class="w-full bg-gradient-to-r from-red-500 to-pink-500 text-white py-2 px-4 rounded-lg hover:from-red-600 hover:to-pink-600 transition-all flex items-center justify-center">
+              <button id="btn-remove-bg" class="w-full bg-gradient-to-r from-red-500 to-pink-500 text-white py-2 px-4 rounded-lg hover:opacity-90 transition-all flex items-center justify-center">
                 <i class="fas fa-cut mr-2"></i>Remover Fundo
               </button>
-              <button id="btn-convert" class="w-full bg-gradient-to-r from-purple-500 to-indigo-500 text-white py-2 px-4 rounded-lg hover:from-purple-600 hover:to-indigo-600 transition-all flex items-center justify-center">
+              <button id="btn-convert" class="w-full bg-gradient-to-r from-purple-500 to-indigo-500 text-white py-2 px-4 rounded-lg hover:opacity-90 transition-all flex items-center justify-center">
                 <i class="fas fa-sync mr-2"></i>Converter
               </button>
-              <button id="btn-rotate" class="w-full bg-gradient-to-r from-blue-500 to-cyan-500 text-white py-2 px-4 rounded-lg hover:from-blue-600 hover:to-cyan-600 transition-all flex items-center justify-center">
+              <button id="btn-rotate" class="w-full bg-gradient-to-r from-blue-500 to-cyan-500 text-white py-2 px-4 rounded-lg hover:opacity-90 transition-all flex items-center justify-center">
                 <i class="fas fa-redo mr-2"></i>Girar 90°
               </button>
-              <button id="btn-flip-h" class="w-full bg-gradient-to-r from-green-500 to-teal-500 text-white py-2 px-4 rounded-lg hover:from-green-600 hover:to-teal-600 transition-all flex items-center justify-center">
+              <button id="btn-flip-h" class="w-full bg-gradient-to-r from-green-500 to-teal-500 text-white py-2 px-4 rounded-lg hover:opacity-90 transition-all flex items-center justify-center">
                 <i class="fas fa-arrows-alt-h mr-2"></i>Espelhar H
               </button>
             </div>
           </div>
         </div>
       </div>
-      
-      <!-- Preview Section -->
+
+      <!-- Pré-visualização -->
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div>
           <div class="flex items-center justify-between mb-3">
-            <h3 class="text-lg font-bold text-gray-800">📷 Imagem Original</h3>
-            <span id="original-info" class="text-sm text-gray-500"></span>
+            <h3 class="text-lg font-bold">📷 Imagem Original</h3>
+            <span id="original-info" class="text-sm text-textSecondary"></span>
           </div>
-          <div id="original-preview" class="border-2 border-dashed border-gray-300 rounded-lg h-80 flex items-center justify-center bg-gray-50 overflow-hidden">
+          <div id="original-preview" class="border rounded-lg h-80 flex items-center justify-center bg-surface border-borderColor overflow-hidden transition-colors duration-300">
             <div class="text-center">
-              <i class="fas fa-image text-4xl text-gray-400 mb-2"></i>
-              <p class="text-gray-500">Nenhuma imagem selecionada</p>
+              <i class="fas fa-image text-4xl text-icon mb-2"></i>
+              <p class="text-textSecondary">Nenhuma imagem selecionada</p>
             </div>
           </div>
         </div>
-        
+
         <div>
           <div class="flex items-center justify-between mb-3">
-            <h3 class="text-lg font-bold text-gray-800">✨ Resultado</h3>
-            <span id="result-info" class="text-sm text-gray-500"></span>
+            <h3 class="text-lg font-bold">✨ Resultado</h3>
+            <span id="result-info" class="text-sm text-textSecondary"></span>
           </div>
-          <div id="result-preview" class="border-2 border-dashed border-gray-300 rounded-lg h-80 flex items-center justify-center bg-gray-50 overflow-hidden">
+          <div id="result-preview" class="border rounded-lg h-80 flex items-center justify-center bg-surface border-borderColor overflow-hidden transition-colors duration-300">
             <div class="text-center">
-              <i class="fas fa-magic text-4xl text-gray-400 mb-2"></i>
-              <p class="text-gray-500">Resultado aparecerá aqui</p>
+              <i class="fas fa-magic text-4xl text-icon mb-2"></i>
+              <p class="text-textSecondary">Resultado aparecerá aqui</p>
             </div>
           </div>
           <div class="mt-3 space-y-2">
@@ -2413,13 +2667,13 @@ function openImageConverterModal() {
           </div>
         </div>
       </div>
-      
-      <!-- Progress Bar -->
+
+      <!-- Progresso -->
       <div id="progress-container" class="hidden mt-4">
-        <div class="bg-gray-200 rounded-full h-2 overflow-hidden">
+        <div class="bg-gray-200 dark:bg-gray-700 rounded-full h-2 overflow-hidden">
           <div id="progress-bar" class="bg-gradient-to-r from-purple-500 to-pink-500 h-full transition-all duration-300" style="width: 0%"></div>
         </div>
-        <p id="progress-text" class="text-center text-sm text-gray-600 mt-2">Processando...</p>
+        <p id="progress-text" class="text-center text-sm mt-2 text-gray-600 dark:text-gray-300">Processando...</p>
       </div>
     </div>
   `;
@@ -2833,190 +3087,334 @@ function setupImageConverter() {
 
 // Calculator Modal (bonus)
 function openCalculatorModal() {
+  const existing = document.getElementById("calculator-modal");
+  if (existing) return;
+
+  const dark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+  const colors = {
+    modalBg: dark ? "#1f2937" : "#fff",
+    modalText: dark ? "#f9fafb" : "#1f2937",
+    border: dark ? "#4b5563" : "#d1d5db",
+    buttonText: "#fff",
+  };
+
   const html = `
-    <div class="max-w-md mx-auto">
-      <h2 class="text-2xl font-bold text-gray-800 mb-6 text-center">
-        <i class="fas fa-calculator mr-2 text-blue-500"></i>Calculadora
+  <div id="calculator-modal" style="
+    position: fixed; left: 50px; top: 100px; width: 400px; height: 380px;
+    background: ${colors.modalBg}; color: ${colors.modalText}; border: 1px solid ${colors.border};
+    border-radius: 0.75rem; padding: 0.7rem; z-index: 9999;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3); display: flex; flex-direction: column;">
+    
+    <div id="calc-drag-handle" style="display:flex; justify-content:space-between; align-items:center; cursor: move; margin-bottom: 0.5rem;">
+      <h2 style="display:flex; align-items:center; gap:0.25rem; font-size: 1.4rem;">
+        <i class='fas fa-calculator text-blue-500'></i>Calculadora
       </h2>
-      <div class="bg-gray-100 p-4 rounded-lg">
-        <input type="text" id="calc-display" readonly class="w-full bg-white border border-gray-300 rounded-lg px-4 py-3 text-right text-xl font-mono mb-4" value="0" />
-        <div class="grid grid-cols-4 gap-2 text-lg font-semibold">
-          <button class="calc-btn bg-red-500 text-white p-3 rounded-lg hover:bg-red-600" onclick="clearCalc()">C</button>
-          <button class="calc-btn bg-yellow-500 text-white p-3 rounded-lg hover:bg-yellow-600" onclick="deleteCalc()">⌫</button>
-          <button class="calc-btn bg-blue-500 text-white p-3 rounded-lg hover:bg-blue-600" onclick="inputCalc('/')">/</button>
-          <button class="calc-btn bg-blue-500 text-white p-3 rounded-lg hover:bg-blue-600" onclick="inputCalc('*')">×</button>
-          
-          <button class="calc-btn bg-gray-300 text-gray-800 p-3 rounded-lg hover:bg-gray-400" onclick="inputCalc('7')">7</button>
-          <button class="calc-btn bg-gray-300 text-gray-800 p-3 rounded-lg hover:bg-gray-400" onclick="inputCalc('8')">8</button>
-          <button class="calc-btn bg-gray-300 text-gray-800 p-3 rounded-lg hover:bg-gray-400" onclick="inputCalc('9')">9</button>
-          <button class="calc-btn bg-blue-500 text-white p-3 rounded-lg hover:bg-blue-600" onclick="inputCalc('-')">-</button>
-          
-          <button class="calc-btn bg-gray-300 text-gray-800 p-3 rounded-lg hover:bg-gray-400" onclick="inputCalc('4')">4</button>
-          <button class="calc-btn bg-gray-300 text-gray-800 p-3 rounded-lg hover:bg-gray-400" onclick="inputCalc('5')">5</button>
-          <button class="calc-btn bg-gray-300 text-gray-800 p-3 rounded-lg hover:bg-gray-400" onclick="inputCalc('6')">6</button>
-          <button class="calc-btn bg-blue-500 text-white p-3 rounded-lg hover:bg-blue-600" onclick="inputCalc('+')">+</button>
-          
-          <button class="calc-btn bg-gray-300 text-gray-800 p-3 rounded-lg hover:bg-gray-400" onclick="inputCalc('1')">1</button>
-          <button class="calc-btn bg-gray-300 text-gray-800 p-3 rounded-lg hover:bg-gray-400" onclick="inputCalc('2')">2</button>
-          <button class="calc-btn bg-gray-300 text-gray-800 p-3 rounded-lg hover:bg-gray-400" onclick="inputCalc('3')">3</button>
-          <button class="calc-btn bg-green-500 text-white p-3 rounded-lg hover:bg-green-600 row-span-2" onclick="calculate()" style="grid-row: span 2;">=</button>
-          
-          <button class="calc-btn bg-gray-300 text-gray-800 p-3 rounded-lg hover:bg-gray-400 col-span-2" onclick="inputCalc('0')" style="grid-column: span 2;">0</button>
-          <button class="calc-btn bg-gray-300 text-gray-800 p-3 rounded-lg hover:bg-gray-400" onclick="inputCalc('.')">.</button>
-        </div>
-      </div>
+      <button id="close-calc" style="background:none; border:none; font-size:1.4rem;">×</button>
     </div>
+
+    <input type="text" id="calc-display" readonly 
+      style="width:100%; background:${dark ? "#374151" : "#f9fafb"}; border:1px solid ${colors.border}; border-radius:0.5rem; padding:0.6rem; text-align:right; font-family:monospace; font-size:1.4rem; margin-bottom:0.6rem;" 
+      value="0" />
+
+    <div id="calc-buttons" style="display:grid; grid-template-columns: repeat(4, 1fr); gap:8px; flex-grow:1;">
+      <button class="calc-btn" onclick="clearCalc()" style="background:red; color:${colors.buttonText}">C</button>
+      <button class="calc-btn" onclick="deleteCalc()" style="background:orange; color:${colors.buttonText}">⌫</button>
+      <button class="calc-btn" onclick="inputCalc('/')" style="background:blue; color:${colors.buttonText}">/</button>
+      <button class="calc-btn" onclick="inputCalc('*')" style="background:blue; color:${colors.buttonText}">×</button>
+
+      <button class="calc-btn" onclick="inputCalc('7')">7</button>
+      <button class="calc-btn" onclick="inputCalc('8')">8</button>
+      <button class="calc-btn" onclick="inputCalc('9')">9</button>
+      <button class="calc-btn" onclick="inputCalc('-')" style="background:blue; color:${colors.buttonText}">-</button>
+
+      <button class="calc-btn" onclick="inputCalc('4')">4</button>
+      <button class="calc-btn" onclick="inputCalc('5')">5</button>
+      <button class="calc-btn" onclick="inputCalc('6')">6</button>
+      <button class="calc-btn" onclick="inputCalc('+')" style="background:blue; color:${colors.buttonText}">+</button>
+
+      <button class="calc-btn" onclick="inputCalc('1')">1</button>
+      <button class="calc-btn" onclick="inputCalc('2')">2</button>
+      <button class="calc-btn" onclick="inputCalc('3')">3</button>
+      <button class="calc-btn" onclick="calculate()" style="background:green; color:${colors.buttonText}; grid-row: span 2;">=</button>
+
+      <button class="calc-btn" onclick="inputCalc('0')" style="grid-column: span 2;">0</button>
+      <button class="calc-btn" onclick="inputCalc('.')">.</button>
+    </div>
+  </div>
   `;
 
-  openModal(html);
+  document.body.insertAdjacentHTML("beforeend", html);
+
+  // Fechar
+  document.getElementById("close-calc").onclick = () =>
+    document.getElementById("calculator-modal")?.remove();
+
   setupCalculator();
+
+  const display = document.getElementById("calc-display");
+
+// Permitir edição ao clicar
+display.addEventListener("click", (e) => {
+  display.readOnly = false; // permite edição
+  const pos = display.selectionStart; // pega a posição do clique
+  setTimeout(() => display.setSelectionRange(pos, pos), 0); // coloca o cursor exatamente ali
+});
+
+// Voltar para readonly ao perder foco
+display.addEventListener("blur", () => {
+  display.readOnly = true;
+});
+
+  makeCalculatorDraggable();
+
+  // Atualiza cores caso o usuário mude o tema
+  window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", (e) => {
+    const dark = e.matches;
+    const modal = document.getElementById("calculator-modal");
+    if (!modal) return;
+    const btns = modal.querySelectorAll(".calc-btn");
+
+    modal.style.background = dark ? "#1f2937" : "#fff";
+    modal.style.color = dark ? "#f9fafb" : "#1f2937";
+    modal.querySelector("#calc-display").style.background = dark ? "#374151" : "#f9fafb";
+    modal.querySelector("#calc-display").style.color = dark ? "#f9fafb" : "#1f2937";
+
+    btns.forEach(b => {
+      if (!['C','⌫','/','*','-','+','='].includes(b.textContent)) {
+        b.style.background = dark ? "#4b5563" : "#e5e7eb";
+        b.style.color = dark ? "#f9fafb" : "#1f2937";
+      }
+    });
+  });
 }
 
+// Drag da calculadora
+function makeCalculatorDraggable() {
+  const modal = document.getElementById("calculator-modal");
+  const handle = document.getElementById("calc-drag-handle");
+  let offsetX = 0, offsetY = 0, dragging = false;
+
+  handle.addEventListener("mousedown", (e) => {
+    dragging = true;
+    offsetX = e.clientX - modal.offsetLeft;
+    offsetY = e.clientY - modal.offsetTop;
+    document.addEventListener("mousemove", move);
+    document.addEventListener("mouseup", stop);
+  });
+
+  function move(e) {
+    if (!dragging) return;
+    modal.style.left = `${e.clientX - offsetX}px`;
+    modal.style.top = `${e.clientY - offsetY}px`;
+  }
+
+  function stop() {
+    dragging = false;
+    document.removeEventListener("mousemove", move);
+    document.removeEventListener("mouseup", stop);
+  }
+}
+
+// Calculadora
 function setupCalculator() {
   window.clearCalc = () => {
     document.getElementById("calc-display").value = "0";
   };
-
   window.deleteCalc = () => {
     const display = document.getElementById("calc-display");
-    const current = display.value;
-    display.value = current.length > 1 ? current.slice(0, -1) : "0";
+    display.value = display.value.length > 1 ? display.value.slice(0, -1) : "0";
   };
-
-  window.inputCalc = (value) => {
+  window.inputCalc = (v) => {
     const display = document.getElementById("calc-display");
-    const current = display.value;
-
-    if (current === "0" && !isNaN(value)) {
-      display.value = value;
-    } else {
-      display.value += value;
-    }
+    display.value = display.value === "0" && !isNaN(v) ? v : display.value + v;
   };
-
   window.calculate = () => {
     const display = document.getElementById("calc-display");
-    try {
-      const result = eval(display.value.replace("×", "*"));
-      display.value = result;
-    } catch (e) {
-      display.value = "Erro";
-    }
+    try { display.value = eval(display.value.replace("×","*")); } 
+    catch { display.value = "Erro"; }
   };
 }
 
 // Color Picker Modal (bonus)
 function openColorPickerModal() {
+  if (document.getElementById("colorpicker-modal")) return;
+
+  const dark = matchMedia("(prefers-color-scheme: dark)").matches;
+  const bg = dark ? "#1f2937" : "#fff",
+        txt = dark ? "#f9fafb" : "#1f2937",
+        border = dark ? "#4b5563" : "#d1d5db",
+        inputBg = dark ? "#374151" : "#f9fafb";
+
   const html = `
-    <div class="max-w-lg mx-auto">
-      <h2 class="text-2xl font-bold text-gray-800 mb-6 text-center">
-        <i class="fas fa-palette mr-2 text-green-500"></i>Seletor de Cores
+  <div id="colorpicker-modal" style="
+    position:fixed; left:80px; top:120px; width:520px;
+    background:${bg}; color:${txt}; border:1px solid ${border};
+    border-radius:.75rem; padding:1.3rem; z-index:9999;
+    box-shadow:0 8px 30px rgba(0,0,0,.35);
+    display:flex; flex-direction:column; gap:1rem;
+    opacity:0; transform:scale(.95);
+    transition:opacity .25s ease, transform .25s ease;
+  ">
+    <div id="drag" style="display:flex;justify-content:space-between;align-items:center;cursor:move;">
+      <h2 style="display:flex;align-items:center;gap:.5rem;font-size:1.4rem;font-weight:600;">
+        <i class="fas fa-palette text-green-500"></i>Seletor de Cores
       </h2>
-      <div class="space-y-4">
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2">Escolher Cor</label>
-          <input type="color" id="color-picker-input" class="w-full h-16 border-2 border-gray-300 rounded-lg cursor-pointer" value="#3b82f6" />
-        </div>
-        
-        <div class="grid grid-cols-2 gap-4">
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">HEX</label>
-            <input type="text" id="hex-value" class="w-full border border-gray-300 rounded-lg px-3 py-2" readonly />
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">RGB</label>
-            <input type="text" id="rgb-value" class="w-full border border-gray-300 rounded-lg px-3 py-2" readonly />
-          </div>
-        </div>
-        
-        <div class="text-center">
-          <button id="copy-hex" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors mr-2">
-            <i class="fas fa-copy mr-1"></i>Copiar HEX
-          </button>
-          <button id="copy-rgb" class="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition-colors">
-            <i class="fas fa-copy mr-1"></i>Copiar RGB
-          </button>
-        </div>
+      <button id="close" style="background:none;border:none;font-size:1.6rem;cursor:pointer;line-height:1;">×</button>
+    </div>
+
+    <input type="color" id="color" value="#3b82f6"
+      style="width:100%;height:80px;border-radius:.6rem;border:1px solid ${border};
+      cursor:pointer;margin-bottom:.8rem;"/>
+
+    <div style="display:flex;justify-content:space-between;gap:15px;">
+      <div style="flex:1;">
+        <label style="font-size:.9rem;display:block;margin-bottom:4px;">HEX</label>
+        <input id="hex" readonly
+          style="width:100%;background:${inputBg};border:1px solid ${border};
+          border-radius:.5rem;padding:.7rem;text-align:center;
+          font-family:monospace;font-size:1rem;"/>
+      </div>
+      <div style="flex:1;">
+        <label style="font-size:.9rem;display:block;margin-bottom:4px;">RGB</label>
+        <input id="rgb" readonly
+          style="width:100%;background:${inputBg};border:1px solid ${border};
+          border-radius:.5rem;padding:.7rem;text-align:center;
+          font-family:monospace;font-size:1rem;"/>
       </div>
     </div>
-  `;
 
-  openModal(html);
-  setupColorPicker();
-}
+    <div style="display:flex;justify-content:center;gap:1.2rem;margin-top:.6rem;">
+      <button id="copyHex"
+        style="background:#3b82f6;color:white;border:none;border-radius:.5rem;
+        padding:.6rem 1.2rem;cursor:pointer;font-weight:600;font-size:.95rem;">
+        <i class="fas fa-copy"></i> HEX
+      </button>
+      <button id="copyRgb"
+        style="background:#10b981;color:white;border:none;border-radius:.5rem;
+        padding:.6rem 1.2rem;cursor:pointer;font-weight:600;font-size:.95rem;">
+        <i class="fas fa-copy"></i> RGB
+      </button>
+    </div>
+  </div>`;
 
-function setupColorPicker() {
-  const colorInput = document.getElementById("color-picker-input");
-  const hexValue = document.getElementById("hex-value");
-  const rgbValue = document.getElementById("rgb-value");
-  const copyHex = document.getElementById("copy-hex");
-  const copyRgb = document.getElementById("copy-rgb");
+  document.body.insertAdjacentHTML("beforeend", html);
+  const m = document.getElementById("colorpicker-modal");
 
-  function updateColors() {
-    const color = colorInput.value;
-    hexValue.value = color.toUpperCase();
+  // Fade in
+  requestAnimationFrame(() => {
+    m.style.opacity = "1";
+    m.style.transform = "scale(1)";
+  });
 
-    const r = parseInt(color.substr(1, 2), 16);
-    const g = parseInt(color.substr(3, 2), 16);
-    const b = parseInt(color.substr(5, 2), 16);
-    rgbValue.value = `rgb(${r}, ${g}, ${b})`;
-  }
+  const c = m.querySelector("#color"),
+        h = m.querySelector("#hex"),
+        r = m.querySelector("#rgb");
 
-  colorInput.onchange = updateColors;
-  updateColors();
+  const update = () => {
+    h.value = c.value.toUpperCase();
+    const v = c.value, n = parseInt;
+    r.value = `rgb(${n(v.slice(1,3),16)},${n(v.slice(3,5),16)},${n(v.slice(5,7),16)})`;
+  };
+  update(); c.oninput = update;
 
-  copyHex.onclick = () => {
-    navigator.clipboard.writeText(hexValue.value);
-    copyHex.innerHTML = '<i class="fas fa-check mr-1"></i>Copiado!';
-    setTimeout(() => {
-      copyHex.innerHTML = '<i class="fas fa-copy mr-1"></i>Copiar HEX';
-    }, 2000);
+  const copy = (el, b, t) => {
+    navigator.clipboard.writeText(el.value);
+    b.innerHTML = "✔ Copiado!";
+    setTimeout(()=>b.innerHTML=`<i class='fas fa-copy'></i> ${t}`,1500);
+  };
+  m.querySelector("#copyHex").onclick = ()=>copy(h, m.querySelector("#copyHex"), "HEX");
+  m.querySelector("#copyRgb").onclick = ()=>copy(r, m.querySelector("#copyRgb"), "RGB");
+
+  // Fade out ao fechar
+  m.querySelector("#close").onclick = ()=>{
+    m.style.opacity="0";
+    m.style.transform="scale(.9)";
+    setTimeout(()=>m.remove(),250);
   };
 
-  copyRgb.onclick = () => {
-    navigator.clipboard.writeText(rgbValue.value);
-    copyRgb.innerHTML = '<i class="fas fa-check mr-1"></i>Copiado!';
-    setTimeout(() => {
-      copyRgb.innerHTML = '<i class="fas fa-copy mr-1"></i>Copiar RGB';
-    }, 2000);
-  };
+  // Drag
+  const drag = m.querySelector("#drag");
+  let x=0,y=0,d=false;
+  drag.onmousedown = e => {d=true;x=e.clientX-m.offsetLeft;y=e.clientY-m.offsetTop};
+  document.onmousemove = e => {if(d){m.style.left=e.clientX-x+"px";m.style.top=e.clientY-y+"px"}};
+  document.onmouseup = ()=>d=false;
+
+  // Atualiza tema automático
+  matchMedia("(prefers-color-scheme: dark)").addEventListener("change", e=>{
+    const dark=e.matches;
+    m.style.background = dark?"#1f2937":"#fff";
+    m.style.color = dark?"#f9fafb":"#1f2937";
+  });
 }
 
 // Text Tools Modal (bonus)
 function openTextToolsModal() {
   const html = `
-    <div class="max-w-2xl">
-      <h2 class="text-2xl font-bold text-gray-800 mb-6 text-center">
-        <i class="fas fa-font mr-2 text-orange-500"></i>Ferramentas de Texto
+    <div class="max-w-2xl" style="color: var(--theme-text)">
+      <h2 class="text-2xl font-bold mb-6 text-center">
+        <i class="fas fa-font mr-2" style="color: var(--theme-accent)"></i>
+        Ferramentas de Texto
       </h2>
+
       <div class="space-y-4">
-        <textarea id="text-input" class="w-full h-32 border border-gray-300 rounded-lg p-3" placeholder="Digite ou cole seu texto aqui..."></textarea>
-        
+        <textarea 
+          id="text-input" 
+          class="w-full h-32 rounded-lg p-3 transition-all focus:outline-none focus:ring-2" 
+          placeholder="Digite ou cole seu texto aqui..."
+          style="
+            background: var(--theme-surface);
+            color: var(--theme-text);
+            border: 1px solid var(--theme-border);
+            box-shadow: 0 1px 2px var(--theme-border);
+            caret-color: var(--theme-accent);
+            focus:ring-color: var(--theme-accent);
+          "
+        ></textarea>
+
         <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
-          <button id="btn-uppercase" class="bg-blue-500 text-white py-2 px-3 rounded-lg hover:bg-blue-600 text-sm">MAIÚSCULO</button>
-          <button id="btn-lowercase" class="bg-green-500 text-white py-2 px-3 rounded-lg hover:bg-green-600 text-sm">minúsculo</button>
-          <button id="btn-capitalize" class="bg-purple-500 text-white py-2 px-3 rounded-lg hover:bg-purple-600 text-sm">Primeira Letra</button>
-          <button id="btn-reverse" class="bg-red-500 text-white py-2 px-3 rounded-lg hover:bg-red-600 text-sm">Reverter</button>
+          <button id="btn-uppercase" 
+            class="py-2 px-3 rounded-lg text-sm transition-colors"
+            style="background: var(--theme-primary); color: #fff; border: none;"
+          >MAIÚSCULO</button>
+
+          <button id="btn-lowercase" 
+            class="py-2 px-3 rounded-lg text-sm transition-colors"
+            style="background: var(--theme-secondary); color: #fff; border: none;"
+          >minúsculo</button>
+
+          <button id="btn-capitalize" 
+            class="py-2 px-3 rounded-lg text-sm transition-colors"
+            style="background: var(--theme-accent); color: #fff; border: none;"
+          >Primeira Letra</button>
+
+          <button id="btn-reverse" 
+            class="py-2 px-3 rounded-lg text-sm transition-colors"
+            style="background: var(--theme-textSecondary); color: #fff; border: none;"
+          >Reverter</button>
         </div>
-        
-        <div class="bg-gray-50 p-4 rounded-lg">
-          <h3 class="font-semibold text-gray-800 mb-2">Estatísticas do Texto</h3>
+
+        <div 
+          class="p-4 rounded-lg shadow-sm transition-all"
+          style="background: var(--theme-surface); border: 1px solid var(--theme-border);"
+        >
+          <h3 class="font-semibold mb-2" style="color: var(--theme-text)">Estatísticas do Texto</h3>
+
           <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
             <div class="text-center">
-              <div id="char-count" class="text-2xl font-bold text-blue-500">0</div>
-              <div class="text-gray-600">Caracteres</div>
+              <div id="char-count" class="text-2xl font-bold" style="color: var(--theme-primary)">0</div>
+              <div style="color: var(--theme-textSecondary)">Caracteres</div>
             </div>
             <div class="text-center">
-              <div id="word-count" class="text-2xl font-bold text-green-500">0</div>
-              <div class="text-gray-600">Palavras</div>
+              <div id="word-count" class="text-2xl font-bold" style="color: var(--theme-secondary)">0</div>
+              <div style="color: var(--theme-textSecondary)">Palavras</div>
             </div>
             <div class="text-center">
-              <div id="line-count" class="text-2xl font-bold text-purple-500">0</div>
-              <div class="text-gray-600">Linhas</div>
+              <div id="line-count" class="text-2xl font-bold" style="color: var(--theme-accent)">0</div>
+              <div style="color: var(--theme-textSecondary)">Linhas</div>
             </div>
             <div class="text-center">
-              <div id="paragraph-count" class="text-2xl font-bold text-orange-500">0</div>
-              <div class="text-gray-600">Parágrafos</div>
+              <div id="paragraph-count" class="text-2xl font-bold" style="color: var(--theme-primary)">0</div>
+              <div style="color: var(--theme-textSecondary)">Parágrafos</div>
             </div>
           </div>
         </div>
@@ -3211,7 +3609,7 @@ function openSettingsModal() {
   const sidebar = document.createElement("div");
   sidebar.id = "settings-sidebar";
   sidebar.className =
-    "bbg-white dark:bg-neutral-900 dark:text-gray-100 w-[340px] max-w-full h-[85vh] rounded-l-2xl shadow-2xl transform translate-x-full transition-transform duration-300 ease-out fixed right-0 top-1/2 -translate-y-1/2 border-l border-gray-200 dark:border-neutral-800 overflow-y-auto";
+    "bg-white dark:bg-neutral-900 dark:text-gray-100 w-[340px] max-w-full h-[85vh] rounded-l-2xl shadow-2xl transform translate-x-full transition-transform duration-300 ease-out fixed right-0 top-1/2 -translate-y-1/2 border-l border-gray-200 dark:border-neutral-800 overflow-y-auto";
 
   sidebar.innerHTML = `
     <div class="p-5 space-y-6">
