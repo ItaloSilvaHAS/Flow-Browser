@@ -19,6 +19,8 @@
 
 O **Flow Browser** é um navegador web inovador, desenvolvido especificamente para estudantes que buscam **foco, produtividade e ferramentas integradas** para otimizar seu tempo de estudo. Baseado na tecnologia Electron, o Flow combina a funcionalidade de um navegador tradicional com um ecossistema completo de ferramentas educacionais.
 
+Este projeto representa o trabalho de conclusão de curso de uma equipe dedicada de estudantes da ETEC de Sapopemba, com o objetivo ambicioso de ser lançado em escolas selecionadas do mercado de ensino tecnológico em dezembro de 2025.
+
 ### 🎯 Missão
 Proporcionar aos estudantes uma experiência de navegação web que prioriza o foco nos estudos, eliminando distrações e oferecendo ferramentas úteis em um só lugar.
 
@@ -26,7 +28,48 @@ Proporcionar aos estudantes uma experiência de navegação web que prioriza o f
 - **Escola**: ETEC de Sapopemba (Centro Paula Souza)
 - **Curso**: Desenvolvimento de Sistemas
 - **Tipo**: Trabalho de Conclusão de Curso (TCC)
-- **Ano**: 2024
+- **Previsão de Lançamento**: Dezembro de 2025
+- **Público-Alvo**: Escolas selecionadas no mercado de ensino tecnológico
+
+### 👥 Equipe de Desenvolvimento
+
+<table>
+  <tr>
+    <th>Nome</th>
+    <th>Função</th>
+    <th>Responsabilidades</th>
+  </tr>
+  <tr>
+    <td><strong>Ítalo S. Santos</strong></td>
+    <td>Backend & Líder de Projeto</td>
+    <td>Arquitetura do sistema, integração de APIs, coordenação geral</td>
+  </tr>
+  <tr>
+    <td><strong>Evelly Laurinda</strong></td>
+    <td>Designer & Front-end</td>
+    <td>Design de interface, experiência do usuário, implementação visual</td>
+  </tr>
+  <tr>
+    <td><strong>Larissa Silva</strong></td>
+    <td>Database</td>
+    <td>Estruturação e gerenciamento de banco de dados, integração Supabase</td>
+  </tr>
+  <tr>
+    <td><strong>Safira Fiel</strong></td>
+    <td>Pesquisadora</td>
+    <td>Pesquisa de mercado, análise de necessidades educacionais, levantamento de requisitos</td>
+  </tr>
+  <tr>
+    <td><strong>Otávio Bernado</strong></td>
+    <td>Pesquisador</td>
+    <td>Pesquisa tecnológica, análise de ferramentas educacionais, documentação técnica</td>
+  </tr>
+  <tr>
+    <td><strong>Ana Julia Brito</strong></td>
+    <td>Documentação</td>
+    <td>Documentação do projeto, manuais de usuário, relatórios acadêmicos</td>
+  </tr>
+</table>
 
 ---
 
@@ -46,8 +89,10 @@ Proporcionar aos estudantes uma experiência de navegação web que prioriza o f
 - Suporte a múltiplas disciplinas
 
 ### 🛠️ **Ferramentas de Produtividade**
+
+#### Ferramentas Básicas
 - **📝 Bloco de Notas**: Sistema completo de anotações
-- **⏱️ Temporizador Pomodoro**: Técnica de estudos cronometrados
+- **⏱️ Temporizador Pomodoro**: Técnica de estudos cronometrados  
 - **🎨 Conversor de Imagens**: Edição e conversão profissional
 - **🧮 Calculadora Científica**: Cálculos complexos integrados
 - **🎯 Gerador de QR Code**: Criação rápida de códigos QR
@@ -55,6 +100,18 @@ Proporcionar aos estudantes uma experiência de navegação web que prioriza o f
 - **📏 Conversor de Unidades**: Medidas, moedas e temperaturas
 - **📋 Editor Markdown**: Documentação técnica
 - **🔧 Formatador JSON**: Validação e formatação de código
+
+#### Ferramentas Educacionais Exclusivas
+- **🎓 Gerador de Simulados**: Sistema completo de simulados para ENEM, FATEC e Vestibulinho
+- **🧪 Tabela Periódica Interativa**: Todos os 118 elementos com informações detalhadas
+- **📝 Flashcards**: Sistema de memorização com cartões de estudo personalizáveis
+- **🗺️ Mapa Mental Interativo**: Criação de mapas mentais com drag-and-drop
+- **📚 Conjugador de Verbos**: Conjugação completa em Português
+- **📖 Resumidor de Textos**: Geração automática de resumos com níveis personalizáveis
+- **⏰ Cronômetro de Concentração**: Técnica 52-17 para produtividade máxima
+- **📐 Biblioteca de Fórmulas**: Fórmulas de Matemática, Física e Química
+- **✅ Organizador de Tarefas de Estudo**: Sistema de to-do list especializado
+- **📕 Dicionário Rápido Offline**: Definições, exemplos e sinônimos
 
 ### 🎨 **Personalização Avançada**
 - **7 Temas Exclusivos**: Light, Dark, Pink, Purple, Green, Blue, Orange
@@ -251,14 +308,22 @@ Este projeto foi desenvolvido como TCC, mas contribuições são bem-vindas para
 
 ### **Orientação Acadêmica**
 - **ETEC de Sapopemba** - Infraestrutura e suporte educacional
-- **Professores Orientadores** - Guidance técnica e metodológica
+- **Professores Orientadores** - Orientação técnica e metodológica
 - **Centro Paula Souza** - Recursos e oportunidades de aprendizado
+- **Colegas de Turma** - Apoio e feedback durante o desenvolvimento
 
 ### **Tecnologias e Comunidade**
 - **Electron Community** - Framework robusto e documentação
 - **OpenAI** - API de IA para recursos educacionais
+- **Supabase** - Banco de dados e backend como serviço
 - **Tailwind CSS** - Framework de design moderno
 - **Font Awesome** - Biblioteca de ícones abrangente
+- **Replit** - Plataforma de desenvolvimento colaborativo
+
+### **Apoio e Inspiração**
+- **Estudantes Brasileiros** - Motivação e propósito do projeto
+- **Comunidade Open Source** - Ferramentas e bibliotecas essenciais
+- **Família e Amigos** - Apoio incondicional durante o desenvolvimento
 
 ---
 
@@ -308,16 +373,30 @@ copies or substantial portions of the Software.
 
 ## 📞 Contato
 
-### **Desenvolvedor Principal**
-- **Nome**: [Seu Nome]
-- **Email**: [seu.email@etec.sp.gov.br]
-- **LinkedIn**: [seu-linkedin]
-- **GitHub**: [seu-github]
+### **Equipe Flow Browser**
+
+**Líder de Projeto - Ítalo S. Santos**
+- 📧 Email: [italo.santos@etec.sp.gov.br]
+- 💼 LinkedIn: [linkedin.com/in/italo-santos]
+- 💻 GitHub: [github.com/italo-santos]
+
+**Design & Front-end - Evelly Laurinda**
+- 📧 Email: [evelly.laurinda@etec.sp.gov.br]
+- 🎨 Portfolio: [evelly-portfolio]
+
+**Database - Larissa Silva**
+- 📧 Email: [larissa.silva@etec.sp.gov.br]
 
 ### **Instituição**
 - **ETEC de Sapopemba**
-- **Endereço**: [Endereço da ETEC]
-- **Site**: [site-oficial]
+- 📍 Endereço: Sapopemba, São Paulo - SP
+- 🌐 Site: [www.etecdesapopemba.com.br]
+- 📧 Email: e211acad@cps.sp.gov.br
+
+### **Projeto Flow Browser**
+- 📧 Email de contato: flowbrowser.team@gmail.com
+- 🌐 Website oficial: [em desenvolvimento]
+- 📱 Redes sociais: [em desenvolvimento]
 
 ---
 
@@ -330,10 +409,20 @@ copies or substantial portions of the Software.
   <img src="https://img.shields.io/badge/Made%20with-❤️-red.svg" alt="Made with Love">
   <img src="https://img.shields.io/badge/Built%20for-🎓%20Students-blue.svg" alt="Built for Students">
   <img src="https://img.shields.io/badge/Powered%20by-⚡%20Innovation-yellow.svg" alt="Powered by Innovation">
+  
+  <br><br>
+  
+  <p><em>"Um navegador criado por estudantes que entende as necessidades de outros estudantes."</em></p>
+  
+  <h4>Equipe Flow Browser 2024-2025</h4>
+  <p>Ítalo S. Santos • Evelly Laurinda • Larissa Silva<br>
+  Safira Fiel • Otávio Bernado • Ana Julia Brito</p>
 </div>
 
 ---
 
 <div align="center">
-  <sub>© 2024 Flow Browser - ETEC de Sapopemba. Todos os direitos reservados.</sub>
+  <sub>© 2024-2025 Flow Browser - ETEC de Sapopemba. Todos os direitos reservados.</sub>
+  <br>
+  <sub>Projeto de Conclusão de Curso - Desenvolvimento de Sistemas</sub>
 </div>

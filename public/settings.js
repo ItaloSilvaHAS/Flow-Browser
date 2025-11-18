@@ -185,20 +185,20 @@ function hideNewsFeed() {
 
 function loadNewsContent(container) {
   container.innerHTML = `
-    <div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg p-4 max-h-[200px] overflow-y-auto">
-      <div class="flex items-center justify-between mb-3">
-        <h3 class="text-sm font-semibold text-gray-700 flex items-center">
-          <i class="fas fa-newspaper mr-2 text-blue-500 text-xs"></i>
-          Notícias Educacionais
+    <div class="bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl overflow-hidden" style="max-height: 450px; width: 100%;">
+      <div class="sticky top-0 bg-blue-600 px-4 py-3 flex items-center justify-between z-10">
+        <h3 class="text-base font-bold text-white flex items-center">
+          <i class="fas fa-newspaper mr-2"></i>
+          Notícias
         </h3>
-        <button onclick="toggleNewsFeed()" class="text-gray-400 hover:text-gray-600 transition">
-          <i class="fas fa-times text-sm"></i>
+        <button onclick="toggleNewsFeed()" class="text-white hover:text-gray-200">
+          <i class="fas fa-times"></i>
         </button>
       </div>
       
-      <div id="news-articles" class="space-y-2">
-        <div class="flex items-center justify-center py-4">
-          <i class="fas fa-spinner fa-spin text-2xl text-blue-500"></i>
+      <div id="news-articles" class="overflow-y-auto p-4" style="max-height: 390px;">
+        <div class="flex items-center justify-center py-8">
+          <i class="fas fa-spinner fa-spin text-3xl text-blue-500"></i>
         </div>
       </div>
     </div>
@@ -240,34 +240,32 @@ async function fetchEducationNews() {
       return;
     }
     
-    // Renderizar notícias do Supabase estilo Bing
+    // Renderizar notícias do Supabase de forma simples e limpa
     articlesContainer.innerHTML = newsData.map((article, index) => {
       const hasImage = article.Imagem && article.Imagem.trim() !== '';
       
       return `
-        <div class="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all border border-gray-200 mb-2 ${index === 0 ? 'col-span-2' : ''}">
-          <a href="${article.Link || '#'}" target="_blank" class="block">
-            ${hasImage ? `
-              <div class="relative h-32 overflow-hidden">
-                <img src="${article.Imagem}" 
-                     alt="${article.Titulo}" 
-                     class="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
-                     onerror="this.parentElement.style.display='none'"/>
-              </div>
-            ` : ''}
-            <div class="p-3">
-              <h4 class="text-sm font-semibold text-gray-800 mb-1 line-clamp-2 hover:text-blue-600 transition-colors">
-                ${article.Titulo}
-              </h4>
-              ${article.Manchete ? `
-                <p class="text-xs text-gray-600 mb-2 line-clamp-2">${article.Manchete}</p>
-              ` : ''}
-              <div class="flex items-center text-xs text-gray-500">
-                <i class="fas fa-newspaper mr-1"></i>
-                <span>Flow News</span>
-              </div>
+        <div class="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all border border-gray-200 mb-3 cursor-pointer" onclick="openNewsInNewTab('${article.Link || '#'}', event)">
+          ${hasImage ? `
+            <div class="relative h-40 overflow-hidden">
+              <img src="${article.Imagem}" 
+                   alt="${article.Titulo}" 
+                   class="w-full h-full object-cover"
+                   onerror="this.parentElement.style.display='none'"/>
             </div>
-          </a>
+          ` : ''}
+          <div class="p-3">
+            <h4 class="text-sm font-bold text-gray-900 mb-1 leading-tight">
+              ${article.Titulo}
+            </h4>
+            ${article.Manchete ? `
+              <p class="text-xs text-gray-600 leading-relaxed mb-2">${article.Manchete}</p>
+            ` : ''}
+            <div class="flex items-center justify-between text-xs text-gray-500 pt-2 border-t">
+              <span><i class="fas fa-newspaper mr-1"></i>Flow News</span>
+              <span class="text-blue-600">Ler mais →</span>
+            </div>
+          </div>
         </div>
       `;
     }).join('');
@@ -333,5 +331,31 @@ function initSettings() {
   initNewsFeed();
 }
 
+// Função para abrir notícia em nova aba do navegador
+function openNewsInNewTab(url, event) {
+  if (event) {
+    event.preventDefault();
+  }
+  
+  if (url && url !== '#') {
+    console.log(`📰 Abrindo notícia em nova aba: ${url}`);
+    
+    // Simular clique no botão de nova aba
+    if (typeof addNewTab === 'function') {
+      addNewTab();
+      
+      // Pequeno delay para garantir que a aba foi criada
+      setTimeout(() => {
+        const inputUrl = document.getElementById('input-url');
+        if (inputUrl) {
+          inputUrl.value = url;
+          inputUrl.dispatchEvent(new KeyboardEvent('keypress', { key: 'Enter', keyCode: 13, which: 13 }));
+        }
+      }, 100);
+    }
+  }
+}
+
 window.toggleSidebar = toggleSidebar;
 window.toggleNewsFeed = toggleNewsFeed;
+window.openNewsInNewTab = openNewsInNewTab;

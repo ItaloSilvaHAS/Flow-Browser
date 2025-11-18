@@ -827,7 +827,116 @@ return [
   { number: 6, symbol: 'C', name: 'Carbono', color: '#AA96DA', mass: '12.01', group: 'Não-metal' },
   { number: 7, symbol: 'N', name: 'Nitrogênio', color: '#FCBAD3', mass: '14.01', group: 'Não-metal' },
   { number: 8, symbol: 'O', name: 'Oxigênio', color: '#A8D8EA', mass: '16.00', group: 'Não-metal' },
-  { number: 9, symbol: 'F', name: 'Flúor', color: '#FFD3B6', mass: '19.00', group: 'Halogênio' }
+  { number: 9, symbol: 'F', name: 'Flúor', color: '#FFD3B6', mass: '19.00', group: 'Halogênio' },
+  { number: 10, symbol: 'Ne', name: 'Neônio', color: '#4ECDC4', mass: '20.18', group: 'Gás nobre' },
+  { number: 11, symbol: 'Na', name: 'Sódio', color: '#FFE66D', mass: '22.99', group: 'Metal alcalino' },
+  { number: 12, symbol: 'Mg', name: 'Magnésio', color: '#95E1D3', mass: '24.31', group: 'Metal alcalino-terroso' },
+  { number: 13, symbol: 'Al', name: 'Alumínio', color: '#A8D8EA', mass: '26.98', group: 'Metal' },
+  { number: 14, symbol: 'Si', name: 'Silício', color: '#F38181', mass: '28.09', group: 'Semimetal' },
+  { number: 15, symbol: 'P', name: 'Fósforo', color: '#FF6B6B', mass: '30.97', group: 'Não-metal' },
+  { number: 16, symbol: 'S', name: 'Enxofre', color: '#FFD3B6', mass: '32.07', group: 'Não-metal' },
+  { number: 17, symbol: 'Cl', name: 'Cloro', color: '#98D8C8', mass: '35.45', group: 'Halogênio' },
+  { number: 18, symbol: 'Ar', name: 'Argônio', color: '#4ECDC4', mass: '39.95', group: 'Gás nobre' },
+  { number: 19, symbol: 'K', name: 'Potássio', color: '#FFE66D', mass: '39.10', group: 'Metal alcalino' },
+  { number: 20, symbol: 'Ca', name: 'Cálcio', color: '#95E1D3', mass: '40.08', group: 'Metal alcalino-terroso' },
+  { number: 21, symbol: 'Sc', name: 'Escândio', color: '#F7DC6F', mass: '44.96', group: 'Metal de transição' },
+  { number: 22, symbol: 'Ti', name: 'Titânio', color: '#F7DC6F', mass: '47.87', group: 'Metal de transição' },
+  { number: 23, symbol: 'V', name: 'Vanádio', color: '#F7DC6F', mass: '50.94', group: 'Metal de transição' },
+  { number: 24, symbol: 'Cr', name: 'Cromo', color: '#F7DC6F', mass: '52.00', group: 'Metal de transição' },
+  { number: 25, symbol: 'Mn', name: 'Manganês', color: '#F7DC6F', mass: '54.94', group: 'Metal de transição' },
+  { number: 26, symbol: 'Fe', name: 'Ferro', color: '#F7DC6F', mass: '55.85', group: 'Metal de transição' },
+  { number: 27, symbol: 'Co', name: 'Cobalto', color: '#F7DC6F', mass: '58.93', group: 'Metal de transição' },
+  { number: 28, symbol: 'Ni', name: 'Níquel', color: '#F7DC6F', mass: '58.69', group: 'Metal de transição' },
+  { number: 29, symbol: 'Cu', name: 'Cobre', color: '#F7DC6F', mass: '63.55', group: 'Metal de transição' },
+  { number: 30, symbol: 'Zn', name: 'Zinco', color: '#F7DC6F', mass: '65.38', group: 'Metal de transição' },
+  { number: 31, symbol: 'Ga', name: 'Gálio', color: '#A8D8EA', mass: '69.72', group: 'Metal' },
+  { number: 32, symbol: 'Ge', name: 'Germânio', color: '#F38181', mass: '72.63', group: 'Semimetal' },
+  { number: 33, symbol: 'As', name: 'Arsênio', color: '#F38181', mass: '74.92', group: 'Semimetal' },
+  { number: 34, symbol: 'Se', name: 'Selênio', color: '#FF6B6B', mass: '78.97', group: 'Não-metal' },
+  { number: 35, symbol: 'Br', name: 'Bromo', color: '#98D8C8', mass: '79.90', group: 'Halogênio' },
+  { number: 36, symbol: 'Kr', name: 'Criptônio', color: '#4ECDC4', mass: '83.80', group: 'Gás nobre' },
+  { number: 37, symbol: 'Rb', name: 'Rubídio', color: '#FFE66D', mass: '85.47', group: 'Metal alcalino' },
+  { number: 38, symbol: 'Sr', name: 'Estrôncio', color: '#95E1D3', mass: '87.62', group: 'Metal alcalino-terroso' },
+  { number: 39, symbol: 'Y', name: 'Ítrio', color: '#F7DC6F', mass: '88.91', group: 'Metal de transição' },
+  { number: 40, symbol: 'Zr', name: 'Zircônio', color: '#F7DC6F', mass: '91.22', group: 'Metal de transição' },
+  { number: 41, symbol: 'Nb', name: 'Nióbio', color: '#F7DC6F', mass: '92.91', group: 'Metal de transição' },
+  { number: 42, symbol: 'Mo', name: 'Molibdênio', color: '#F7DC6F', mass: '95.95', group: 'Metal de transição' },
+  { number: 43, symbol: 'Tc', name: 'Tecnécio', color: '#F7DC6F', mass: '98', group: 'Metal de transição' },
+  { number: 44, symbol: 'Ru', name: 'Rutênio', color: '#F7DC6F', mass: '101.07', group: 'Metal de transição' },
+  { number: 45, symbol: 'Rh', name: 'Ródio', color: '#F7DC6F', mass: '102.91', group: 'Metal de transição' },
+  { number: 46, symbol: 'Pd', name: 'Paládio', color: '#F7DC6F', mass: '106.42', group: 'Metal de transição' },
+  { number: 47, symbol: 'Ag', name: 'Prata', color: '#F7DC6F', mass: '107.87', group: 'Metal de transição' },
+  { number: 48, symbol: 'Cd', name: 'Cádmio', color: '#F7DC6F', mass: '112.41', group: 'Metal de transição' },
+  { number: 49, symbol: 'In', name: 'Índio', color: '#A8D8EA', mass: '114.82', group: 'Metal' },
+  { number: 50, symbol: 'Sn', name: 'Estanho', color: '#A8D8EA', mass: '118.71', group: 'Metal' },
+  { number: 51, symbol: 'Sb', name: 'Antimônio', color: '#F38181', mass: '121.76', group: 'Semimetal' },
+  { number: 52, symbol: 'Te', name: 'Telúrio', color: '#F38181', mass: '127.60', group: 'Semimetal' },
+  { number: 53, symbol: 'I', name: 'Iodo', color: '#98D8C8', mass: '126.90', group: 'Halogênio' },
+  { number: 54, symbol: 'Xe', name: 'Xenônio', color: '#4ECDC4', mass: '131.29', group: 'Gás nobre' },
+  { number: 55, symbol: 'Cs', name: 'Césio', color: '#FFE66D', mass: '132.91', group: 'Metal alcalino' },
+  { number: 56, symbol: 'Ba', name: 'Bário', color: '#95E1D3', mass: '137.33', group: 'Metal alcalino-terroso' },
+  { number: 57, symbol: 'La', name: 'Lantânio', color: '#AA96DA', mass: '138.91', group: 'Lantanídeo' },
+  { number: 58, symbol: 'Ce', name: 'Cério', color: '#AA96DA', mass: '140.12', group: 'Lantanídeo' },
+  { number: 59, symbol: 'Pr', name: 'Praseodímio', color: '#AA96DA', mass: '140.91', group: 'Lantanídeo' },
+  { number: 60, symbol: 'Nd', name: 'Neodímio', color: '#AA96DA', mass: '144.24', group: 'Lantanídeo' },
+  { number: 61, symbol: 'Pm', name: 'Promécio', color: '#AA96DA', mass: '145', group: 'Lantanídeo' },
+  { number: 62, symbol: 'Sm', name: 'Samário', color: '#AA96DA', mass: '150.36', group: 'Lantanídeo' },
+  { number: 63, symbol: 'Eu', name: 'Európio', color: '#AA96DA', mass: '151.96', group: 'Lantanídeo' },
+  { number: 64, symbol: 'Gd', name: 'Gadolínio', color: '#AA96DA', mass: '157.25', group: 'Lantanídeo' },
+  { number: 65, symbol: 'Tb', name: 'Térbio', color: '#AA96DA', mass: '158.93', group: 'Lantanídeo' },
+  { number: 66, symbol: 'Dy', name: 'Disprósio', color: '#AA96DA', mass: '162.50', group: 'Lantanídeo' },
+  { number: 67, symbol: 'Ho', name: 'Hólmio', color: '#AA96DA', mass: '164.93', group: 'Lantanídeo' },
+  { number: 68, symbol: 'Er', name: 'Érbio', color: '#AA96DA', mass: '167.26', group: 'Lantanídeo' },
+  { number: 69, symbol: 'Tm', name: 'Túlio', color: '#AA96DA', mass: '168.93', group: 'Lantanídeo' },
+  { number: 70, symbol: 'Yb', name: 'Itérbio', color: '#AA96DA', mass: '173.05', group: 'Lantanídeo' },
+  { number: 71, symbol: 'Lu', name: 'Lutécio', color: '#AA96DA', mass: '174.97', group: 'Lantanídeo' },
+  { number: 72, symbol: 'Hf', name: 'Háfnio', color: '#F7DC6F', mass: '178.49', group: 'Metal de transição' },
+  { number: 73, symbol: 'Ta', name: 'Tântalo', color: '#F7DC6F', mass: '180.95', group: 'Metal de transição' },
+  { number: 74, symbol: 'W', name: 'Tungstênio', color: '#F7DC6F', mass: '183.84', group: 'Metal de transição' },
+  { number: 75, symbol: 'Re', name: 'Rênio', color: '#F7DC6F', mass: '186.21', group: 'Metal de transição' },
+  { number: 76, symbol: 'Os', name: 'Ósmio', color: '#F7DC6F', mass: '190.23', group: 'Metal de transição' },
+  { number: 77, symbol: 'Ir', name: 'Irídio', color: '#F7DC6F', mass: '192.22', group: 'Metal de transição' },
+  { number: 78, symbol: 'Pt', name: 'Platina', color: '#F7DC6F', mass: '195.08', group: 'Metal de transição' },
+  { number: 79, symbol: 'Au', name: 'Ouro', color: '#F7DC6F', mass: '196.97', group: 'Metal de transição' },
+  { number: 80, symbol: 'Hg', name: 'Mercúrio', color: '#F7DC6F', mass: '200.59', group: 'Metal de transição' },
+  { number: 81, symbol: 'Tl', name: 'Tálio', color: '#A8D8EA', mass: '204.38', group: 'Metal' },
+  { number: 82, symbol: 'Pb', name: 'Chumbo', color: '#A8D8EA', mass: '207.2', group: 'Metal' },
+  { number: 83, symbol: 'Bi', name: 'Bismuto', color: '#A8D8EA', mass: '208.98', group: 'Metal' },
+  { number: 84, symbol: 'Po', name: 'Polônio', color: '#F38181', mass: '209', group: 'Semimetal' },
+  { number: 85, symbol: 'At', name: 'Astato', color: '#98D8C8', mass: '210', group: 'Halogênio' },
+  { number: 86, symbol: 'Rn', name: 'Radônio', color: '#4ECDC4', mass: '222', group: 'Gás nobre' },
+  { number: 87, symbol: 'Fr', name: 'Frâncio', color: '#FFE66D', mass: '223', group: 'Metal alcalino' },
+  { number: 88, symbol: 'Ra', name: 'Rádio', color: '#95E1D3', mass: '226', group: 'Metal alcalino-terroso' },
+  { number: 89, symbol: 'Ac', name: 'Actínio', color: '#FCBAD3', mass: '227', group: 'Actinídeo' },
+  { number: 90, symbol: 'Th', name: 'Tório', color: '#FCBAD3', mass: '232.04', group: 'Actinídeo' },
+  { number: 91, symbol: 'Pa', name: 'Protactínio', color: '#FCBAD3', mass: '231.04', group: 'Actinídeo' },
+  { number: 92, symbol: 'U', name: 'Urânio', color: '#FCBAD3', mass: '238.03', group: 'Actinídeo' },
+  { number: 93, symbol: 'Np', name: 'Netúnio', color: '#FCBAD3', mass: '237', group: 'Actinídeo' },
+  { number: 94, symbol: 'Pu', name: 'Plutônio', color: '#FCBAD3', mass: '244', group: 'Actinídeo' },
+  { number: 95, symbol: 'Am', name: 'Amerício', color: '#FCBAD3', mass: '243', group: 'Actinídeo' },
+  { number: 96, symbol: 'Cm', name: 'Cúrio', color: '#FCBAD3', mass: '247', group: 'Actinídeo' },
+  { number: 97, symbol: 'Bk', name: 'Berkélio', color: '#FCBAD3', mass: '247', group: 'Actinídeo' },
+  { number: 98, symbol: 'Cf', name: 'Califórnio', color: '#FCBAD3', mass: '251', group: 'Actinídeo' },
+  { number: 99, symbol: 'Es', name: 'Einstênio', color: '#FCBAD3', mass: '252', group: 'Actinídeo' },
+  { number: 100, symbol: 'Fm', name: 'Férmio', color: '#FCBAD3', mass: '257', group: 'Actinídeo' },
+  { number: 101, symbol: 'Md', name: 'Mendelévio', color: '#FCBAD3', mass: '258', group: 'Actinídeo' },
+  { number: 102, symbol: 'No', name: 'Nobélio', color: '#FCBAD3', mass: '259', group: 'Actinídeo' },
+  { number: 103, symbol: 'Lr', name: 'Laurêncio', color: '#FCBAD3', mass: '266', group: 'Actinídeo' },
+  { number: 104, symbol: 'Rf', name: 'Rutherfórdio', color: '#F7DC6F', mass: '267', group: 'Metal de transição' },
+  { number: 105, symbol: 'Db', name: 'Dúbnio', color: '#F7DC6F', mass: '268', group: 'Metal de transição' },
+  { number: 106, symbol: 'Sg', name: 'Seabórgio', color: '#F7DC6F', mass: '269', group: 'Metal de transição' },
+  { number: 107, symbol: 'Bh', name: 'Bóhrio', color: '#F7DC6F', mass: '270', group: 'Metal de transição' },
+  { number: 108, symbol: 'Hs', name: 'Hássio', color: '#F7DC6F', mass: '277', group: 'Metal de transição' },
+  { number: 109, symbol: 'Mt', name: 'Meitnério', color: '#F7DC6F', mass: '278', group: 'Metal de transição' },
+  { number: 110, symbol: 'Ds', name: 'Darmstádtio', color: '#F7DC6F', mass: '281', group: 'Metal de transição' },
+  { number: 111, symbol: 'Rg', name: 'Roentgênio', color: '#F7DC6F', mass: '282', group: 'Metal de transição' },
+  { number: 112, symbol: 'Cn', name: 'Copernício', color: '#F7DC6F', mass: '285', group: 'Metal de transição' },
+  { number: 113, symbol: 'Nh', name: 'Nihônio', color: '#A8D8EA', mass: '286', group: 'Metal' },
+  { number: 114, symbol: 'Fl', name: 'Fleróvio', color: '#A8D8EA', mass: '289', group: 'Metal' },
+  { number: 115, symbol: 'Mc', name: 'Moscóvio', color: '#A8D8EA', mass: '290', group: 'Metal' },
+  { number: 116, symbol: 'Lv', name: 'Livermório', color: '#A8D8EA', mass: '293', group: 'Metal' },
+  { number: 117, symbol: 'Ts', name: 'Tenessino', color: '#98D8C8', mass: '294', group: 'Halogênio' },
+  { number: 118, symbol: 'Og', name: 'Oganessônio', color: '#4ECDC4', mass: '294', group: 'Gás nobre' }
 ];
 }
 
@@ -872,38 +981,48 @@ search.addEventListener('input', (e) => {
 });
 }
 
-// ========== 5. MAPA MENTAL ==========
+// ========== 5. MAPA MENTAL INTERATIVO ==========
 function openMindMapModal() {
   const html = `
-    <div class="max-w-5xl mx-auto">
+    <div class="max-w-6xl mx-auto">
       <h2 class="text-3xl font-bold text-gray-800 mb-6 text-center">
-        <i class="fas fa-project-diagram mr-3 text-purple-500"></i>Mapa Mental
+        <i class="fas fa-project-diagram mr-3 text-purple-500"></i>Mapa Mental Interativo
       </h2>
       
       <div class="mb-4 flex gap-4">
-        <input type="text" id="mindmap-topic" placeholder="Tópico principal" 
+        <input type="text" id="mindmap-central-topic" placeholder="Editar tema central" 
+               class="flex-1 border border-gray-300 rounded-lg px-4 py-3" />
+        <input type="text" id="mindmap-topic" placeholder="Novo tópico/ramo" 
                class="flex-1 border border-gray-300 rounded-lg px-4 py-3" />
         <button id="btn-add-node" class="bg-purple-500 text-white px-6 py-3 rounded-lg hover:bg-purple-600">
           <i class="fas fa-plus mr-2"></i>Adicionar Ramo
         </button>
       </div>
       
-      <div id="mindmap-canvas" class="bg-white rounded-xl border-2 border-gray-200 p-8 min-h-[500px] relative overflow-auto">
-        <div id="central-node" class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-          <div class="bg-purple-500 text-white px-8 py-4 rounded-full text-xl font-bold shadow-xl">
+      <div id="mindmap-canvas" class="bg-gradient-to-br from-purple-50 to-blue-50 rounded-xl border-2 border-gray-300 p-8 min-h-[600px] relative overflow-hidden" style="cursor: grab;">
+        <svg id="mindmap-lines" class="absolute inset-0 w-full h-full pointer-events-none" style="z-index: 1;"></svg>
+        <div id="central-node" class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" style="cursor: move; z-index: 10;" draggable="true">
+          <div class="bg-gradient-to-br from-purple-600 to-purple-700 text-white px-8 py-4 rounded-full text-xl font-bold shadow-2xl border-4 border-white">
             Tema Central
           </div>
         </div>
-        <div id="branches-container"></div>
+        <div id="branches-container" style="z-index: 5;"></div>
       </div>
       
-      <div class="mt-4 flex gap-4">
+      <div class="mt-4 flex gap-2">
         <button id="btn-save-mindmap" class="flex-1 bg-green-500 text-white py-3 rounded-lg hover:bg-green-600">
           <i class="fas fa-save mr-2"></i>Salvar
+        </button>
+        <button id="btn-export-image" class="flex-1 bg-blue-500 text-white py-3 rounded-lg hover:bg-blue-600">
+          <i class="fas fa-image mr-2"></i>Exportar Imagem
         </button>
         <button id="btn-clear-mindmap" class="flex-1 bg-red-500 text-white py-3 rounded-lg hover:bg-red-600">
           <i class="fas fa-trash mr-2"></i>Limpar
         </button>
+      </div>
+      
+      <div class="mt-4 bg-blue-100 border border-blue-300 rounded-lg p-3 text-sm text-blue-800">
+        <strong>Dica:</strong> Arraste os nós para reposicioná-los! Clique 2x em um nó para editá-lo. Clique direito para deletar.
       </div>
     </div>
   `;
@@ -916,42 +1035,208 @@ function openMindMapModal() {
 
 function setupMindMap() {
   let branches = [];
-  const colors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A', '#98D8C8', '#F7DC6F'];
+  let centralNode = { x: 0, y: 0, text: 'Tema Central' };
+  const colors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A', '#98D8C8', '#F7DC6F', '#AA96DA', '#FCBAD3'];
+  
+  const canvas = document.getElementById('mindmap-canvas');
+  const centralNodeEl = document.getElementById('central-node');
+  const branchesContainer = document.getElementById('branches-container');
+  const linesContainer = document.getElementById('mindmap-lines');
+  const topicInput = document.getElementById('mindmap-topic');
+  const centralTopicInput = document.getElementById('mindmap-central-topic');
+  
+  let draggedElement = null;
+  let draggedBranchIndex = null;
+  let offsetX = 0;
+  let offsetY = 0;
+  
+  function drawLines() {
+    linesContainer.innerHTML = '';
+    const canvasRect = canvas.getBoundingClientRect();
+    const centralRect = centralNodeEl.getBoundingClientRect();
+    const centralX = centralRect.left + centralRect.width / 2 - canvasRect.left;
+    const centralY = centralRect.top + centralRect.height / 2 - canvasRect.top;
+    
+    branches.forEach((branch, index) => {
+      const branchEl = document.querySelector(`[data-branch-index="${index}"]`);
+      if (!branchEl) return;
+      
+      const branchRect = branchEl.getBoundingClientRect();
+      const branchX = branchRect.left + branchRect.width / 2 - canvasRect.left;
+      const branchY = branchRect.top + branchRect.height / 2 - canvasRect.top;
+      
+      const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      line.setAttribute('x1', centralX);
+      line.setAttribute('y1', centralY);
+      line.setAttribute('x2', branchX);
+      line.setAttribute('y2', branchY);
+      line.setAttribute('stroke', branch.color);
+      line.setAttribute('stroke-width', '3');
+      line.setAttribute('opacity', '0.6');
+      linesContainer.appendChild(line);
+    });
+  }
+  
+  function createBranchElement(branch, index) {
+    const branchEl = document.createElement('div');
+    branchEl.className = 'absolute';
+    branchEl.style.left = `calc(50% + ${branch.x}px)`;
+    branchEl.style.top = `calc(50% + ${branch.y}px)`;
+    branchEl.style.cursor = 'move';
+    branchEl.style.zIndex = '10';
+    branchEl.setAttribute('draggable', 'true');
+    branchEl.setAttribute('data-branch-index', index);
+    branchEl.innerHTML = `
+      <div class="px-6 py-3 rounded-full text-white font-medium shadow-xl transform -translate-x-1/2 -translate-y-1/2 whitespace-nowrap border-3 border-white hover:scale-105 transition-transform"
+           style="background: ${branch.color};">
+        ${branch.text}
+      </div>
+    `;
+    
+    branchEl.addEventListener('dblclick', (e) => {
+      e.stopPropagation();
+      const newText = prompt('Editar tópico:', branch.text);
+      if (newText && newText.trim()) {
+        branches[index].text = newText.trim();
+        renderBranches();
+      }
+    });
+    
+    branchEl.addEventListener('contextmenu', (e) => {
+      e.preventDefault();
+      if (confirm('Deletar este ramo?')) {
+        branches.splice(index, 1);
+        renderBranches();
+      }
+    });
+    
+    branchEl.addEventListener('dragstart', (e) => {
+      draggedElement = branchEl;
+      draggedBranchIndex = index;
+      const rect = branchEl.getBoundingClientRect();
+      const canvasRect = canvas.getBoundingClientRect();
+      offsetX = e.clientX - rect.left;
+      offsetY = e.clientY - rect.top;
+      branchEl.style.opacity = '0.5';
+    });
+    
+    branchEl.addEventListener('dragend', (e) => {
+      if (draggedElement) {
+        draggedElement.style.opacity = '1';
+        draggedElement = null;
+        draggedBranchIndex = null;
+      }
+    });
+    
+    return branchEl;
+  }
+  
+  function renderBranches() {
+    branchesContainer.innerHTML = '';
+    branches.forEach((branch, index) => {
+      branchesContainer.appendChild(createBranchElement(branch, index));
+    });
+    setTimeout(drawLines, 10);
+  }
+  
+  canvas.addEventListener('dragover', (e) => {
+    e.preventDefault();
+  });
+  
+  canvas.addEventListener('drop', (e) => {
+    e.preventDefault();
+    if (draggedElement && draggedBranchIndex !== null) {
+      const canvasRect = canvas.getBoundingClientRect();
+      const centerX = canvasRect.width / 2;
+      const centerY = canvasRect.height / 2;
+      
+      const newX = e.clientX - canvasRect.left - centerX;
+      const newY = e.clientY - canvasRect.top - centerY;
+      
+      branches[draggedBranchIndex].x = newX;
+      branches[draggedBranchIndex].y = newY;
+      
+      renderBranches();
+    }
+  });
+  
+  centralNodeEl.addEventListener('dblclick', (e) => {
+    e.stopPropagation();
+    const newText = prompt('Editar tema central:', centralNode.text);
+    if (newText && newText.trim()) {
+      centralNode.text = newText.trim();
+      centralNodeEl.querySelector('div').textContent = centralNode.text;
+      centralTopicInput.value = centralNode.text;
+    }
+  });
+  
+  centralTopicInput.addEventListener('change', (e) => {
+    if (e.target.value.trim()) {
+      centralNode.text = e.target.value.trim();
+      centralNodeEl.querySelector('div').textContent = centralNode.text;
+    }
+  });
   
   document.getElementById('btn-add-node').addEventListener('click', () => {
-    const topic = document.getElementById('mindmap-topic').value.trim();
-    if (!topic) return;
+    const topic = topicInput.value.trim();
+    if (!topic) {
+      alert('Digite um tópico para adicionar!');
+      return;
+    }
     
-    const angle = (branches.length * 60) % 360;
-    const radius = 200;
+    const angle = (branches.length * 45 + Math.random() * 30) % 360;
+    const radius = 180 + Math.random() * 80;
     const x = Math.cos(angle * Math.PI / 180) * radius;
     const y = Math.sin(angle * Math.PI / 180) * radius;
     const color = colors[branches.length % colors.length];
     
-    const branch = document.createElement('div');
-    branch.className = 'absolute';
-    branch.style.left = `calc(50% + ${x}px)`;
-    branch.style.top = `calc(50% + ${y}px)`;
-    branch.innerHTML = `
-      <div class="px-6 py-3 rounded-full text-white font-medium shadow-lg transform -translate-x-1/2 -translate-y-1/2 whitespace-nowrap"
-           style="background: ${color};">
-        ${topic}
-      </div>
-    `;
-    
-    document.getElementById('branches-container').appendChild(branch);
-    branches.push({ topic, x, y, color });
-    document.getElementById('mindmap-topic').value = '';
+    branches.push({ text: topic, x, y, color });
+    topicInput.value = '';
+    renderBranches();
   });
   
   document.getElementById('btn-clear-mindmap').addEventListener('click', () => {
-    document.getElementById('branches-container').innerHTML = '';
-    branches = [];
+    if (confirm('Limpar todo o mapa mental?')) {
+      branches = [];
+      centralNode = { x: 0, y: 0, text: 'Tema Central' };
+      centralNodeEl.querySelector('div').textContent = 'Tema Central';
+      centralTopicInput.value = '';
+      renderBranches();
+    }
   });
   
   document.getElementById('btn-save-mindmap').addEventListener('click', () => {
-    alert('💾 Mapa Mental salvo! (Funcionalidade de exportação em desenvolvimento)');
+    const data = {
+      central: centralNode,
+      branches: branches
+    };
+    localStorage.setItem('mindmap_data', JSON.stringify(data));
+    alert('💾 Mapa Mental salvo no navegador!');
   });
+  
+  document.getElementById('btn-export-image').addEventListener('click', () => {
+    alert('📸 Exportação de imagem em desenvolvimento! Use a captura de tela do sistema por enquanto.');
+  });
+  
+  const saved = localStorage.getItem('mindmap_data');
+  if (saved) {
+    try {
+      const data = JSON.parse(saved);
+      if (data.central) {
+        centralNode = data.central;
+        centralNodeEl.querySelector('div').textContent = centralNode.text;
+        centralTopicInput.value = centralNode.text;
+      }
+      if (data.branches) {
+        branches = data.branches;
+        renderBranches();
+      }
+    } catch (e) {
+      console.error('Erro ao carregar mapa mental salvo:', e);
+    }
+  }
+  
+  renderBranches();
 }
 
 console.log('✨ 5 Novas Ferramentas Autorais Carregadas!');
