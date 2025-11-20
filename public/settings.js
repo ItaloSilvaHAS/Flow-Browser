@@ -153,14 +153,15 @@ function showNewsFeed() {
   if (!newsContainer) {
     newsContainer = document.createElement('div');
     newsContainer.id = 'news-feed-container';
-    newsContainer.className = 'absolute bottom-0 left-0 right-0 pb-6 px-8';
+    newsContainer.className = 'w-full px-4 sm:px-8 mb-6 transition-all duration-500';
     newsContainer.style.opacity = '0';
-    newsContainer.style.transition = 'opacity 0.5s ease';
-    
+    newsContainer.style.maxHeight = '0';
+    newsContainer.style.overflow = 'hidden';
     homePage.appendChild(newsContainer);
     
     setTimeout(() => {
       newsContainer.style.opacity = '1';
+  newsContainer.style.maxHeight = '500px'; // altura máxima do feed
     }, 10);
     
     loadNewsContent(newsContainer);
@@ -174,6 +175,7 @@ function hideNewsFeed() {
   
   if (newsContainer) {
     newsContainer.style.opacity = '0';
+    newsContainer.style.maxHeight = '0';
     
     setTimeout(() => {
       newsContainer.remove();
@@ -185,10 +187,10 @@ function hideNewsFeed() {
 
 function loadNewsContent(container) {
   container.innerHTML = `
-    <div class="bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl overflow-hidden" style="max-height: 450px; width: 100%;">
+    <div class="bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl overflow-hidden transition-all duration-500">
       <div class="sticky top-0 bg-blue-600 px-4 py-3 flex items-center justify-between z-10">
-        <h3 class="text-base font-bold text-white flex items-center">
-          <i class="fas fa-newspaper mr-2"></i>
+       <h3 class="text-base font-bold text-white flex items-center">
+         <i class="fas fa-newspaper mr-2"></i>
           Notícias
         </h3>
         <button onclick="toggleNewsFeed()" class="text-white hover:text-gray-200">
@@ -196,9 +198,9 @@ function loadNewsContent(container) {
         </button>
       </div>
       
-      <div id="news-articles" class="overflow-y-auto p-4" style="max-height: 390px;">
+      <div id="news-articles" class="overflow-y-auto p-4" style="max-height: 400px;">
         <div class="flex items-center justify-center py-8">
-          <i class="fas fa-spinner fa-spin text-3xl text-blue-500"></i>
+         <i class="fas fa-spinner fa-spin text-3xl text-blue-500"></i>
         </div>
       </div>
     </div>

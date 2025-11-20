@@ -8,77 +8,82 @@ async function openSimuladosModal() {
   }
 }
 
-// Interface minimalista de seleção de categoria
+// Interface minimalista de seleção (lista simples)
 function getCategorySelectionHTML() {
   return `
-    <div class="max-w-4xl mx-auto">
+    <div class="max-w-xl mx-auto px-6 py-8">
       <div class="text-center mb-8">
-        <h2 class="text-3xl font-bold text-gray-800 mb-3">
-          <i class="fas fa-graduation-cap mr-3 text-blue-500"></i>
+        <h2 class="text-3xl font-bold text-gray-800 mb-2">
+          <i class="fas fa-graduation-cap mr-2 text-blue-500"></i>
           Gerador de Simulados
         </h2>
-        <p class="text-gray-600">Escolha o tipo de simulado que deseja fazer</p>
+        <p class="text-gray-600">Escolha o tipo de simulado</p>
       </div>
       
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-5xl mx-auto">
+      <div class="space-y-3">
         <!-- ENEM -->
         <button onclick="startSimulado('ENEM')" 
-                class="group bg-gradient-to-br from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-xl p-6 shadow-lg hover:shadow-2xl transition-all transform hover:scale-105">
-          <div class="text-center">
-            <i class="fas fa-book-open text-4xl mb-3 group-hover:scale-110 transition-transform"></i>
-            <h3 class="text-xl font-bold mb-1">ENEM</h3>
-            <p class="text-blue-100 text-xs">Exame Nacional</p>
+                class="w-full flex items-center justify-between bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-lg px-6 py-4 shadow-md hover:shadow-lg transition-all group">
+          <div class="flex items-center">
+            <i class="fas fa-book-open text-2xl mr-4"></i>
+            <div class="text-left">
+              <h3 class="font-bold text-lg">ENEM</h3>
+              <p class="text-sm text-blue-100">Exame Nacional</p>
+            </div>
           </div>
-        </button>
-        
-        <!-- ETEC -->
-        <button onclick="startSimulado('ETEC')" 
-                class="group bg-gradient-to-br from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white rounded-xl p-6 shadow-lg hover:shadow-2xl transition-all transform hover:scale-105">
-          <div class="text-center">
-            <i class="fas fa-laptop-code text-4xl mb-3 group-hover:scale-110 transition-transform"></i>
-            <h3 class="text-xl font-bold mb-1">ETEC</h3>
-            <p class="text-purple-100 text-xs">Escola Técnica</p>
-          </div>
+          <i class="fas fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
         </button>
         
         <!-- FATEC -->
         <button onclick="startSimulado('FATEC')" 
-                class="group bg-gradient-to-br from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white rounded-xl p-6 shadow-lg hover:shadow-2xl transition-all transform hover:scale-105">
-          <div class="text-center">
-            <i class="fas fa-university text-4xl mb-3 group-hover:scale-110 transition-transform"></i>
-            <h3 class="text-xl font-bold mb-1">FATEC</h3>
-            <p class="text-green-100 text-xs">Faculdade</p>
+                class="w-full flex items-center justify-between bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white rounded-lg px-6 py-4 shadow-md hover:shadow-lg transition-all group">
+          <div class="flex items-center">
+            <i class="fas fa-university text-2xl mr-4"></i>
+            <div class="text-left">
+              <h3 class="font-bold text-lg">FATEC</h3>
+              <p class="text-sm text-green-100">Faculdade de Tecnologia</p>
+            </div>
           </div>
+          <i class="fas fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
         </button>
         
-        <!-- FUVEST/USP -->
+        <!-- FUVEST -->
         <button onclick="startSimulado('FUVEST')" 
-                class="group bg-gradient-to-br from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white rounded-xl p-6 shadow-lg hover:shadow-2xl transition-all transform hover:scale-105">
-          <div class="text-center">
-            <i class="fas fa-graduation-cap text-4xl mb-3 group-hover:scale-110 transition-transform"></i>
-            <h3 class="text-xl font-bold mb-1">FUVEST</h3>
-            <p class="text-red-100 text-xs">USP</p>
+                class="w-full flex items-center justify-between bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white rounded-lg px-6 py-4 shadow-md hover:shadow-lg transition-all group">
+          <div class="flex items-center">
+            <i class="fas fa-graduation-cap text-2xl mr-4"></i>
+            <div class="text-left">
+              <h3 class="font-bold text-lg">FUVEST</h3>
+              <p class="text-sm text-red-100">USP</p>
+            </div>
           </div>
+          <i class="fas fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
         </button>
         
         <!-- Vestibulinho -->
         <button onclick="startSimulado('VESTIBULINHO')" 
-                class="group bg-gradient-to-br from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white rounded-xl p-6 shadow-lg hover:shadow-2xl transition-all transform hover:scale-105">
-          <div class="text-center">
-            <i class="fas fa-pen-fancy text-4xl mb-3 group-hover:scale-110 transition-transform"></i>
-            <h3 class="text-xl font-bold mb-1">Vestibulinho</h3>
-            <p class="text-orange-100 text-xs">Ensino Médio</p>
+                class="w-full flex items-center justify-between bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white rounded-lg px-6 py-4 shadow-md hover:shadow-lg transition-all group">
+          <div class="flex items-center">
+            <i class="fas fa-pen-fancy text-2xl mr-4"></i>
+            <div class="text-left">
+              <h3 class="font-bold text-lg">Vestibulinho</h3>
+              <p class="text-sm text-orange-100">Ensino Médio</p>
+            </div>
           </div>
+          <i class="fas fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
         </button>
         
         <!-- Todos -->
         <button onclick="startSimulado('TODOS')" 
-                class="group bg-gradient-to-br from-gray-700 to-gray-800 hover:from-gray-800 hover:to-gray-900 text-white rounded-xl p-6 shadow-lg hover:shadow-2xl transition-all transform hover:scale-105">
-          <div class="text-center">
-            <i class="fas fa-layer-group text-4xl mb-3 group-hover:scale-110 transition-transform"></i>
-            <h3 class="text-xl font-bold mb-1">Todos</h3>
-            <p class="text-gray-300 text-xs">Completo</p>
+                class="w-full flex items-center justify-between bg-gradient-to-r from-gray-700 to-gray-800 hover:from-gray-800 hover:to-gray-900 text-white rounded-lg px-6 py-4 shadow-md hover:shadow-lg transition-all group">
+          <div class="flex items-center">
+            <i class="fas fa-layer-group text-2xl mr-4"></i>
+            <div class="text-left">
+              <h3 class="font-bold text-lg">Todos</h3>
+              <p class="text-sm text-gray-300">Mix Completo</p>
+            </div>
           </div>
+          <i class="fas fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
         </button>
       </div>
     </div>
@@ -152,33 +157,50 @@ async function startSimulado(categoria) {
   }
 }
 
-// Função para obter questões do Supabase com filtro por categoria
+
+// Função para normalizar gabarito do Supabase
+function normalizarGabarito(gabaritoBruto) {
+  if (!gabaritoBruto) return null;
+
+  const g = gabaritoBruto.toString().trim().toUpperCase();
+
+  // Formato R1-R5 → converte para letra
+  const rMatch = g.match(/^R([1-5])$/);
+  if (rMatch) return String.fromCharCode(64 + parseInt(rMatch[1], 10)); // R1->A, R2->B ...
+
+  // Já é letra A-E
+  if (["A","B","C","D","E"].includes(g)) return g;
+
+  // Caso inválido
+  return null;
+}
+
+// Converte letra A-E em índice 0-4
+function gabaritoParaIndice(g) {
+  if (!g) return null;
+  return g.charCodeAt(0) - 65;
+}
+
+// Função principal para obter questões do Supabase
 async function obterQuestoesDoSupabase(categoria = 'TODOS') {
   try {
-    if (typeof supabaseClient === 'undefined' || !supabaseClient) {
+    if (!supabaseClient) {
       console.error('❌ Supabase não inicializado');
       alert('Erro: Supabase não inicializado. Verifique a conexão.');
       return [];
     }
 
     console.log(`🔍 Buscando questões de ${categoria}...`);
-    
+
     let query = supabaseClient.from('Simulados').select('*');
-    
-    // Filtrar por banca se não for TODOS
-    if (categoria !== 'TODOS') {
-      query = query.ilike('Banca', `%${categoria}%`);
-    }
-    
+    if (categoria !== 'TODOS') query = query.ilike('Banca', `%${categoria}%`);
+
     let { data, error } = await query;
 
-    // Tentar com tabela minúscula se der erro
     if (error) {
       console.log('⚠️ Tentando tabela "simulados" (minúsculo)...');
       query = supabaseClient.from('simulados').select('*');
-      if (categoria !== 'TODOS') {
-        query = query.ilike('Banca', `%${categoria}%`);
-      }
+      if (categoria !== 'TODOS') query = query.ilike('Banca', `%${categoria}%`);
       const result = await query;
       data = result.data;
       error = result.error;
@@ -186,37 +208,30 @@ async function obterQuestoesDoSupabase(categoria = 'TODOS') {
 
     if (error) {
       console.error('❌ Erro ao buscar questões:', error);
-      alert(`Erro: ${error.message}\n\nVerifique se a tabela existe no Supabase.`);
+      alert(`Erro: ${error.message}\nVerifique se a tabela existe no Supabase.`);
       return [];
     }
-
-    console.log('📊 Dados retornados:', data);
 
     if (!data || data.length === 0) {
       console.log(`⚠️ Nenhuma questão encontrada para ${categoria}`);
       return [];
     }
 
-    // Converter dados do Supabase para o formato esperado
+    // Processar questões
     const questoes = data.map(q => {
-      const alternativas = [];
-      if (q.R1) alternativas.push(q.R1);
-      if (q.R2) alternativas.push(q.R2);
-      if (q.R3) alternativas.push(q.R3);
-      if (q.R4) alternativas.push(q.R4);
-      if (q.R5) alternativas.push(q.R5);
+      const alternativas = [q.R1, q.R2, q.R3, q.R4, q.R5].filter(a => a && a.trim() !== "");
 
-      const gabarito = q.Gabarito ? q.Gabarito.toString().trim().toUpperCase() : 'A';
-      const respostaCorreta = gabarito.charCodeAt(0) - 65;
-      
-      console.log(`Questão ${q.id}: Gabarito = "${q.Gabarito}" -> "${gabarito}" -> índice ${respostaCorreta}`);
+      const gabaritoLetra = normalizarGabarito(q.Gabarito);
+      const respostaCorreta = gabaritoParaIndice(gabaritoLetra);
+
+      console.log(`🔍 Q${q.id}: DB="${q.Gabarito}" → Letra=${gabaritoLetra} → Índice=${respostaCorreta}`);
 
       return {
         id: q.id,
         enunciado: q.Enunciado || 'Questão sem enunciado',
-        alternativas: alternativas,
-        respostaCorreta: respostaCorreta,
-        gabarito: gabarito,
+        alternativas,
+        respostaCorreta,
+        gabarito: gabaritoLetra,
         ano: q.Ano,
         banca: q.Banca
       };
@@ -323,29 +338,53 @@ function finalizarSimulado(questoes) {
   
   let acertos = 0;
   let respondidas = 0;
+  const resultadosDetalhados = [];
   
-  questoes.forEach(questao => {
+  questoes.forEach((questao, index) => {
     const resposta = document.querySelector(`input[name="questao-${questao.id}"]:checked`);
     
     if (resposta) {
       respondidas++;
       const respostaUsuario = parseInt(resposta.value);
-      const respostaCorretaQuestao = questao.respostaCorreta;
+      const respostaCorreta = Number(questao.respostaCorreta);
+      const acertou = respostaUsuario === respostaCorreta;
       
-      console.log(`Questão ${questao.id}: Usuário escolheu ${respostaUsuario}, Correta é ${respostaCorretaQuestao}, Gabarito: ${questao.gabarito}`);
+      console.log(`🔎 Q${questao.id}:
+        📝 Usuário: ${respostaUsuario} (${String.fromCharCode(65 + respostaUsuario)})
+        ✅ Correta: ${respostaCorreta} (${questao.gabarito})
+        📊 Tipos: user=${typeof respostaUsuario} correta=${typeof respostaCorreta}
+        ${acertou ? '✅ ACERTOU!' : '❌ ERROU!'}`);
       
-      if (respostaUsuario === respostaCorretaQuestao) {
+      if (acertou) {
         acertos++;
-        console.log(`✅ ACERTOU questão ${questao.id}`);
-      } else {
-        console.log(`❌ ERROU questão ${questao.id}`);
       }
+      
+      resultadosDetalhados.push({
+        numero: index + 1,
+        acertou: acertou
+      });
+    } else {
+      resultadosDetalhados.push({
+        numero: index + 1,
+        acertou: null
+      });
     }
   });
   
   const totalQuestoes = questoes.length;
   const percentual = totalQuestoes > 0 ? ((acertos / totalQuestoes) * 100).toFixed(1) : 0;
   const erros = respondidas - acertos;
+  
+  // Gerar mini gabarito visual
+  const miniGabarito = resultadosDetalhados.map(r => {
+    if (r.acertou === null) {
+      return `<div class="w-8 h-8 rounded-lg bg-gray-200 flex items-center justify-center text-xs font-bold text-gray-400" title="Questão ${r.numero} - Não respondida">${r.numero}</div>`;
+    } else if (r.acertou) {
+      return `<div class="w-8 h-8 rounded-lg bg-green-500 flex items-center justify-center text-xs font-bold text-white" title="Questão ${r.numero} - Correta"><i class="fas fa-check"></i></div>`;
+    } else {
+      return `<div class="w-8 h-8 rounded-lg bg-red-500 flex items-center justify-center text-xs font-bold text-white" title="Questão ${r.numero} - Incorreta"><i class="fas fa-times"></i></div>`;
+    }
+  }).join('');
   
   const resultado = `
     <div class="text-center max-w-3xl mx-auto">
@@ -389,6 +428,31 @@ function finalizarSimulado(questoes) {
             percentual >= 50 ? 'Com mais dedicação, você chegará lá!' : 
             'Cada questão é um aprendizado. Não desista!'}
         </p>
+      </div>
+      
+      <!-- Mini Gabarito Visual -->
+      <div class="bg-white rounded-2xl p-6 shadow-lg mb-8">
+        <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center justify-center">
+          <i class="fas fa-list-check mr-2 text-blue-500"></i>
+          Mapa de Acertos
+        </h3>
+        <div class="grid grid-cols-10 gap-2 justify-items-center">
+          ${miniGabarito}
+        </div>
+        <div class="flex justify-center items-center gap-6 mt-6 text-sm">
+          <div class="flex items-center">
+            <div class="w-4 h-4 bg-green-500 rounded mr-2"></div>
+            <span class="text-gray-600">Acertou</span>
+          </div>
+          <div class="flex items-center">
+            <div class="w-4 h-4 bg-red-500 rounded mr-2"></div>
+            <span class="text-gray-600">Errou</span>
+          </div>
+          <div class="flex items-center">
+            <div class="w-4 h-4 bg-gray-200 rounded mr-2"></div>
+            <span class="text-gray-600">Em branco</span>
+          </div>
+        </div>
       </div>
       
       <button onclick="openSimuladosModal()" class="bg-blue-600 text-white px-10 py-4 rounded-xl hover:bg-blue-700 text-lg font-semibold shadow-lg hover:shadow-xl transition-all transform hover:scale-105">

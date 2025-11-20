@@ -3911,7 +3911,62 @@ function setWallpaperFromDataURL(dataUrl) {
   }
 }
 
-// Reader Mode
+// Controles do Reader Mode (escopo global)
+let readerFontSize = 100;
+let readerTheme = 'light';
+let readerWidth = 'medium';
+
+function adjustReaderFontSize(delta) {
+  readerFontSize = Math.max(80, Math.min(150, readerFontSize + (delta * 10)));
+  const article = document.getElementById('reader-article');
+  if (article) {
+    const baseSize = 18;
+    article.style.fontSize = (baseSize * readerFontSize / 100) + 'px';
+    const sizeDisplay = document.getElementById('reader-font-size');
+    if (sizeDisplay) sizeDisplay.textContent = readerFontSize + '%';
+  }
+}
+
+function toggleReaderTheme() {
+  const article = document.getElementById('reader-article');
+  const wrapper = document.querySelector('.reader-content-wrapper');
+  
+  if (!article || !wrapper) return;
+  
+  if (readerTheme === 'light') {
+    article.classList.add('dark-theme');
+    wrapper.style.background = '#0f0f0f';
+    readerTheme = 'dark';
+  } else {
+    article.classList.remove('dark-theme');
+    wrapper.style.background = '';
+    readerTheme = 'light';
+  }
+}
+
+function setReaderWidth(width) {
+  const article = document.getElementById('reader-article');
+  if (!article) return;
+  
+  article.classList.remove('width-narrow', 'width-medium', 'width-wide');
+  article.classList.add('width-' + width);
+  readerWidth = width;
+
+  const buttons = document.querySelectorAll('.reader-toolbar button[onclick^="setReaderWidth"]');
+  buttons.forEach((btn, idx) => {
+    if ((width === 'narrow' && idx === 0) ||
+        (width === 'medium' && idx === 1) ||
+        (width === 'wide' && idx === 2)) {
+      btn.classList.add('text-blue-500');
+      btn.classList.remove('text-gray-600');
+    } else {
+      btn.classList.add('text-gray-600');
+      btn.classList.remove('text-blue-500');
+    }
+  });
+}
+
+// Reader Mode - Versão Premium Minimalista
 async function openReaderMode() {
   try {
     if (!webview) {
@@ -3919,26 +3974,306 @@ async function openReaderMode() {
       return;
     }
 
-    const text = await webview.executeJavaScript(`
+    // Reset estados
+    readerFontSize = 100;
+    readerTheme = 'light';
+    readerWidth = 'medium';
+
+    // Extrair conteúdo estruturado e LIMPO da página
+    const content = await webview.executeJavaScript(`
       (() => {
-        const article = document.querySelector('article') || document.body;
-        return article.innerText || article.textContent || '';
+        // Clonar documento para não modificar o original
+        const docClone = document.cloneNode(true);
+        
+        // Remover elementos indesejados do clone
+        const unwantedSelectors = [
+          'script', 'style', 'noscript', 'iframe', 'object', 'embed',
+          'nav', 'header', 'footer', 'aside', 'form', 'button',
+          '[role="navigation"]', '[role="banner"]', '[role="contentinfo"]',
+          '.ad', '.ads', '.advertisement', '.promo', '.popup', '.modal',
+          '.social-share', '.share-buttons', '#comments', '.comments',
+          '.sidebar', '.widget', '.related-posts', '.newsletter'
+        ];
+        
+        unwantedSelectors.forEach(selector => {
+          docClone.querySelectorAll(selector).forEach(el => el.remove());
+        });
+
+        // Encontrar título
+        let title = '';
+        const h1 = docClone.querySelector('h1');
+        const ogTitle = document.querySelector('meta[property="og:title"]');
+        const titleTag = document.querySelector('title');
+        
+        if (h1 && h1.innerText.trim().length > 0 && h1.innerText.trim().length < 200) {
+          title = h1.innerText.trim();
+        } else if (ogTitle) {
+          title = ogTitle.getAttribute('content');
+        } else if (titleTag) {
+          title = titleTag.innerText.split('|')[0].split('-')[0].trim();
+        }
+
+        // Encontrar conteúdo principal com prioridade
+        let contentElement = null;
+        const selectors = [
+          'article',
+          'main',
+          '[role="main"]',
+          '.post-content',
+          '.article-content',
+          '.entry-content',
+          '.content',
+          '#content'
+        ];
+        
+        for (const selector of selectors) {
+          contentElement = docClone.querySelector(selector);
+          if (contentElement && contentElement.innerText.trim().length > 200) break;
+        }
+        
+        if (!contentElement) {
+          contentElement = docClone.body;
+        }
+
+        // Limpar e extrair apenas elementos de conteúdo
+        const cleanDiv = document.createElement('div');
+        const allowedTags = ['P', 'H1', 'H2', 'H3', 'H4', 'H5', 'H6', 'UL', 'OL', 'LI', 'BLOCKQUOTE', 'PRE', 'CODE', 'IMG', 'A', 'STRONG', 'EM', 'BR'];
+        
+        function cleanElement(el) {
+          if (!el || !el.tagName) return null;
+          
+          // Pular se for invisível ou vazio
+          if (el.offsetHeight === 0 || !el.innerText || el.innerText.trim().length === 0) {
+            if (el.tagName !== 'IMG') return null;
+          }
+          
+          if (allowedTags.includes(el.tagName)) {
+            const newEl = document.createElement(el.tagName.toLowerCase());
+            
+            // Copiar texto ou atributos essenciais (com sanitização rigorosa)
+            if (el.tagName === 'IMG') {
+              // Whitelist de esquemas seguros para imagens
+              const src = el.src || '';
+              const srcLower = src.toLowerCase();
+              const safeSchemes = ['https://', 'http://'];
+              const safeDataImages = ['data:image/png', 'data:image/jpeg', 'data:image/jpg', 'data:image/gif', 'data:image/webp'];
+              
+              const isSafe = safeSchemes.some(scheme => srcLower.startsWith(scheme)) ||
+                            safeDataImages.some(dataType => srcLower.startsWith(dataType));
+              
+              if (isSafe) {
+                newEl.src = src;
+              }
+              newEl.alt = (el.alt || '').substring(0, 200); // Limitar alt text
+            } else if (el.tagName === 'A') {
+              // Whitelist de esquemas seguros para links
+              const href = el.href || '';
+              const hrefLower = href.toLowerCase();
+              const safeSchemes = ['https://', 'http://', 'mailto:', 'tel:'];
+              
+              if (safeSchemes.some(scheme => hrefLower.startsWith(scheme))) {
+                newEl.href = href;
+                newEl.target = '_blank';
+                newEl.rel = 'noopener noreferrer';
+              }
+              newEl.textContent = (el.textContent || '').substring(0, 500); // Limitar texto do link
+            } else {
+              // Para outros elementos, copiar apenas o texto dos filhos diretos
+              Array.from(el.childNodes).forEach(child => {
+                if (child.nodeType === 3) { // Text node
+                  newEl.appendChild(document.createTextNode(child.textContent));
+                } else if (child.nodeType === 1) { // Element
+                  const cleaned = cleanElement(child);
+                  if (cleaned) newEl.appendChild(cleaned);
+                }
+              });
+            }
+            
+            return newEl;
+          } else {
+            // Se não é permitido, processar filhos
+            const fragment = document.createDocumentFragment();
+            Array.from(el.children).forEach(child => {
+              const cleaned = cleanElement(child);
+              if (cleaned) fragment.appendChild(cleaned);
+            });
+            return fragment;
+          }
+        }
+        
+        Array.from(contentElement.children).forEach(child => {
+          const cleaned = cleanElement(child);
+          if (cleaned) cleanDiv.appendChild(cleaned);
+        });
+
+        return {
+          title: title,
+          content: cleanDiv.innerHTML || '<p>Não foi possível extrair o conteúdo desta página.</p>'
+        };
       })();
     `);
 
-    const html = `
-      <div class="flex flex-col h-[70vh] max-w-4xl w-full overflow-auto">
-        <h2 class="text-2xl font-bold text-gray-800 mb-4">
-          <i class="fas fa-book-open mr-2 text-green-500"></i>Modo de Leitura
-        </h2>
-        <div class="bg-white p-6 rounded-lg border border-gray-200 overflow-auto">
-          <pre class="whitespace-pre-wrap text-gray-700 leading-relaxed">${text.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</pre>
+    const readerHTML = `
+      <div class="reader-mode-container flex flex-col h-[85vh] w-full bg-gradient-to-br from-gray-50 to-gray-100">
+        <!-- Toolbar Superior -->
+        <div class="reader-toolbar flex items-center justify-between px-6 py-4 bg-white border-b border-gray-200 shadow-sm">
+          <div class="flex items-center gap-2">
+            <i class="fas fa-book-open text-2xl text-blue-500"></i>
+            <span class="font-semibold text-gray-700">Modo de Leitura</span>
+          </div>
+          
+          <div class="flex items-center gap-3">
+            <!-- Controle de Tamanho da Fonte -->
+            <div class="flex items-center gap-2 bg-gray-100 rounded-lg px-3 py-1.5">
+              <button onclick="adjustReaderFontSize(-1)" class="text-gray-600 hover:text-gray-900 transition" title="Diminuir fonte">
+                <i class="fas fa-minus text-sm"></i>
+              </button>
+              <span class="text-sm font-medium text-gray-700 min-w-[2rem] text-center" id="reader-font-size">100%</span>
+              <button onclick="adjustReaderFontSize(1)" class="text-gray-600 hover:text-gray-900 transition" title="Aumentar fonte">
+                <i class="fas fa-plus text-sm"></i>
+              </button>
+            </div>
+
+            <!-- Controle de Largura -->
+            <div class="flex items-center gap-2 bg-gray-100 rounded-lg px-3 py-1.5">
+              <button onclick="setReaderWidth('narrow')" class="text-gray-600 hover:text-gray-900 transition" title="Largura estreita">
+                <i class="fas fa-compress-alt text-sm"></i>
+              </button>
+              <button onclick="setReaderWidth('medium')" class="text-blue-500 hover:text-blue-700 transition" title="Largura média">
+                <i class="fas fa-arrows-alt-h text-sm"></i>
+              </button>
+              <button onclick="setReaderWidth('wide')" class="text-gray-600 hover:text-gray-900 transition" title="Largura ampla">
+                <i class="fas fa-expand-alt text-sm"></i>
+              </button>
+            </div>
+
+            <!-- Toggle Tema -->
+            <button onclick="toggleReaderTheme()" class="bg-gray-100 hover:bg-gray-200 rounded-lg px-3 py-1.5 transition" title="Alternar tema">
+              <i class="fas fa-adjust text-sm text-gray-700"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Área de Leitura -->
+        <div class="reader-content-wrapper flex-1 overflow-y-auto">
+          <div id="reader-article" class="reader-article mx-auto px-8 py-12 max-w-3xl bg-white shadow-xl" style="font-size: 18px; line-height: 1.8;">
+            ${content.title ? `<h1 class="reader-title text-4xl font-bold text-gray-900 mb-8 leading-tight">${content.title}</h1>` : ''}
+            <div class="reader-body text-gray-800">
+              ${content.content}
+            </div>
+          </div>
         </div>
       </div>
+
+      <style>
+        .reader-article {
+          transition: all 0.3s ease;
+        }
+
+        .reader-article.dark-theme {
+          background: #1a1a1a !important;
+          color: #e0e0e0 !important;
+        }
+
+        .reader-article.dark-theme .reader-title {
+          color: #ffffff !important;
+        }
+
+        .reader-article.dark-theme .reader-body {
+          color: #d0d0d0 !important;
+        }
+
+        .reader-body p {
+          margin-bottom: 1.5em;
+          font-size: inherit;
+          line-height: inherit;
+          color: inherit;
+        }
+
+        .reader-body h1, .reader-body h2, .reader-body h3, 
+        .reader-body h4, .reader-body h5, .reader-body h6 {
+          font-weight: 700;
+          margin-top: 2em;
+          margin-bottom: 0.8em;
+          line-height: 1.3;
+          color: inherit;
+        }
+
+        .reader-body h2 { font-size: 1.8em; }
+        .reader-body h3 { font-size: 1.5em; }
+        .reader-body h4 { font-size: 1.3em; }
+
+        .reader-body img {
+          max-width: 100%;
+          height: auto;
+          border-radius: 8px;
+          margin: 2em auto;
+          display: block;
+          box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .reader-body ul, .reader-body ol {
+          margin-left: 2em;
+          margin-bottom: 1.5em;
+        }
+
+        .reader-body li {
+          margin-bottom: 0.5em;
+          line-height: inherit;
+        }
+
+        .reader-body a {
+          color: #2563eb;
+          text-decoration: underline;
+          transition: color 0.2s;
+        }
+
+        .reader-body a:hover {
+          color: #1d4ed8;
+        }
+
+        .reader-body blockquote {
+          border-left: 4px solid #e5e7eb;
+          padding-left: 1.5em;
+          margin: 1.5em 0;
+          font-style: italic;
+          color: #6b7280;
+        }
+
+        .reader-body code {
+          background: #f3f4f6;
+          padding: 0.2em 0.4em;
+          border-radius: 4px;
+          font-family: 'Courier New', monospace;
+          font-size: 0.9em;
+        }
+
+        .reader-body pre {
+          background: #1f2937;
+          color: #e5e7eb;
+          padding: 1em;
+          border-radius: 8px;
+          overflow-x: auto;
+          margin: 1.5em 0;
+        }
+
+        .reader-body pre code {
+          background: transparent;
+          color: inherit;
+          padding: 0;
+        }
+
+        /* Larguras */
+        .reader-article.width-narrow { max-width: 38rem; }
+        .reader-article.width-medium { max-width: 48rem; }
+        .reader-article.width-wide { max-width: 64rem; }
+      </style>
+
     `;
 
-    openModal(html);
+    openModal(readerHTML);
   } catch (e) {
+    console.error('Erro ao abrir modo de leitura:', e);
     alert("Não foi possível ativar o modo de leitura nesta página.");
   }
 }
