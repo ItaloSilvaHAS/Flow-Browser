@@ -148,21 +148,27 @@ function showNewsFeed() {
     return;
   }
 
+  // Habilitar scroll vertical suave na home page
+  homePage.style.overflowY = 'auto';
+  homePage.style.overflowX = 'hidden';
+  homePage.style.alignItems = 'flex-start';
+  homePage.style.paddingTop = '8rem';
+  homePage.style.paddingBottom = '4rem';
+
   let newsContainer = document.getElementById('news-feed-container');
   
   if (!newsContainer) {
     newsContainer = document.createElement('div');
     newsContainer.id = 'news-feed-container';
-    newsContainer.className = 'w-full px-4 sm:px-8 mb-6 transition-all duration-500';
+    newsContainer.className = 'w-full max-w-5xl mx-auto px-6 mt-20 transition-all duration-700';
     newsContainer.style.opacity = '0';
-    newsContainer.style.maxHeight = '0';
-    newsContainer.style.overflow = 'hidden';
+    newsContainer.style.transform = 'translateY(30px)';
     homePage.appendChild(newsContainer);
     
     setTimeout(() => {
       newsContainer.style.opacity = '1';
-  newsContainer.style.maxHeight = '500px'; // altura máxima do feed
-    }, 10);
+      newsContainer.style.transform = 'translateY(0)';
+    }, 100);
     
     loadNewsContent(newsContainer);
   }
@@ -171,15 +177,24 @@ function showNewsFeed() {
 }
 
 function hideNewsFeed() {
+  const homePage = document.getElementById('home-page');
   const newsContainer = document.getElementById('news-feed-container');
   
   if (newsContainer) {
     newsContainer.style.opacity = '0';
-    newsContainer.style.maxHeight = '0';
+    newsContainer.style.transform = 'translateY(30px)';
     
     setTimeout(() => {
       newsContainer.remove();
-    }, 500);
+    }, 700);
+  }
+  
+  // Restaurar estilo original da home page
+  if (homePage) {
+    homePage.style.overflowY = 'hidden';
+    homePage.style.alignItems = 'center';
+    homePage.style.paddingTop = '0';
+    homePage.style.paddingBottom = '0';
   }
   
   console.log("🔕 Feed de notícias desativado");
@@ -187,21 +202,21 @@ function hideNewsFeed() {
 
 function loadNewsContent(container) {
   container.innerHTML = `
-    <div class="bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl overflow-hidden transition-all duration-500">
-      <div class="sticky top-0 bg-blue-600 px-4 py-3 flex items-center justify-between z-10">
-       <h3 class="text-base font-bold text-white flex items-center">
-         <i class="fas fa-newspaper mr-2"></i>
-          Notícias
-        </h3>
-        <button onclick="toggleNewsFeed()" class="text-white hover:text-gray-200">
-          <i class="fas fa-times"></i>
-        </button>
-      </div>
-      
-      <div id="news-articles" class="overflow-y-auto p-4" style="max-height: 400px;">
-        <div class="flex items-center justify-center py-8">
-         <i class="fas fa-spinner fa-spin text-3xl text-blue-500"></i>
-        </div>
+    <div class="mb-8 flex items-center justify-between">
+      <h2 class="text-4xl font-bold text-white drop-shadow-2xl flex items-center">
+        <i class="fas fa-newspaper mr-4 text-blue-400"></i>
+        Notícias Educacionais
+      </h2>
+      <button onclick="toggleNewsFeed()" 
+              class="text-white/80 hover:text-white bg-white/10 hover:bg-white/20 backdrop-blur-md rounded-full px-6 py-3 transition-all duration-300 flex items-center space-x-2 shadow-lg">
+        <i class="fas fa-times"></i>
+        <span class="font-medium">Fechar</span>
+      </button>
+    </div>
+    
+    <div id="news-articles" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div class="col-span-full flex items-center justify-center py-16">
+        <i class="fas fa-spinner fa-spin text-5xl text-white/50"></i>
       </div>
     </div>
   `;
@@ -242,33 +257,48 @@ async function fetchEducationNews() {
       return;
     }
     
-    // Renderizar notícias do Supabase de forma simples e limpa
+    // Renderizar notícias do Supabase com design minimalista e elegante
     articlesContainer.innerHTML = newsData.map((article, index) => {
       const hasImage = article.Imagem && article.Imagem.trim() !== '';
       
       return `
-        <div class="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all border border-gray-200 mb-3 cursor-pointer" onclick="openNewsInNewTab('${article.Link || '#'}', event)">
+        <article class="group bg-white/95 backdrop-blur-md rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 cursor-pointer transform hover:scale-[1.02]" 
+                 onclick="openNewsInNewTab('${article.Link || '#'}', event)">
           ${hasImage ? `
-            <div class="relative h-40 overflow-hidden">
+            <div class="relative h-56 overflow-hidden">
               <img src="${article.Imagem}" 
                    alt="${article.Titulo}" 
-                   class="w-full h-full object-cover"
+                   class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700"
                    onerror="this.parentElement.style.display='none'"/>
+              <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
             </div>
-          ` : ''}
-          <div class="p-3">
-            <h4 class="text-sm font-bold text-gray-900 mb-1 leading-tight">
+          ` : `
+            <div class="h-56 bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 opacity-80"></div>
+          `}
+          
+          <div class="p-6 space-y-3">
+            <h3 class="text-xl font-bold text-gray-900 leading-tight group-hover:text-blue-600 transition-colors line-clamp-2">
               ${article.Titulo}
-            </h4>
+            </h3>
+            
             ${article.Manchete ? `
-              <p class="text-xs text-gray-600 leading-relaxed mb-2">${article.Manchete}</p>
+              <p class="text-sm text-gray-600 leading-relaxed line-clamp-3">
+                ${article.Manchete}
+              </p>
             ` : ''}
-            <div class="flex items-center justify-between text-xs text-gray-500 pt-2 border-t">
-              <span><i class="fas fa-newspaper mr-1"></i>Flow News</span>
-              <span class="text-blue-600">Ler mais →</span>
+            
+            <div class="flex items-center justify-between pt-4 border-t border-gray-100">
+              <div class="flex items-center space-x-2 text-sm text-gray-500">
+                <i class="fas fa-newspaper text-blue-500"></i>
+                <span class="font-medium">Flow News</span>
+              </div>
+              <div class="flex items-center space-x-2 text-blue-600 font-medium text-sm group-hover:translate-x-1 transition-transform">
+                <span>Ler mais</span>
+                <i class="fas fa-arrow-right"></i>
+              </div>
             </div>
           </div>
-        </div>
+        </article>
       `;
     }).join('');
     
@@ -284,34 +314,67 @@ function loadDefaultNews(container) {
   const defaultNews = [
     {
       Titulo: "MEC anuncia novas diretrizes para o ENEM 2025",
-      Manchete: "Mudanças nas provas visam melhor avaliar competências dos estudantes",
+      Manchete: "Mudanças nas provas visam melhor avaliar competências dos estudantes e preparar melhor os jovens para o ensino superior",
       Link: "https://www.gov.br/mec",
-      Imagem: ""
+      Imagem: "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=800&q=80"
     },
     {
       Titulo: "Universidades brasileiras entre as melhores da América Latina",
-      Manchete: "Ranking internacional destaca qualidade do ensino superior no Brasil",
+      Manchete: "Ranking internacional destaca qualidade do ensino superior no Brasil e reconhece avanços em pesquisa científica",
       Link: "https://www.folha.uol.com.br/educacao",
-      Imagem: ""
+      Imagem: "https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=800&q=80"
     },
     {
       Titulo: "Plataformas digitais revolucionam o aprendizado online",
-      Manchete: "Tecnologia permite personalização e flexibilidade nos estudos",
+      Manchete: "Tecnologia permite personalização e flexibilidade nos estudos, democratizando o acesso à educação de qualidade",
       Link: "https://www.example.com",
-      Imagem: ""
+      Imagem: "https://images.unsplash.com/photo-1501504905252-473c47e087f8?w=800&q=80"
+    },
+    {
+      Titulo: "Novas metodologias ativas transformam salas de aula",
+      Manchete: "Escolas adotam abordagens inovadoras que colocam o aluno como protagonista do próprio aprendizado",
+      Link: "https://www.example.com",
+      Imagem: "https://images.unsplash.com/photo-1509062522246-3755977927d7?w=800&q=80"
     }
   ];
   
   container.innerHTML = defaultNews.map(article => `
-    <div class="bg-gray-50 rounded-lg p-2 hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
-      <a href="${article.Link}" target="_blank" class="block">
-        <h4 class="text-xs font-medium text-gray-800 mb-1 line-clamp-1">${article.Titulo}</h4>
-        <div class="flex items-center text-[10px] text-gray-500">
-          <i class="fas fa-newspaper mr-1"></i>
-          <span>Flow News</span>
+    <article class="group bg-white/95 backdrop-blur-md rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 cursor-pointer transform hover:scale-[1.02]" 
+             onclick="openNewsInNewTab('${article.Link}', event)">
+      ${article.Imagem ? `
+        <div class="relative h-56 overflow-hidden">
+          <img src="${article.Imagem}" 
+               alt="${article.Titulo}" 
+               class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700"/>
+          <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
         </div>
-      </a>
-    </div>
+      ` : `
+        <div class="h-56 bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 opacity-80"></div>
+      `}
+      
+      <div class="p-6 space-y-3">
+        <h3 class="text-xl font-bold text-gray-900 leading-tight group-hover:text-blue-600 transition-colors line-clamp-2">
+          ${article.Titulo}
+        </h3>
+        
+        ${article.Manchete ? `
+          <p class="text-sm text-gray-600 leading-relaxed line-clamp-3">
+            ${article.Manchete}
+          </p>
+        ` : ''}
+        
+        <div class="flex items-center justify-between pt-4 border-t border-gray-100">
+          <div class="flex items-center space-x-2 text-sm text-gray-500">
+            <i class="fas fa-newspaper text-blue-500"></i>
+            <span class="font-medium">Flow News</span>
+          </div>
+          <div class="flex items-center space-x-2 text-blue-600 font-medium text-sm group-hover:translate-x-1 transition-transform">
+            <span>Ler mais</span>
+            <i class="fas fa-arrow-right"></i>
+          </div>
+        </div>
+      </div>
+    </article>
   `).join('');
 }
 

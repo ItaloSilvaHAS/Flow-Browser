@@ -1667,14 +1667,6 @@ function openMoreToolsModal() {
       to: "#ec4899",
     },
     {
-      id: "btn-calculator",
-      icon: "fa-calculator",
-      title: "Calculadora",
-      desc: "Modo científico incluso",
-      from: "#3b82f6",
-      to: "#06b6d4",
-    },
-    {
       id: "btn-color-picker",
       icon: "fa-palette",
       title: "Seletor de Cores",
@@ -1755,14 +1747,6 @@ function openMoreToolsModal() {
       to: "#1d4ed8",
     },
     {
-      id: "btn-flashcards",
-      icon: "fa-lightbulb",
-      title: "Flashcards Inteligentes",
-      desc: "Memorização ativa",
-      from: "#f59e0b",
-      to: "#d97706",
-    },
-    {
       id: "btn-periodic-table",
       icon: "fa-atom",
       title: "Tabela Periódica",
@@ -1785,14 +1769,6 @@ function openMoreToolsModal() {
       desc: "Crie resumos automáticos",
       from: "#6366f1",
       to: "#8b5cf6",
-    },
-    {
-      id: "btn-focus-timer",
-      icon: "fa-brain",
-      title: "Cronômetro de Foco",
-      desc: "Técnica 52-17 de concentração",
-      from: "#8b5cf6",
-      to: "#a855f7",
     },
     {
       id: "btn-formula-generator",
@@ -1916,7 +1892,6 @@ searchInput.addEventListener("keydown", (e) => {
 
 function setupMoreToolsModal() {
   const btnImageConverter = document.getElementById("btn-image-converter");
-  const btnCalculator = document.getElementById("btn-calculator");
   const btnColorPicker = document.getElementById("btn-color-picker");
   const btnTextTools = document.getElementById("btn-text-tools");
   const btnQrGenerator = document.getElementById("btn-qr-generator");
@@ -1930,7 +1905,6 @@ function setupMoreToolsModal() {
   
   const btnVerbConjugator = document.getElementById("btn-verb-conjugator");
   const btnScientificCalc = document.getElementById("btn-scientific-calc");
-  const btnFlashcards = document.getElementById("btn-flashcards");
   const btnPeriodicTable = document.getElementById("btn-periodic-table");
   const btnMindMap = document.getElementById("btn-mind-map");
 
@@ -1939,14 +1913,6 @@ function setupMoreToolsModal() {
       document.getElementById("more-tools-modal")?.remove();
       closeModal();
       setTimeout(openImageConverterModal, 100);
-    };
-  }
-
-  if (btnCalculator) {
-    btnCalculator.onclick = () => {
-      document.getElementById("more-tools-modal")?.remove();
-      closeModal();
-      setTimeout(openCalculatorModal, 100);
     };
   }
 
@@ -2030,14 +1996,6 @@ function setupMoreToolsModal() {
     };
   }
   
-  if (btnFlashcards) {
-    btnFlashcards.onclick = () => {
-      document.getElementById("more-tools-modal")?.remove();
-      closeModal();
-      setTimeout(openFlashcardsModal, 100);
-    };
-  }
-  
   if (btnPeriodicTable) {
     btnPeriodicTable.onclick = () => {
       document.getElementById("more-tools-modal")?.remove();
@@ -2056,7 +2014,6 @@ function setupMoreToolsModal() {
   
   // Novas ferramentas de estudo
   const btnTextSummarizer = document.getElementById("btn-text-summarizer");
-  const btnFocusTimer = document.getElementById("btn-focus-timer");
   const btnFormulaGenerator = document.getElementById("btn-formula-generator");
   const btnStudyTasks = document.getElementById("btn-study-tasks");
   const btnDictionary = document.getElementById("btn-dictionary");
@@ -2066,14 +2023,6 @@ function setupMoreToolsModal() {
       document.getElementById("more-tools-modal")?.remove();
       closeModal();
       setTimeout(openTextSummarizerModal, 100);
-    };
-  }
-  
-  if (btnFocusTimer) {
-    btnFocusTimer.onclick = () => {
-      document.getElementById("more-tools-modal")?.remove();
-      closeModal();
-      setTimeout(openFocusTimerModal, 100);
     };
   }
   
@@ -3109,156 +3058,6 @@ function setupImageConverter() {
       b: Math.round(b / corners.length),
     };
   }
-}
-
-// Calculator Modal (bonus)
-function openCalculatorModal() {
-  const existing = document.getElementById("calculator-modal");
-  if (existing) return;
-
-  const dark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-  const colors = {
-    modalBg: dark ? "#1f2937" : "#fff",
-    modalText: dark ? "#f9fafb" : "#1f2937",
-    border: dark ? "#4b5563" : "#d1d5db",
-    buttonText: "#fff",
-  };
-
-  const html = `
-  <div id="calculator-modal" style="
-    position: fixed; left: 50px; top: 100px; width: 400px; height: 380px;
-    background: ${colors.modalBg}; color: ${colors.modalText}; border: 1px solid ${colors.border};
-    border-radius: 0.75rem; padding: 0.7rem; z-index: 9999;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.3); display: flex; flex-direction: column;">
-    
-    <div id="calc-drag-handle" style="display:flex; justify-content:space-between; align-items:center; cursor: move; margin-bottom: 0.5rem;">
-      <h2 style="display:flex; align-items:center; gap:0.25rem; font-size: 1.4rem;">
-        <i class='fas fa-calculator text-blue-500'></i>Calculadora
-      </h2>
-      <button id="close-calc" style="background:none; border:none; font-size:1.4rem;">×</button>
-    </div>
-
-    <input type="text" id="calc-display" readonly 
-      style="width:100%; background:${dark ? "#374151" : "#f9fafb"}; border:1px solid ${colors.border}; border-radius:0.5rem; padding:0.6rem; text-align:right; font-family:monospace; font-size:1.4rem; margin-bottom:0.6rem;" 
-      value="0" />
-
-    <div id="calc-buttons" style="display:grid; grid-template-columns: repeat(4, 1fr); gap:8px; flex-grow:1;">
-      <button class="calc-btn" onclick="clearCalc()" style="background:red; color:${colors.buttonText}">C</button>
-      <button class="calc-btn" onclick="deleteCalc()" style="background:orange; color:${colors.buttonText}">⌫</button>
-      <button class="calc-btn" onclick="inputCalc('/')" style="background:blue; color:${colors.buttonText}">/</button>
-      <button class="calc-btn" onclick="inputCalc('*')" style="background:blue; color:${colors.buttonText}">×</button>
-
-      <button class="calc-btn" onclick="inputCalc('7')">7</button>
-      <button class="calc-btn" onclick="inputCalc('8')">8</button>
-      <button class="calc-btn" onclick="inputCalc('9')">9</button>
-      <button class="calc-btn" onclick="inputCalc('-')" style="background:blue; color:${colors.buttonText}">-</button>
-
-      <button class="calc-btn" onclick="inputCalc('4')">4</button>
-      <button class="calc-btn" onclick="inputCalc('5')">5</button>
-      <button class="calc-btn" onclick="inputCalc('6')">6</button>
-      <button class="calc-btn" onclick="inputCalc('+')" style="background:blue; color:${colors.buttonText}">+</button>
-
-      <button class="calc-btn" onclick="inputCalc('1')">1</button>
-      <button class="calc-btn" onclick="inputCalc('2')">2</button>
-      <button class="calc-btn" onclick="inputCalc('3')">3</button>
-      <button class="calc-btn" onclick="calculate()" style="background:green; color:${colors.buttonText}; grid-row: span 2;">=</button>
-
-      <button class="calc-btn" onclick="inputCalc('0')" style="grid-column: span 2;">0</button>
-      <button class="calc-btn" onclick="inputCalc('.')">.</button>
-    </div>
-  </div>
-  `;
-
-  document.body.insertAdjacentHTML("beforeend", html);
-
-  // Fechar
-  document.getElementById("close-calc").onclick = () =>
-    document.getElementById("calculator-modal")?.remove();
-
-  setupCalculator();
-
-  const display = document.getElementById("calc-display");
-
-// Permitir edição ao clicar
-display.addEventListener("click", (e) => {
-  display.readOnly = false; // permite edição
-  const pos = display.selectionStart; // pega a posição do clique
-  setTimeout(() => display.setSelectionRange(pos, pos), 0); // coloca o cursor exatamente ali
-});
-
-// Voltar para readonly ao perder foco
-display.addEventListener("blur", () => {
-  display.readOnly = true;
-});
-
-  makeCalculatorDraggable();
-
-  // Atualiza cores caso o usuário mude o tema
-  window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", (e) => {
-    const dark = e.matches;
-    const modal = document.getElementById("calculator-modal");
-    if (!modal) return;
-    const btns = modal.querySelectorAll(".calc-btn");
-
-    modal.style.background = dark ? "#1f2937" : "#fff";
-    modal.style.color = dark ? "#f9fafb" : "#1f2937";
-    modal.querySelector("#calc-display").style.background = dark ? "#374151" : "#f9fafb";
-    modal.querySelector("#calc-display").style.color = dark ? "#f9fafb" : "#1f2937";
-
-    btns.forEach(b => {
-      if (!['C','⌫','/','*','-','+','='].includes(b.textContent)) {
-        b.style.background = dark ? "#4b5563" : "#e5e7eb";
-        b.style.color = dark ? "#f9fafb" : "#1f2937";
-      }
-    });
-  });
-}
-
-// Drag da calculadora
-function makeCalculatorDraggable() {
-  const modal = document.getElementById("calculator-modal");
-  const handle = document.getElementById("calc-drag-handle");
-  let offsetX = 0, offsetY = 0, dragging = false;
-
-  handle.addEventListener("mousedown", (e) => {
-    dragging = true;
-    offsetX = e.clientX - modal.offsetLeft;
-    offsetY = e.clientY - modal.offsetTop;
-    document.addEventListener("mousemove", move);
-    document.addEventListener("mouseup", stop);
-  });
-
-  function move(e) {
-    if (!dragging) return;
-    modal.style.left = `${e.clientX - offsetX}px`;
-    modal.style.top = `${e.clientY - offsetY}px`;
-  }
-
-  function stop() {
-    dragging = false;
-    document.removeEventListener("mousemove", move);
-    document.removeEventListener("mouseup", stop);
-  }
-}
-
-// Calculadora
-function setupCalculator() {
-  window.clearCalc = () => {
-    document.getElementById("calc-display").value = "0";
-  };
-  window.deleteCalc = () => {
-    const display = document.getElementById("calc-display");
-    display.value = display.value.length > 1 ? display.value.slice(0, -1) : "0";
-  };
-  window.inputCalc = (v) => {
-    const display = document.getElementById("calc-display");
-    display.value = display.value === "0" && !isNaN(v) ? v : display.value + v;
-  };
-  window.calculate = () => {
-    const display = document.getElementById("calc-display");
-    try { display.value = eval(display.value.replace("×","*")); } 
-    catch { display.value = "Erro"; }
-  };
 }
 
 // Color Picker Modal (bonus)
