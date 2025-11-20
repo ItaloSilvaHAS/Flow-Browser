@@ -142,27 +142,58 @@ function updateNewsFeedButtonText() {
 
 function showNewsFeed() {
   const homePage = document.getElementById('home-page');
+  const homeSearch = document.getElementById('home-search');
+  const homeIcons = document.getElementById('home-icons');
   
   if (!homePage) {
     console.warn("⚠️ Elemento home-page não encontrado");
     return;
   }
 
-  // Habilitar scroll vertical suave na home page
+  // Habilitar scroll vertical suave
   homePage.style.overflowY = 'auto';
   homePage.style.overflowX = 'hidden';
-  homePage.style.alignItems = 'flex-start';
-  homePage.style.paddingTop = '8rem';
-  homePage.style.paddingBottom = '4rem';
+  homePage.style.justifyContent = 'flex-start';
+  homePage.style.paddingTop = '0';
+  
+  // Customizar scrollbar
+  homePage.style.scrollbarWidth = 'thin';
+  homePage.style.scrollbarColor = 'rgba(255,255,255,0.3) transparent';
+  
+  // Criar wrapper para centralizar os elementos da home
+  let homeWrapper = document.getElementById('home-wrapper');
+  if (!homeWrapper && homeSearch && homeIcons) {
+    homeWrapper = document.createElement('div');
+    homeWrapper.id = 'home-wrapper';
+    homeWrapper.className = 'w-full flex flex-col items-center justify-center';
+    homeWrapper.style.minHeight = '100vh';
+    homeWrapper.style.paddingTop = '0';
+    
+    // Mover search e icons para dentro do wrapper
+    const searchParent = homeSearch.parentElement;
+    const iconsParent = homeIcons.parentElement;
+    
+    if (searchParent === homePage) {
+      homeWrapper.appendChild(homeSearch);
+    }
+    if (iconsParent === homePage) {
+      homeWrapper.appendChild(homeIcons);
+    }
+    
+    homePage.insertBefore(homeWrapper, homePage.firstChild);
+  }
 
   let newsContainer = document.getElementById('news-feed-container');
   
   if (!newsContainer) {
     newsContainer = document.createElement('div');
     newsContainer.id = 'news-feed-container';
-    newsContainer.className = 'w-full max-w-5xl mx-auto px-6 mt-20 transition-all duration-700';
+    newsContainer.className = 'w-full mx-auto px-8 transition-all duration-700';
     newsContainer.style.opacity = '0';
     newsContainer.style.transform = 'translateY(30px)';
+    newsContainer.style.maxWidth = '1400px';
+    newsContainer.style.paddingTop = '2rem';
+    newsContainer.style.paddingBottom = '4rem';
     homePage.appendChild(newsContainer);
     
     setTimeout(() => {
@@ -179,6 +210,9 @@ function showNewsFeed() {
 function hideNewsFeed() {
   const homePage = document.getElementById('home-page');
   const newsContainer = document.getElementById('news-feed-container');
+  const homeWrapper = document.getElementById('home-wrapper');
+  const homeSearch = document.getElementById('home-search');
+  const homeIcons = document.getElementById('home-icons');
   
   if (newsContainer) {
     newsContainer.style.opacity = '0';
@@ -189,12 +223,25 @@ function hideNewsFeed() {
     }, 700);
   }
   
-  // Restaurar estilo original da home page
+  // Restaurar estrutura original
+  if (homeWrapper && homePage) {
+    // Mover search e icons de volta para homePage
+    if (homeSearch && homeSearch.parentElement === homeWrapper) {
+      homePage.appendChild(homeSearch);
+    }
+    if (homeIcons && homeIcons.parentElement === homeWrapper) {
+      homePage.appendChild(homeIcons);
+    }
+    
+    // Remover wrapper
+    homeWrapper.remove();
+  }
+  
+  // Restaurar estilos
   if (homePage) {
     homePage.style.overflowY = 'hidden';
-    homePage.style.alignItems = 'center';
+    homePage.style.justifyContent = 'center';
     homePage.style.paddingTop = '0';
-    homePage.style.paddingBottom = '0';
   }
   
   console.log("🔕 Feed de notícias desativado");
@@ -202,21 +249,24 @@ function hideNewsFeed() {
 
 function loadNewsContent(container) {
   container.innerHTML = `
-    <div class="mb-8 flex items-center justify-between">
-      <h2 class="text-4xl font-bold text-white drop-shadow-2xl flex items-center">
+    <div class="mb-12 flex items-center justify-between sticky top-0 z-10 py-4 backdrop-blur-xl bg-gradient-to-r from-black/10 via-black/5 to-transparent rounded-2xl px-6">
+      <h2 class="text-5xl font-black text-white drop-shadow-2xl flex items-center tracking-tight">
         <i class="fas fa-newspaper mr-4 text-blue-400"></i>
-        Notícias Educacionais
+        Flow News
       </h2>
       <button onclick="toggleNewsFeed()" 
-              class="text-white/80 hover:text-white bg-white/10 hover:bg-white/20 backdrop-blur-md rounded-full px-6 py-3 transition-all duration-300 flex items-center space-x-2 shadow-lg">
-        <i class="fas fa-times"></i>
-        <span class="font-medium">Fechar</span>
+              class="text-white hover:text-white bg-white/20 hover:bg-white/30 backdrop-blur-md rounded-full px-8 py-3 transition-all duration-300 flex items-center space-x-3 shadow-2xl border border-white/20 hover:border-white/40 hover:scale-105">
+        <i class="fas fa-times-circle text-lg"></i>
+        <span class="font-semibold">Fechar</span>
       </button>
     </div>
     
-    <div id="news-articles" class="grid grid-cols-1 md:grid-cols-2 gap-6">
-      <div class="col-span-full flex items-center justify-center py-16">
-        <i class="fas fa-spinner fa-spin text-5xl text-white/50"></i>
+    <div id="news-articles" class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8 pb-8">
+      <div class="col-span-full flex items-center justify-center py-20">
+        <div class="flex flex-col items-center space-y-4">
+          <i class="fas fa-spinner fa-spin text-6xl text-white drop-shadow-2xl"></i>
+          <p class="text-white text-xl font-medium drop-shadow-lg">Carregando notícias...</p>
+        </div>
       </div>
     </div>
   `;
@@ -262,37 +312,51 @@ async function fetchEducationNews() {
       const hasImage = article.Imagem && article.Imagem.trim() !== '';
       
       return `
-        <article class="group bg-white/95 backdrop-blur-md rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 cursor-pointer transform hover:scale-[1.02]" 
+        <article class="group bg-white/98 backdrop-blur-xl rounded-3xl overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-500 cursor-pointer transform hover:scale-[1.03] hover:-translate-y-2 border border-white/50" 
                  onclick="openNewsInNewTab('${article.Link || '#'}', event)">
           ${hasImage ? `
-            <div class="relative h-56 overflow-hidden">
+            <div class="relative h-64 overflow-hidden">
               <img src="${article.Imagem}" 
                    alt="${article.Titulo}" 
                    class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700"
                    onerror="this.parentElement.style.display='none'"/>
-              <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
+              <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent group-hover:from-black/80 transition-all duration-500"></div>
+              <div class="absolute top-4 right-4 bg-blue-500/90 backdrop-blur-sm text-white px-4 py-2 rounded-full text-xs font-bold shadow-lg">
+                <i class="fas fa-graduation-cap mr-1"></i>
+                Educação
+              </div>
             </div>
           ` : `
-            <div class="h-56 bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 opacity-80"></div>
+            <div class="h-64 bg-gradient-to-br from-blue-500 via-purple-600 to-pink-500 relative overflow-hidden">
+              <div class="absolute inset-0 opacity-20">
+                <div class="absolute inset-0" style="background-image: url('data:image/svg+xml,%3Csvg width=&quot;60&quot; height=&quot;60&quot; viewBox=&quot;0 0 60 60&quot; xmlns=&quot;http://www.w3.org/2000/svg&quot;%3E%3Cg fill=&quot;none&quot; fill-rule=&quot;evenodd&quot;%3E%3Cg fill=&quot;%23ffffff&quot; fill-opacity=&quot;0.4&quot;%3E%3Cpath d=&quot;M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z&quot;/%3E%3C/g%3E%3C/g%3E%3C/svg%3E');"></div>
+              </div>
+              <div class="absolute top-4 right-4 bg-white/90 backdrop-blur-sm text-purple-600 px-4 py-2 rounded-full text-xs font-bold shadow-lg">
+                <i class="fas fa-graduation-cap mr-1"></i>
+                Educação
+              </div>
+            </div>
           `}
           
-          <div class="p-6 space-y-3">
-            <h3 class="text-xl font-bold text-gray-900 leading-tight group-hover:text-blue-600 transition-colors line-clamp-2">
+          <div class="p-7 space-y-4">
+            <h3 class="text-2xl font-extrabold text-gray-900 leading-tight group-hover:text-blue-600 transition-colors line-clamp-2 min-h-[3.5rem]">
               ${article.Titulo}
             </h3>
             
             ${article.Manchete ? `
-              <p class="text-sm text-gray-600 leading-relaxed line-clamp-3">
+              <p class="text-base text-gray-600 leading-relaxed line-clamp-3 min-h-[4.5rem]">
                 ${article.Manchete}
               </p>
             ` : ''}
             
-            <div class="flex items-center justify-between pt-4 border-t border-gray-100">
-              <div class="flex items-center space-x-2 text-sm text-gray-500">
-                <i class="fas fa-newspaper text-blue-500"></i>
-                <span class="font-medium">Flow News</span>
+            <div class="flex items-center justify-between pt-5 border-t-2 border-gray-100">
+              <div class="flex items-center space-x-3 text-sm text-gray-500">
+                <div class="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center">
+                  <i class="fas fa-newspaper text-white text-xs"></i>
+                </div>
+                <span class="font-semibold text-gray-700">Flow News</span>
               </div>
-              <div class="flex items-center space-x-2 text-blue-600 font-medium text-sm group-hover:translate-x-1 transition-transform">
+              <div class="flex items-center space-x-2 text-blue-600 font-bold text-sm group-hover:translate-x-2 transition-transform bg-blue-50 px-4 py-2 rounded-full group-hover:bg-blue-100">
                 <span>Ler mais</span>
                 <i class="fas fa-arrow-right"></i>
               </div>
@@ -339,36 +403,50 @@ function loadDefaultNews(container) {
   ];
   
   container.innerHTML = defaultNews.map(article => `
-    <article class="group bg-white/95 backdrop-blur-md rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 cursor-pointer transform hover:scale-[1.02]" 
+    <article class="group bg-white/98 backdrop-blur-xl rounded-3xl overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-500 cursor-pointer transform hover:scale-[1.03] hover:-translate-y-2 border border-white/50" 
              onclick="openNewsInNewTab('${article.Link}', event)">
       ${article.Imagem ? `
-        <div class="relative h-56 overflow-hidden">
+        <div class="relative h-64 overflow-hidden">
           <img src="${article.Imagem}" 
                alt="${article.Titulo}" 
                class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700"/>
-          <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
+          <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent group-hover:from-black/80 transition-all duration-500"></div>
+          <div class="absolute top-4 right-4 bg-blue-500/90 backdrop-blur-sm text-white px-4 py-2 rounded-full text-xs font-bold shadow-lg">
+            <i class="fas fa-graduation-cap mr-1"></i>
+            Educação
+          </div>
         </div>
       ` : `
-        <div class="h-56 bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 opacity-80"></div>
+        <div class="h-64 bg-gradient-to-br from-blue-500 via-purple-600 to-pink-500 relative overflow-hidden">
+          <div class="absolute inset-0 opacity-20">
+            <div class="absolute inset-0" style="background-image: url('data:image/svg+xml,%3Csvg width=&quot;60&quot; height=&quot;60&quot; viewBox=&quot;0 0 60 60&quot; xmlns=&quot;http://www.w3.org/2000/svg&quot;%3E%3Cg fill=&quot;none&quot; fill-rule=&quot;evenodd&quot;%3E%3Cg fill=&quot;%23ffffff&quot; fill-opacity=&quot;0.4&quot;%3E%3Cpath d=&quot;M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z&quot;/%3E%3C/g%3E%3C/g%3E%3C/svg%3E');"></div>
+          </div>
+          <div class="absolute top-4 right-4 bg-white/90 backdrop-blur-sm text-purple-600 px-4 py-2 rounded-full text-xs font-bold shadow-lg">
+            <i class="fas fa-graduation-cap mr-1"></i>
+            Educação
+          </div>
+        </div>
       `}
       
-      <div class="p-6 space-y-3">
-        <h3 class="text-xl font-bold text-gray-900 leading-tight group-hover:text-blue-600 transition-colors line-clamp-2">
+      <div class="p-7 space-y-4">
+        <h3 class="text-2xl font-extrabold text-gray-900 leading-tight group-hover:text-blue-600 transition-colors line-clamp-2 min-h-[3.5rem]">
           ${article.Titulo}
         </h3>
         
         ${article.Manchete ? `
-          <p class="text-sm text-gray-600 leading-relaxed line-clamp-3">
+          <p class="text-base text-gray-600 leading-relaxed line-clamp-3 min-h-[4.5rem]">
             ${article.Manchete}
           </p>
         ` : ''}
         
-        <div class="flex items-center justify-between pt-4 border-t border-gray-100">
-          <div class="flex items-center space-x-2 text-sm text-gray-500">
-            <i class="fas fa-newspaper text-blue-500"></i>
-            <span class="font-medium">Flow News</span>
+        <div class="flex items-center justify-between pt-5 border-t-2 border-gray-100">
+          <div class="flex items-center space-x-3 text-sm text-gray-500">
+            <div class="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center">
+              <i class="fas fa-newspaper text-white text-xs"></i>
+            </div>
+            <span class="font-semibold text-gray-700">Flow News</span>
           </div>
-          <div class="flex items-center space-x-2 text-blue-600 font-medium text-sm group-hover:translate-x-1 transition-transform">
+          <div class="flex items-center space-x-2 text-blue-600 font-bold text-sm group-hover:translate-x-2 transition-transform bg-blue-50 px-4 py-2 rounded-full group-hover:bg-blue-100">
             <span>Ler mais</span>
             <i class="fas fa-arrow-right"></i>
           </div>
@@ -400,23 +478,19 @@ function initSettings() {
 function openNewsInNewTab(url, event) {
   if (event) {
     event.preventDefault();
+    event.stopPropagation();
   }
   
   if (url && url !== '#') {
     console.log(`📰 Abrindo notícia em nova aba: ${url}`);
     
-    // Simular clique no botão de nova aba
-    if (typeof addNewTab === 'function') {
-      addNewTab();
-      
-      // Pequeno delay para garantir que a aba foi criada
-      setTimeout(() => {
-        const inputUrl = document.getElementById('input-url');
-        if (inputUrl) {
-          inputUrl.value = url;
-          inputUrl.dispatchEvent(new KeyboardEvent('keypress', { key: 'Enter', keyCode: 13, which: 13 }));
-        }
-      }, 100);
+    // Usar a função createTab do app.js
+    if (typeof createTab === 'function') {
+      createTab(url, 'Notícia');
+    } else if (typeof window.createTab === 'function') {
+      window.createTab(url, 'Notícia');
+    } else {
+      console.error('❌ Função createTab não encontrada');
     }
   }
 }
