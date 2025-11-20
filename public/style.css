@@ -884,6 +884,7 @@ button:hover:not(:disabled) {
 /* Garantir que wallpaper seja visível */
 #wallpaper-container {
   z-index: 0;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
 }
 
 main {

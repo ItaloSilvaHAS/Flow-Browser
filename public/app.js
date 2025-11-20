@@ -45,8 +45,8 @@ let tabIdCounter = 0;
 // Constants
 const NOTES_STORAGE_KEY = "flow_browser_notes";
 const WALLPAPER_STORAGE_KEY = "flow_browser_wallpaper";
-const CHATGPT_API_KEY =
-  "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";
+// IMPORTANTE: Adicione sua própria chave OpenAI em um arquivo .env ou configuração segura
+const CHATGPT_API_KEY = localStorage.getItem('openai_api_key') || "";
 
 // Timer state
 let timerInterval = null;
@@ -484,12 +484,38 @@ function showHome() {
   if (homePage) homePage.style.display = "flex";
   if (webviewContainer) webviewContainer.style.display = "none";
   if (inputUrl) inputUrl.value = "";
+  
+  // Mostrar wallpaper quando estiver na home (só após carregar)
+  const wallpaperContainer = document.getElementById('wallpaper-container');
+  const wallpaperImg = document.getElementById('wallpaper-img');
+  
+  if (wallpaperContainer && wallpaperImg) {
+    // Se a imagem já está carregada, mostra imediatamente
+    if (wallpaperImg.complete && wallpaperImg.naturalHeight !== 0) {
+      wallpaperContainer.style.opacity = '1';
+      wallpaperContainer.style.visibility = 'visible';
+    } else {
+      // Aguarda a imagem carregar antes de mostrar
+      wallpaperImg.onload = () => {
+        wallpaperContainer.style.opacity = '1';
+        wallpaperContainer.style.visibility = 'visible';
+      };
+    }
+  }
+  
   updateNavButtons();
 }
 
 function showWebview(url) {
   if (homePage) homePage.style.display = "none";
   if (webviewContainer) webviewContainer.style.display = "flex";
+  
+  // Esconder wallpaper quando estiver navegando (mais imersivo)
+  const wallpaperContainer = document.getElementById('wallpaper-container');
+  if (wallpaperContainer) {
+    wallpaperContainer.style.opacity = '0';
+    wallpaperContainer.style.visibility = 'hidden';
+  }
 
   if (webview && url !== webview.src) {
     const removeLoading = showLoadingAnimation();
@@ -3723,6 +3749,17 @@ function openSettingsModal() {
   `;
   overlay.appendChild(sidebar);
 
+  // Inicializar sistema de wallpapers
+  if (typeof loadBackgroundWallpapers === 'function') {
+    loadBackgroundWallpapers();
+  }
+  if (typeof updateCustomWallpaperPreview === 'function') {
+    updateCustomWallpaperPreview();
+  }
+  if (typeof setupWallpaperEvents === 'function') {
+    setupWallpaperEvents();
+  }
+
   // --- Eventos ---
   document.getElementById("close-settings").onclick = closeSettingsSidebar;
   overlay.addEventListener("click", (e) => {
@@ -3764,71 +3801,8 @@ function openSettingsModal() {
     localStorage.setItem("flow_browser_font_family", fontSelect.value);
   };
 
-  // Wallpaper - configurar eventos diretamente
-  const uploadBtn = document.getElementById("upload-wallpaper-btn");
-  const fileInput = document.getElementById("wallpaper-file-input");
-  
-  if (uploadBtn && fileInput) {
-    uploadBtn.onclick = (e) => {
-      e.stopPropagation();
-      console.log('📤 Abrindo seletor de arquivo...');
-      fileInput.click();
-    };
-    
-    fileInput.onchange = (e) => {
-      const file = e.target.files && e.target.files[0];
-      if (!file) return;
-      
-      console.log('📁 Arquivo selecionado:', file.name);
-      
-      if (!file.type.startsWith('image/')) {
-        alert('Por favor, selecione apenas arquivos de imagem!');
-        e.target.value = '';
-        return;
-      }
-      
-      const reader = new FileReader();
-      reader.onload = (ev) => {
-        const dataUrl = ev.target.result;
-        console.log('✅ Imagem carregada, aplicando wallpaper...');
-        applyWallpaperDirect(dataUrl);
-      };
-      reader.onerror = () => {
-        console.error('❌ Erro ao ler arquivo');
-        alert('Erro ao ler o arquivo. Tente novamente.');
-      };
-      reader.readAsDataURL(file);
-      e.target.value = '';
-    };
-  }
-  
-  // Wallpapers predefinidos
-  document
-    .querySelectorAll("#wallpaper-grid > div[data-wallpaper]")
-    .forEach((div) => {
-      div.addEventListener("click", (e) => {
-        e.stopPropagation();
-        const img = div.querySelector("img");
-        if (img && img.src) {
-          console.log('🖼️ Wallpaper predefinido selecionado:', img.src);
-          applyWallpaperDirect(img.src);
-        }
-      });
-    });
-  
-  // Slot personalizado
-  const customSlot = document.getElementById('custom-wallpaper-slot');
-  if (customSlot) {
-    customSlot.addEventListener('click', (e) => {
-      e.stopPropagation();
-      const savedWallpaper = localStorage.getItem("flow_browser_wallpaper");
-      if (savedWallpaper && savedWallpaper.startsWith('data:image')) {
-        applyWallpaperDirect(savedWallpaper);
-      } else {
-        fileInput.click();
-      }
-    });
-  }
+  // Wallpaper - agora é gerenciado pelo wallpaper.js
+  // As funções loadBackgroundWallpapers() e setupWallpaperEvents() já cuidam de tudo
 
   setTimeout(() => {
     overlay.classList.remove("opacity-0", "pointer-events-none");
@@ -3982,10 +3956,25 @@ async function openReaderMode() {
     // Extrair conteúdo estruturado e LIMPO da página
     const content = await webview.executeJavaScript(`
       (() => {
-        // Clonar documento para não modificar o original
-        const docClone = document.cloneNode(true);
+        // Clonar o HTML completo para não modificar a página original
+        const parser = new DOMParser();
+        const docClone = parser.parseFromString(document.documentElement.outerHTML, 'text/html');
         
-        // Remover elementos indesejados do clone
+        // Encontrar título
+        let title = '';
+        const h1 = docClone.querySelector('h1');
+        const ogTitle = document.querySelector('meta[property="og:title"]');
+        const titleTag = document.querySelector('title');
+        
+        if (h1 && h1.innerText && h1.innerText.trim().length > 0 && h1.innerText.trim().length < 200) {
+          title = h1.innerText.trim();
+        } else if (ogTitle) {
+          title = ogTitle.getAttribute('content');
+        } else if (titleTag) {
+          title = titleTag.innerText.split('|')[0].split('-')[0].trim();
+        }
+
+        // Remover elementos indesejados do clone ANTES de buscar conteúdo
         const unwantedSelectors = [
           'script', 'style', 'noscript', 'iframe', 'object', 'embed',
           'nav', 'header', 'footer', 'aside', 'form', 'button',
@@ -3996,22 +3985,12 @@ async function openReaderMode() {
         ];
         
         unwantedSelectors.forEach(selector => {
-          docClone.querySelectorAll(selector).forEach(el => el.remove());
+          try {
+            docClone.querySelectorAll(selector).forEach(el => {
+              if (el && el.parentNode) el.parentNode.removeChild(el);
+            });
+          } catch(e) {}
         });
-
-        // Encontrar título
-        let title = '';
-        const h1 = docClone.querySelector('h1');
-        const ogTitle = document.querySelector('meta[property="og:title"]');
-        const titleTag = document.querySelector('title');
-        
-        if (h1 && h1.innerText.trim().length > 0 && h1.innerText.trim().length < 200) {
-          title = h1.innerText.trim();
-        } else if (ogTitle) {
-          title = ogTitle.getAttribute('content');
-        } else if (titleTag) {
-          title = titleTag.innerText.split('|')[0].split('-')[0].trim();
-        }
 
         // Encontrar conteúdo principal com prioridade
         let contentElement = null;
@@ -4023,12 +4002,16 @@ async function openReaderMode() {
           '.article-content',
           '.entry-content',
           '.content',
-          '#content'
+          '#content',
+          'body'
         ];
         
         for (const selector of selectors) {
-          contentElement = docClone.querySelector(selector);
-          if (contentElement && contentElement.innerText.trim().length > 200) break;
+          const el = docClone.querySelector(selector);
+          if (el && el.innerText && el.innerText.trim().length > 200) {
+            contentElement = el;
+            break;
+          }
         }
         
         if (!contentElement) {
@@ -4043,9 +4026,10 @@ async function openReaderMode() {
           if (!el || !el.tagName) return null;
           
           // Pular se for invisível ou vazio
-          if (el.offsetHeight === 0 || !el.innerText || el.innerText.trim().length === 0) {
-            if (el.tagName !== 'IMG') return null;
-          }
+          const hasText = el.innerText && el.innerText.trim().length > 0;
+          const isImage = el.tagName === 'IMG';
+          
+          if (!hasText && !isImage) return null;
           
           if (allowedTags.includes(el.tagName)) {
             const newEl = document.createElement(el.tagName.toLowerCase());
