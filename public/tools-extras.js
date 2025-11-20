@@ -981,48 +981,82 @@ search.addEventListener('input', (e) => {
 });
 }
 
-// ========== 5. MAPA MENTAL INTERATIVO ==========
+// ========== 5. MAPA MENTAL INTERATIVO MELHORADO ==========
 function openMindMapModal() {
   const html = `
-    <div class="max-w-6xl mx-auto">
-      <h2 class="text-3xl font-bold text-gray-800 mb-6 text-center">
-        <i class="fas fa-project-diagram mr-3 text-purple-500"></i>Mapa Mental Interativo
+    <div class="max-w-7xl mx-auto">
+      <h2 class="text-4xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-6 text-center flex items-center justify-center gap-3">
+        <i class="fas fa-brain text-purple-500"></i>
+        Mapa Mental Interativo
       </h2>
       
-      <div class="mb-4 flex gap-4">
-        <input type="text" id="mindmap-central-topic" placeholder="Editar tema central" 
-               class="flex-1 border border-gray-300 rounded-lg px-4 py-3" />
-        <input type="text" id="mindmap-topic" placeholder="Novo tópico/ramo" 
-               class="flex-1 border border-gray-300 rounded-lg px-4 py-3" />
-        <button id="btn-add-node" class="bg-purple-500 text-white px-6 py-3 rounded-lg hover:bg-purple-600">
-          <i class="fas fa-plus mr-2"></i>Adicionar Ramo
+      <div class="mb-4 flex gap-3">
+        <input type="text" id="mindmap-central-topic" placeholder="✏️ Editar tema central" 
+               class="flex-1 border-2 border-purple-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all" />
+        <input type="text" id="mindmap-topic" placeholder="➕ Novo ramo principal" 
+               class="flex-1 border-2 border-blue-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all" />
+        <button id="btn-add-node" class="bg-gradient-to-r from-purple-500 to-purple-600 text-white px-8 py-3 rounded-xl hover:from-purple-600 hover:to-purple-700 transform hover:scale-105 transition-all shadow-lg font-semibold">
+          <i class="fas fa-plus mr-2"></i>Adicionar
         </button>
       </div>
       
-      <div id="mindmap-canvas" class="bg-gradient-to-br from-purple-50 to-blue-50 rounded-xl border-2 border-gray-300 p-8 min-h-[600px] relative overflow-hidden" style="cursor: grab;">
+      <div id="mindmap-canvas" class="bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50 rounded-2xl border-3 border-purple-200 shadow-2xl p-8 min-h-[650px] relative overflow-auto" style="cursor: grab;">
         <svg id="mindmap-lines" class="absolute inset-0 w-full h-full pointer-events-none" style="z-index: 1;"></svg>
-        <div id="central-node" class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" style="cursor: move; z-index: 10;" draggable="true">
-          <div class="bg-gradient-to-br from-purple-600 to-purple-700 text-white px-8 py-4 rounded-full text-xl font-bold shadow-2xl border-4 border-white">
+        <div id="central-node" class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 group" style="cursor: move; z-index: 20;" draggable="true">
+          <div class="bg-gradient-to-br from-purple-600 via-purple-700 to-pink-600 text-white px-10 py-6 rounded-3xl text-2xl font-bold shadow-2xl border-4 border-white group-hover:scale-110 transition-transform duration-300 relative">
+            <div class="absolute -top-2 -right-2 bg-yellow-400 text-purple-900 w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold shadow-lg">
+              <i class="fas fa-star"></i>
+            </div>
             Tema Central
           </div>
         </div>
         <div id="branches-container" style="z-index: 5;"></div>
       </div>
       
-      <div class="mt-4 flex gap-2">
-        <button id="btn-save-mindmap" class="flex-1 bg-green-500 text-white py-3 rounded-lg hover:bg-green-600">
+      <div class="mt-5 flex gap-3">
+        <button id="btn-save-mindmap" class="flex-1 bg-gradient-to-r from-green-500 to-emerald-600 text-white py-3 rounded-xl hover:from-green-600 hover:to-emerald-700 transform hover:scale-105 transition-all shadow-lg font-semibold">
           <i class="fas fa-save mr-2"></i>Salvar
         </button>
-        <button id="btn-export-image" class="flex-1 bg-blue-500 text-white py-3 rounded-lg hover:bg-blue-600">
-          <i class="fas fa-image mr-2"></i>Exportar Imagem
+        <button id="btn-export-image" class="flex-1 bg-gradient-to-r from-blue-500 to-cyan-600 text-white py-3 rounded-xl hover:from-blue-600 hover:to-cyan-700 transform hover:scale-105 transition-all shadow-lg font-semibold">
+          <i class="fas fa-image mr-2"></i>Exportar PNG
         </button>
-        <button id="btn-clear-mindmap" class="flex-1 bg-red-500 text-white py-3 rounded-lg hover:bg-red-600">
-          <i class="fas fa-trash mr-2"></i>Limpar
+        <button id="btn-clear-mindmap" class="flex-1 bg-gradient-to-r from-red-500 to-rose-600 text-white py-3 rounded-xl hover:from-red-600 hover:to-rose-700 transform hover:scale-105 transition-all shadow-lg font-semibold">
+          <i class="fas fa-trash-alt mr-2"></i>Limpar Tudo
         </button>
       </div>
       
-      <div class="mt-4 bg-blue-100 border border-blue-300 rounded-lg p-3 text-sm text-blue-800">
-        <strong>Dica:</strong> Arraste os nós para reposicioná-los! Clique 2x em um nó para editá-lo. Clique direito para deletar.
+      <div class="mt-4 bg-gradient-to-r from-blue-50 to-purple-50 border-2 border-blue-300 rounded-xl p-4 text-sm text-blue-900">
+        <div class="flex items-start gap-2">
+          <i class="fas fa-info-circle text-blue-600 mt-1"></i>
+          <div>
+            <strong class="block mb-1">💡 Dicas de Uso:</strong>
+            <ul class="space-y-1 ml-4 list-disc">
+              <li><strong>Duplo clique</strong> em qualquer nó para editar o texto</li>
+              <li><strong>Clique simples</strong> em um ramo para selecioná-lo e adicionar sub-ramos</li>
+              <li><strong>Arraste</strong> os nós para reorganizar o mapa</li>
+              <li><strong>Clique direito</strong> para deletar um nó</li>
+              <li><strong>Sub-ramos:</strong> Selecione um ramo pai e digite o sub-ramo no campo acima</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      
+      <div id="selected-node-info" class="hidden mt-3 bg-purple-100 border-2 border-purple-400 rounded-xl p-3 text-sm">
+        <div class="flex items-center justify-between">
+          <span class="text-purple-900 font-semibold">
+            <i class="fas fa-hand-pointer mr-2"></i>Ramo selecionado: <span id="selected-node-text" class="font-bold"></span>
+          </span>
+          <button id="btn-deselect" class="text-purple-600 hover:text-purple-800">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div class="mt-2 flex gap-2">
+          <input type="text" id="subbranch-input" placeholder="➕ Digite o sub-ramo aqui" 
+                 class="flex-1 border-2 border-purple-300 rounded-lg px-3 py-2 text-sm" />
+          <button id="btn-add-subbranch" class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700">
+            <i class="fas fa-plus mr-1"></i>Adicionar Sub-ramo
+          </button>
+        </div>
       </div>
     </div>
   `;
@@ -1036,7 +1070,21 @@ function openMindMapModal() {
 function setupMindMap() {
   let branches = [];
   let centralNode = { x: 0, y: 0, text: 'Tema Central' };
-  const colors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A', '#98D8C8', '#F7DC6F', '#AA96DA', '#FCBAD3'];
+  let selectedBranch = null;
+  let nodeIdCounter = 0;
+  
+  const colorGradients = [
+    ['#FF6B6B', '#FF8E8E'],
+    ['#4ECDC4', '#6FE5DB'],
+    ['#45B7D1', '#5DD5F0'],
+    ['#FFA07A', '#FFB89D'],
+    ['#98D8C8', '#B5E7DB'],
+    ['#F7DC6F', '#FFE896'],
+    ['#AA96DA', '#C5B3E6'],
+    ['#FCBAD3', '#FFCFE3'],
+    ['#6C5CE7', '#A29BFE'],
+    ['#00B894', '#55EFC4']
+  ];
   
   const canvas = document.getElementById('mindmap-canvas');
   const centralNodeEl = document.getElementById('central-node');
@@ -1044,9 +1092,12 @@ function setupMindMap() {
   const linesContainer = document.getElementById('mindmap-lines');
   const topicInput = document.getElementById('mindmap-topic');
   const centralTopicInput = document.getElementById('mindmap-central-topic');
+  const selectedInfo = document.getElementById('selected-node-info');
+  const selectedText = document.getElementById('selected-node-text');
+  const subbranchInput = document.getElementById('subbranch-input');
   
   let draggedElement = null;
-  let draggedBranchIndex = null;
+  let draggedNode = null;
   let offsetX = 0;
   let offsetY = 0;
   
@@ -1057,85 +1108,170 @@ function setupMindMap() {
     const centralX = centralRect.left + centralRect.width / 2 - canvasRect.left;
     const centralY = centralRect.top + centralRect.height / 2 - canvasRect.top;
     
-    branches.forEach((branch, index) => {
-      const branchEl = document.querySelector(`[data-branch-index="${index}"]`);
+    function drawCurvedLine(x1, y1, x2, y2, color, width = 4, isDashed = false) {
+      const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      const midX = (x1 + x2) / 2;
+      const midY = (y1 + y2) / 2;
+      const dx = x2 - x1;
+      const dy = y2 - y1;
+      const offset = Math.min(50, Math.sqrt(dx*dx + dy*dy) / 3);
+      const controlX = midX + dy * 0.15;
+      const controlY = midY - dx * 0.15;
+      
+      const d = `M ${x1} ${y1} Q ${controlX} ${controlY}, ${x2} ${y2}`;
+      path.setAttribute('d', d);
+      path.setAttribute('stroke', color);
+      path.setAttribute('stroke-width', width);
+      path.setAttribute('fill', 'none');
+      path.setAttribute('opacity', '0.7');
+      path.setAttribute('stroke-linecap', 'round');
+      if (isDashed) {
+        path.setAttribute('stroke-dasharray', '5,5');
+      }
+      linesContainer.appendChild(path);
+    }
+    
+    function drawBranchLines(parentX, parentY, branch, isRoot = true) {
+      const branchEl = document.querySelector(`[data-node-id="${branch.id}"]`);
       if (!branchEl) return;
       
       const branchRect = branchEl.getBoundingClientRect();
       const branchX = branchRect.left + branchRect.width / 2 - canvasRect.left;
       const branchY = branchRect.top + branchRect.height / 2 - canvasRect.top;
       
-      const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-      line.setAttribute('x1', centralX);
-      line.setAttribute('y1', centralY);
-      line.setAttribute('x2', branchX);
-      line.setAttribute('y2', branchY);
-      line.setAttribute('stroke', branch.color);
-      line.setAttribute('stroke-width', '3');
-      line.setAttribute('opacity', '0.6');
-      linesContainer.appendChild(line);
+      drawCurvedLine(parentX, parentY, branchX, branchY, branch.colors[0], isRoot ? 4 : 3, !isRoot);
+      
+      if (branch.children && branch.children.length > 0) {
+        branch.children.forEach(child => {
+          drawBranchLines(branchX, branchY, child, false);
+        });
+      }
+    }
+    
+    branches.forEach(branch => {
+      drawBranchLines(centralX, centralY, branch, true);
     });
   }
   
-  function createBranchElement(branch, index) {
-    const branchEl = document.createElement('div');
-    branchEl.className = 'absolute';
-    branchEl.style.left = `calc(50% + ${branch.x}px)`;
-    branchEl.style.top = `calc(50% + ${branch.y}px)`;
-    branchEl.style.cursor = 'move';
-    branchEl.style.zIndex = '10';
-    branchEl.setAttribute('draggable', 'true');
-    branchEl.setAttribute('data-branch-index', index);
-    branchEl.innerHTML = `
-      <div class="px-6 py-3 rounded-full text-white font-medium shadow-xl transform -translate-x-1/2 -translate-y-1/2 whitespace-nowrap border-3 border-white hover:scale-105 transition-transform"
-           style="background: ${branch.color};">
-        ${branch.text}
+  function createNodeElement(node, isChild = false) {
+    const nodeEl = document.createElement('div');
+    nodeEl.className = 'absolute transition-all duration-300';
+    nodeEl.style.left = `calc(50% + ${node.x}px)`;
+    nodeEl.style.top = `calc(50% + ${node.y}px)`;
+    nodeEl.style.cursor = 'move';
+    nodeEl.style.zIndex = isChild ? '8' : '10';
+    nodeEl.setAttribute('draggable', 'true');
+    nodeEl.setAttribute('data-node-id', node.id);
+    
+    const isSelected = selectedBranch && selectedBranch.id === node.id;
+    const size = isChild ? 'px-4 py-2 text-sm' : 'px-6 py-3 text-base';
+    const shadow = isChild ? 'shadow-lg' : 'shadow-2xl';
+    const border = isSelected ? 'ring-4 ring-yellow-400 ring-offset-2' : '';
+    const childCount = node.children ? node.children.length : 0;
+    
+    nodeEl.innerHTML = `
+      <div class="relative group">
+        <div class="${size} ${shadow} ${border} rounded-2xl text-white font-semibold transform -translate-x-1/2 -translate-y-1/2 whitespace-nowrap border-3 border-white/50 hover:scale-110 hover:shadow-2xl transition-all duration-300 backdrop-blur-sm cursor-pointer"
+             style="background: linear-gradient(135deg, ${node.colors[0]}, ${node.colors[1]});">
+          ${node.text}
+          ${childCount > 0 ? `<span class="ml-2 bg-white/30 px-2 py-0.5 rounded-full text-xs">${childCount}</span>` : ''}
+        </div>
+        ${!isChild ? '<div class="absolute -top-1 -right-1 bg-gradient-to-br from-yellow-300 to-yellow-500 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold text-yellow-900 shadow-md"><i class="fas fa-lightbulb"></i></div>' : ''}
       </div>
     `;
     
-    branchEl.addEventListener('dblclick', (e) => {
+    // Click para selecionar
+    nodeEl.addEventListener('click', (e) => {
       e.stopPropagation();
-      const newText = prompt('Editar tópico:', branch.text);
+      selectedBranch = node;
+      selectedInfo.classList.remove('hidden');
+      selectedText.textContent = node.text;
+      subbranchInput.value = '';
+      subbranchInput.focus();
+      renderAllNodes();
+    });
+    
+    // Double click para editar
+    nodeEl.addEventListener('dblclick', (e) => {
+      e.stopPropagation();
+      const newText = prompt('✏️ Editar tópico:', node.text);
       if (newText && newText.trim()) {
-        branches[index].text = newText.trim();
-        renderBranches();
+        node.text = newText.trim();
+        renderAllNodes();
       }
     });
     
-    branchEl.addEventListener('contextmenu', (e) => {
+    // Right click para deletar
+    nodeEl.addEventListener('contextmenu', (e) => {
       e.preventDefault();
-      if (confirm('Deletar este ramo?')) {
-        branches.splice(index, 1);
-        renderBranches();
+      if (confirm(`🗑️ Deletar "${node.text}" e todos os seus sub-ramos?`)) {
+        deleteNode(node);
+        if (selectedBranch && selectedBranch.id === node.id) {
+          selectedBranch = null;
+          selectedInfo.classList.add('hidden');
+        }
+        renderAllNodes();
       }
     });
     
-    branchEl.addEventListener('dragstart', (e) => {
-      draggedElement = branchEl;
-      draggedBranchIndex = index;
-      const rect = branchEl.getBoundingClientRect();
-      const canvasRect = canvas.getBoundingClientRect();
+    // Drag start
+    nodeEl.addEventListener('dragstart', (e) => {
+      draggedElement = nodeEl;
+      draggedNode = node;
+      const rect = nodeEl.getBoundingClientRect();
       offsetX = e.clientX - rect.left;
       offsetY = e.clientY - rect.top;
-      branchEl.style.opacity = '0.5';
+      nodeEl.style.opacity = '0.4';
+      nodeEl.style.transform = 'scale(0.95)';
     });
     
-    branchEl.addEventListener('dragend', (e) => {
+    // Drag end
+    nodeEl.addEventListener('dragend', (e) => {
       if (draggedElement) {
         draggedElement.style.opacity = '1';
+        draggedElement.style.transform = 'scale(1)';
         draggedElement = null;
-        draggedBranchIndex = null;
+        draggedNode = null;
       }
     });
     
-    return branchEl;
+    return nodeEl;
   }
   
-  function renderBranches() {
+  function deleteNode(node) {
+    const index = branches.findIndex(b => b.id === node.id);
+    if (index !== -1) {
+      branches.splice(index, 1);
+      return;
+    }
+    
+    function removeFromChildren(parent) {
+      if (!parent.children) return false;
+      const childIndex = parent.children.findIndex(c => c.id === node.id);
+      if (childIndex !== -1) {
+        parent.children.splice(childIndex, 1);
+        return true;
+      }
+      for (let child of parent.children) {
+        if (removeFromChildren(child)) return true;
+      }
+      return false;
+    }
+    
+    branches.forEach(branch => removeFromChildren(branch));
+  }
+  
+  function renderAllNodes() {
     branchesContainer.innerHTML = '';
-    branches.forEach((branch, index) => {
-      branchesContainer.appendChild(createBranchElement(branch, index));
-    });
+    
+    function renderNodeAndChildren(node, isChild = false) {
+      branchesContainer.appendChild(createNodeElement(node, isChild));
+      if (node.children && node.children.length > 0) {
+        node.children.forEach(child => renderNodeAndChildren(child, true));
+      }
+    }
+    
+    branches.forEach(branch => renderNodeAndChildren(branch));
     setTimeout(drawLines, 10);
   }
   
@@ -1145,7 +1281,7 @@ function setupMindMap() {
   
   canvas.addEventListener('drop', (e) => {
     e.preventDefault();
-    if (draggedElement && draggedBranchIndex !== null) {
+    if (draggedElement && draggedNode) {
       const canvasRect = canvas.getBoundingClientRect();
       const centerX = canvasRect.width / 2;
       const centerY = canvasRect.height / 2;
@@ -1153,10 +1289,19 @@ function setupMindMap() {
       const newX = e.clientX - canvasRect.left - centerX;
       const newY = e.clientY - canvasRect.top - centerY;
       
-      branches[draggedBranchIndex].x = newX;
-      branches[draggedBranchIndex].y = newY;
+      draggedNode.x = newX;
+      draggedNode.y = newY;
       
-      renderBranches();
+      renderAllNodes();
+    }
+  });
+  
+  // Deselecionar quando clicar no canvas
+  canvas.addEventListener('click', (e) => {
+    if (e.target === canvas) {
+      selectedBranch = null;
+      selectedInfo.classList.add('hidden');
+      renderAllNodes();
     }
   });
   
@@ -1177,66 +1322,200 @@ function setupMindMap() {
     }
   });
   
+  // Adicionar ramo principal
   document.getElementById('btn-add-node').addEventListener('click', () => {
     const topic = topicInput.value.trim();
     if (!topic) {
-      alert('Digite um tópico para adicionar!');
+      alert('💡 Digite um tópico para adicionar!');
       return;
     }
     
-    const angle = (branches.length * 45 + Math.random() * 30) % 360;
-    const radius = 180 + Math.random() * 80;
-    const x = Math.cos(angle * Math.PI / 180) * radius;
-    const y = Math.sin(angle * Math.PI / 180) * radius;
-    const color = colors[branches.length % colors.length];
+    const angle = (branches.length * 60 + Math.random() * 40) * Math.PI / 180;
+    const radius = 200 + Math.random() * 60;
+    const x = Math.cos(angle) * radius;
+    const y = Math.sin(angle) * radius;
+    const colorIndex = branches.length % colorGradients.length;
     
-    branches.push({ text: topic, x, y, color });
+    const newBranch = {
+      id: ++nodeIdCounter,
+      text: topic,
+      x,
+      y,
+      colors: colorGradients[colorIndex],
+      children: []
+    };
+    
+    branches.push(newBranch);
     topicInput.value = '';
-    renderBranches();
+    renderAllNodes();
   });
   
-  document.getElementById('btn-clear-mindmap').addEventListener('click', () => {
-    if (confirm('Limpar todo o mapa mental?')) {
-      branches = [];
-      centralNode = { x: 0, y: 0, text: 'Tema Central' };
-      centralNodeEl.querySelector('div').textContent = 'Tema Central';
-      centralTopicInput.value = '';
-      renderBranches();
+  // Adicionar sub-ramo
+  document.getElementById('btn-add-subbranch').addEventListener('click', () => {
+    if (!selectedBranch) {
+      alert('⚠️ Selecione um ramo primeiro!');
+      return;
+    }
+    
+    const subtext = subbranchInput.value.trim();
+    if (!subtext) {
+      alert('💡 Digite o nome do sub-ramo!');
+      return;
+    }
+    
+    if (!selectedBranch.children) {
+      selectedBranch.children = [];
+    }
+    
+    const childCount = selectedBranch.children.length;
+    const angle = (childCount * 60 + Math.random() * 30) * Math.PI / 180;
+    const radius = 120;
+    const offsetX = Math.cos(angle) * radius;
+    const offsetY = Math.sin(angle) * radius;
+    
+    const darkerColors = selectedBranch.colors.map(c => {
+      const rgb = parseInt(c.slice(1), 16);
+      const r = Math.max(0, ((rgb >> 16) & 255) - 30);
+      const g = Math.max(0, ((rgb >> 8) & 255) - 30);
+      const b = Math.max(0, (rgb & 255) - 30);
+      return `#${((r << 16) | (g << 8) | b).toString(16).padStart(6, '0')}`;
+    });
+    
+    const newChild = {
+      id: ++nodeIdCounter,
+      text: subtext,
+      x: selectedBranch.x + offsetX,
+      y: selectedBranch.y + offsetY,
+      colors: darkerColors,
+      children: []
+    };
+    
+    selectedBranch.children.push(newChild);
+    subbranchInput.value = '';
+    renderAllNodes();
+  });
+  
+  // Botão de desselecionar
+  document.getElementById('btn-deselect').addEventListener('click', () => {
+    selectedBranch = null;
+    selectedInfo.classList.add('hidden');
+    renderAllNodes();
+  });
+  
+  // Enter para adicionar sub-ramo
+  subbranchInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+      document.getElementById('btn-add-subbranch').click();
     }
   });
   
+  // Limpar mapa
+  document.getElementById('btn-clear-mindmap').addEventListener('click', () => {
+    if (confirm('🗑️ Limpar TODO o mapa mental? Esta ação não pode ser desfeita!')) {
+      branches = [];
+      nodeIdCounter = 0;
+      selectedBranch = null;
+      selectedInfo.classList.add('hidden');
+      centralNode = { x: 0, y: 0, text: 'Tema Central' };
+      const centralDiv = centralNodeEl.querySelector('div');
+      if (centralDiv) {
+        const starIcon = centralDiv.querySelector('.absolute');
+        centralDiv.innerHTML = '';
+        if (starIcon) centralDiv.appendChild(starIcon);
+        const textNode = document.createTextNode('Tema Central');
+        centralDiv.appendChild(textNode);
+      }
+      centralTopicInput.value = '';
+      renderAllNodes();
+    }
+  });
+  
+  // Salvar mapa
   document.getElementById('btn-save-mindmap').addEventListener('click', () => {
     const data = {
       central: centralNode,
-      branches: branches
+      branches: branches,
+      nodeIdCounter: nodeIdCounter
     };
     localStorage.setItem('mindmap_data', JSON.stringify(data));
-    alert('💾 Mapa Mental salvo no navegador!');
+    
+    const btn = document.getElementById('btn-save-mindmap');
+    const originalHTML = btn.innerHTML;
+    btn.innerHTML = '<i class="fas fa-check mr-2"></i>Salvo com Sucesso!';
+    btn.classList.add('from-emerald-600', 'to-green-700');
+    
+    setTimeout(() => {
+      btn.innerHTML = originalHTML;
+      btn.classList.remove('from-emerald-600', 'to-green-700');
+    }, 2000);
   });
   
-  document.getElementById('btn-export-image').addEventListener('click', () => {
-    alert('📸 Exportação de imagem em desenvolvimento! Use a captura de tela do sistema por enquanto.');
+  // Exportar como imagem (PNG)
+  document.getElementById('btn-export-image').addEventListener('click', async () => {
+    const btn = document.getElementById('btn-export-image');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Exportando...';
+    
+    try {
+      // Usar html2canvas se disponível, senão mostrar mensagem
+      if (typeof html2canvas !== 'undefined') {
+        const screenshot = await html2canvas(canvas, {
+          backgroundColor: '#f8f9fa',
+          scale: 2
+        });
+        
+        const link = document.createElement('a');
+        link.download = `mapa-mental-${Date.now()}.png`;
+        link.href = screenshot.toDataURL('image/png');
+        link.click();
+        
+        btn.innerHTML = '<i class="fas fa-check mr-2"></i>Exportado!';
+      } else {
+        alert('📸 Para exportar como imagem, use a captura de tela do seu sistema ou pressione Print Screen!');
+        btn.innerHTML = '<i class="fas fa-image mr-2"></i>Exportar PNG';
+      }
+    } catch (e) {
+      console.error('Erro ao exportar:', e);
+      alert('⚠️ Use a captura de tela do sistema (Print Screen) para salvar o mapa mental!');
+      btn.innerHTML = '<i class="fas fa-image mr-2"></i>Exportar PNG';
+    }
+    
+    btn.disabled = false;
+    setTimeout(() => {
+      btn.innerHTML = '<i class="fas fa-image mr-2"></i>Exportar PNG';
+    }, 3000);
   });
   
+  // Carregar mapa salvo
   const saved = localStorage.getItem('mindmap_data');
   if (saved) {
     try {
       const data = JSON.parse(saved);
       if (data.central) {
         centralNode = data.central;
-        centralNodeEl.querySelector('div').textContent = centralNode.text;
+        const centralDiv = centralNodeEl.querySelector('div');
+        if (centralDiv) {
+          const starIcon = centralDiv.querySelector('.absolute');
+          centralDiv.innerHTML = '';
+          if (starIcon) centralDiv.appendChild(starIcon);
+          const textNode = document.createTextNode(centralNode.text);
+          centralDiv.appendChild(textNode);
+        }
         centralTopicInput.value = centralNode.text;
       }
       if (data.branches) {
         branches = data.branches;
-        renderBranches();
       }
+      if (data.nodeIdCounter) {
+        nodeIdCounter = data.nodeIdCounter;
+      }
+      renderAllNodes();
     } catch (e) {
       console.error('Erro ao carregar mapa mental salvo:', e);
     }
   }
   
-  renderBranches();
+  renderAllNodes();
 }
 
 console.log('✨ 5 Novas Ferramentas Autorais Carregadas!');

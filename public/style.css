@@ -414,13 +414,13 @@ button:active:not(:disabled) {
   box-shadow: var(--shadow-md);
 }
 
-/* Home page with theme */
+/* Home page with theme - SEM background para mostrar wallpaper */
 #home-page {
-  background: var(--theme-background);
+  background: transparent;
 }
 
 .theme-dark #home-page {
-  background: linear-gradient(135deg, var(--theme-background), var(--theme-surface));
+  background: transparent;
 }
 
 /* Pesquisa doméstica com tema */
@@ -632,7 +632,7 @@ button:active:not(:disabled) {
 }
 
 .theme-dark #home-bg {
-  filter: brightness(0.4) contrast(1.2);
+  filter: brightness(0.8) contrast(1.1);
 }
 
 /* Designe responsivo */
@@ -878,6 +878,16 @@ button:hover:not(:disabled) {
 /* Transição de papel de parede */
 #home-bg {
   transition: all 0.7s ease;
+  z-index: -1;
+}
+
+/* Garantir que wallpaper seja visível */
+#wallpaper-container {
+  z-index: 0;
+}
+
+main {
+  background: transparent !important;
 }
 
 
